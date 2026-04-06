@@ -96,3 +96,32 @@ We eschew traditional drop shadows for **Tonal Layering** and **Luminescence**.
 ---
 
 **Director's Note:** Every pixel should feel like it belongs in a high-security data vault. When in doubt, add more "air" (vertical padding) and reduce the opacity of your borders. Let the neon do the heavy lifting.
+
+---
+
+## 7. Implementation Notes (Code Sync)
+
+Use this section when reviewing or changing visuals so CSS and structure stay aligned with the design intent.
+
+### Global film grain
+
+- **Token:** `--film-grain-opacity` on `:root` in `src/index.css` (drives visible strength).
+- **Markup:** In `src/components/layout/AppChrome.tsx`, after the atmosphere layer, render `<div class="app-film-grain" aria-hidden />`.
+- **Styles:** `.app-film-grain` lives in `@layer components` in `src/index.css`; tiled SVG `feTurbulence` noise with a slightly lower `baseFrequency` so texture remains perceptible at modest opacity.
+- **Stacking:** `z-index: 45` — must sit **above** the main content shell (`z-10`) or opaque section backgrounds fully hide the grain (opacity tweaks then appear to do nothing); must stay **below** the header (`z-50`), mobile full-screen nav (`z-60`), and modals (`z-100+`). `pointer-events: none`.
+- **Avoid:** Do not put sitewide grain on `body::before` — `#root` and `AppChrome`’s solid `bg-background` paint over it.
+
+### Home: Hero → Prizes transition
+
+- **`.home-hero-bottom-blend`:** Gradient at the bottom of the hero (above the video, below copy) easing into prizes base `#101010`, softening the cut between moving highlights and flat matte (`HomePage.tsx`, directly after `HeroVideoBackdrop`).
+- **`.home-prizes-section`:** Solid `#101010` plus a subtle top wash `linear-gradient` using `rgba(var(--rgb-neon), …)` to carry chroma from the hero UI; top edge uses `box-shadow: inset 0 1px 0 …` instead of a harsh `border-t`.
+- **Perception:** Two regions can match hex yet feel mismatched — the hero reads richer due to motion and highlights; the wash and blend address **simultaneous contrast** and **hue continuity**, not only luminance.
+
+### Related files
+
+| Concern | Location |
+|--------|----------|
+| Grain + hero/prizes utilities | `src/index.css` (`:root`, `components` layer) |
+| Grain node + content `z-10` shell | `src/components/layout/AppChrome.tsx` |
+| Hero blend + prizes section classes | `src/pages/HomePage.tsx` |
+| Countdown / CTA animations | `src/globals.css` |

@@ -8,7 +8,7 @@
 | `/showcase` | 参赛展示（`localStorage` 用户投稿 + 内置示例合并） |
 | `/admin` | 管理（PIN 见环境变量） |
 
-视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**；设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
+视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**（含 **§7 实现备忘**：全站胶片颗粒叠放、`--film-grain-opacity`、首屏与奖项区 `.home-hero-bottom-blend` / `.home-prizes-section` 衔接等）。设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
 
 ---
 
@@ -58,7 +58,7 @@ npm run dev
 
 | 模块 | 说明 |
 |------|------|
-| 首页 | Mux HLS 背景视频（`HeroMuxHlsVideo.tsx`）、投稿截止倒计时、奖项与投稿规范、评审权重展示 |
+| 首页 | Mux HLS 背景视频（`HeroMuxHlsVideo.tsx`）、投稿截止倒计时、奖项与投稿规范、评审权重展示；首屏底缘与奖项区背景衔接见 `DESIGN.md` §7、`HomePage.tsx` + `index.css` |
 | 参赛展示 | `showcaseMerge`：用户投稿（`localStorage`）与 `mockShowcase` 合并列表 |
 | 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ 可选 Gemini 或本地摘要回填 |
 | 管理 | 条目可见性、编辑、删除 |

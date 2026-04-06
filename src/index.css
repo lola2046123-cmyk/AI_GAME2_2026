@@ -42,7 +42,7 @@
       var(--site-header-inner-height) + env(safe-area-inset-top, 0px)
     );
     /* 全局质感：颗粒 / 玻璃 / 背景网格（可调） */
-    --film-grain-opacity: 0.03;
+    --film-grain-opacity: 0.08;
     --atmosphere-grid-size: 40px;
     --atmosphere-grid-line: rgba(255, 255, 255, 0.035);
     --glass-surface: rgba(255, 255, 255, 0.05);
@@ -74,6 +74,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  #root {
+    min-height: 100%;
+    min-height: 100dvh;
+  }
+
   body {
     @apply bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-fixed overflow-x-hidden;
     /* 接近 SF 正文的轻微负字距，整体更干净 */
@@ -82,21 +87,6 @@
     line-height: 1.14;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  /**
-   * 全局胶片颗粒（Film Grain）：固定层 + 点击穿透，弱化纯色块廉价感
-   */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: var(--film-grain-opacity);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 200px 200px;
   }
 
   h1,
@@ -678,12 +668,14 @@
     line-height: 1.14;
   }
 
-  /* 首屏主标题投影：约为原强度的 40%（弱化 60%） */
+  /* 首屏主标题：黑色投影叠层，保证白字在亮视频上可读 */
   .hero-title-over-video {
     text-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.38),
-      0 4px 28px rgba(0, 0, 0, 0.35),
-      0 0 40px rgba(14, 14, 16, 0.3);
+      0 0 1px rgb(0 0 0),
+      0 1px 2px rgb(0 0 0 / 0.95),
+      0 2px 6px rgb(0 0 0 / 0.85),
+      0 4px 16px rgb(0 0 0 / 0.65),
+      0 8px 32px rgb(0 0 0 / 0.45);
   }
 
   /**
@@ -695,6 +687,54 @@
     z-index: -10;
     overflow: hidden;
     pointer-events: none;
+  }
+
+  /**
+   * 胶片颗粒：须在「主内容包装 z-10」之上，否则各区块实色底 / Hero 全屏层会完全盖住颗粒（z-0 时等于看不见）。
+   * 叠放：app-atmosphere -10 < 主内容 10 < 本层 45 < 顶栏 50 < 移动全屏菜单 60 < 弹窗 100+
+   */
+  .app-film-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    opacity: var(--film-grain-opacity);
+    /* baseFrequency 略低：单格内对比更强，同样 opacity 下更易感知 */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.52' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  /**
+   * 首屏底缘：向奖项区底色收束。视频有动效与高光，同亮度纯色会显「更灰」——用渐变把两屏在感知上连成一段。
+   */
+  .home-hero-bottom-blend {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 6;
+    height: min(22vh, 260px);
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      #101010 0%,
+      rgba(16, 16, 16, 0.72) 42%,
+      transparent 100%
+    );
+  }
+
+  /**
+   * 奖项区：保持 #101010 实底 + 顶区极淡霓虹洗光（与首屏 UI 色偏对齐），顶边用内阴影代替硬 border。
+   */
+  .home-prizes-section {
+    position: relative;
+    background-color: #101010;
+    background-image: linear-gradient(
+      180deg,
+      rgba(var(--rgb-neon), 0.065) 0%,
+      transparent min(38vh, 340px)
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.042);
   }
 
   .app-atmosphere__grid {

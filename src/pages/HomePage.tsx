@@ -51,6 +51,7 @@ export function HomePage() {
           className="relative isolate flex min-h-[calc(100svh-var(--site-header-height))] w-full flex-col overflow-hidden bg-background text-white"
         >
           <HeroVideoBackdrop />
+          <div className="home-hero-bottom-blend" aria-hidden />
 
           <div className="relative z-10 mx-auto grid min-h-[calc(100svh-var(--site-header-height))] w-full max-w-home place-content-center justify-items-stretch px-6 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-0 md:px-12 md:pb-6">
               <motion.div
@@ -61,19 +62,12 @@ export function HomePage() {
               >
                 <motion.h1
                   variants={fadeInUp}
-                  className="type-amount min-w-0 max-w-full font-headline font-bold leading-none tracking-tight text-white max-md:whitespace-nowrap max-md:text-center max-md:text-[clamp(1.375rem,11vw,3.125rem)] md:text-balance md:text-[clamp(3.25rem,6.25vw,5.6875rem)]"
+                  className="hero-title-over-video type-amount min-w-0 max-w-full font-headline font-bold leading-none tracking-tight text-white max-md:whitespace-nowrap max-md:text-center max-md:text-[clamp(1.375rem,11vw,3.125rem)] md:text-balance md:text-[clamp(3.25rem,6.25vw,5.6875rem)]"
                 >
                   AI 游戏设计大赛
                 </motion.h1>
 
-                <motion.div
-                  variants={fadeInUp}
-                  className="flex flex-col items-center"
-                  aria-label="投稿截止倒计时"
-                >
-                  <p className="mb-1 font-body text-[13px] font-normal tracking-normal text-primary/45 md:text-[14px]">
-                    投递截止倒计时
-                  </p>
+                <motion.div variants={fadeInUp} className="flex flex-col items-center">
                   <SubmissionCountdown variant="footer" />
                 </motion.div>
 
@@ -110,8 +104,8 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* Rewards Section */}
-        <section className="border-t border-white/[0.06] bg-background px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
+        {/* Rewards Section — 与首屏衔接见 .home-prizes-section / .home-hero-bottom-blend */}
+        <section className="home-prizes-section px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
           <div className="mx-auto w-full max-w-home text-center">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
@@ -369,7 +363,7 @@ export function HomePage() {
                 {
                   label: "完成度",
                   percent: 40,
-                  desc: "技术稳定性、完成度与落地执行力。",
+                  desc: "技术稳定性、打磨程度与执行质量。",
                   offset: 276
                 }
               ].map((gauge, idx) => (

@@ -52,10 +52,14 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
     if (footer) {
       return (
         <div
-          className="countdown-liquid-glass mx-auto flex max-w-[min(100%,15.84rem)] items-center justify-center rounded-full px-6 py-[0.45rem] font-mono text-sm font-medium tracking-normal text-red-400/90"
+          className="countdown-liquid-glass mx-auto flex w-full max-w-[min(100%,340px)] flex-col items-center gap-2 rounded-2xl px-5 py-3 md:px-6 md:py-3.5"
           role="status"
+          aria-label="投稿截止倒计时"
         >
-          封盘中
+          <p className="font-body text-[13px] font-normal tracking-normal text-primary md:text-[14px]">
+            投递截止倒计时
+          </p>
+          <p className="font-mono text-sm font-medium tracking-normal text-red-400">封盘中</p>
         </div>
       );
     }
@@ -81,19 +85,19 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   ] as const;
 
   const shell = footer
-    ? "countdown-liquid-glass mx-auto max-w-[min(100%,316.8px)] rounded-full px-[1.08rem] py-[0.525rem] font-mono md:px-[1.8rem] md:py-[0.6rem]"
+    ? "countdown-liquid-glass mx-auto flex w-full max-w-[min(100%,340px)] flex-col items-center gap-2 rounded-2xl px-5 py-3 font-mono md:px-6 md:py-3.5"
     : compact
       ? "mx-auto flex max-w-[12.6rem] flex-nowrap items-center justify-center gap-[0.27rem] rounded-lg border border-[#00ffcc]/28 bg-black/52 px-1.5 py-1.5 font-mono text-white shadow-[0_0_14px_rgba(0,255,204,0.12)] backdrop-blur-md"
       : "mx-auto flex w-full max-w-[360px] flex-nowrap items-center justify-center gap-[0.54rem] rounded-xl border border-white/[0.1] bg-white/[0.055] px-[0.6rem] py-[0.75rem] font-mono text-on-background shadow-[0_0_22px_rgba(0,255,204,0.075)] backdrop-blur-xl sm:gap-[0.63rem] sm:px-[0.75rem] sm:py-[0.81rem] md:gap-[0.9rem] md:px-[0.9rem] md:py-[0.81rem]";
 
   const digit = footer
-    ? "block whitespace-nowrap text-[clamp(0.8125rem,3.1vw,1.2rem)] font-semibold leading-none text-white md:text-[1.35rem] [text-shadow:0_0_12px_rgba(0,255,204,0.35)]"
+    ? "block whitespace-nowrap text-[clamp(0.8125rem,3.1vw,1.2rem)] font-semibold leading-none text-white md:text-[1.35rem]"
     : compact
       ? "block whitespace-nowrap text-[clamp(0.875rem,3.6vw,1.25rem)] font-semibold leading-none text-[#a8ffe1] [text-shadow:0_0_10px_rgba(168,255,225,0.42),0_0_20px_rgba(0,255,204,0.14)]"
       : `block whitespace-nowrap text-[clamp(1.125rem,4.6vw,2.25rem)] font-semibold leading-none text-primary-container transition-opacity duration-300 sm:text-[clamp(1.2rem,4vw,2.7rem)] md:text-[3.3rem] md:leading-none [text-shadow:0_0_12px_rgba(0,255,204,0.28),0_0_24px_rgba(0,255,204,0.12)]`;
 
   const labelCls = footer
-    ? "mt-1 block whitespace-nowrap text-[0.66rem] font-normal tracking-[0.036em] text-primary/50 md:text-[0.72rem]"
+    ? "mt-1 block whitespace-nowrap text-[0.66rem] font-normal tracking-[0.036em] text-primary md:text-[0.72rem]"
     : compact
       ? "mt-0.5 block whitespace-nowrap text-[0.6rem] font-normal tracking-[0.036em] text-white/45"
       : "mt-1 block whitespace-nowrap text-[0.78rem] font-normal tracking-[0.036em] text-primary/50 sm:mt-1.5 sm:text-[0.84rem]";
@@ -109,7 +113,7 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
       {blocks.map((b) => (
         <div key={b.label} className={blockMin}>
           <span
-            className={`${digit}${b.label === "秒" ? " countdown-geek-seconds" : ""}`}
+            className={`${digit}${b.label === "秒" && !footer ? " countdown-geek-seconds" : ""}`}
           >
             {b.value}
           </span>
@@ -122,6 +126,9 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   if (footer) {
     return (
       <div className={shell} role="timer" aria-label="投稿截止倒计时">
+        <p className="relative z-[1] font-body text-[13px] font-normal tracking-normal text-primary md:text-[14px]">
+          投递截止倒计时
+        </p>
         <div className="relative z-[1] flex w-full min-w-0 flex-nowrap items-center justify-center gap-x-[0.6rem] whitespace-nowrap md:gap-x-[0.9rem]">
           {inner}
         </div>
