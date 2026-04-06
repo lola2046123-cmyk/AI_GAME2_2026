@@ -68,7 +68,7 @@ export function HomePage() {
               >
                 <motion.h1
                   variants={fadeInUp}
-                  className="hero-title-over-video text-balance font-headline text-[clamp(1.95rem,5.8vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.032em] text-white md:text-[clamp(2.15rem,4.25vw,3.85rem)] md:leading-[1.06] md:tracking-[-0.03em]"
+                  className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount text-balance font-headline text-[clamp(2.4rem,6.76vw,4.1rem)] font-bold leading-none tracking-tight md:text-[clamp(2.6rem,5vw,4.55rem)]"
                 >
                   AI 游戏设计大赛
                 </motion.h1>
@@ -83,7 +83,7 @@ export function HomePage() {
                     <span className="text-primary/75">(Total Prize Pool)</span>
                   </p>
                   <div className="flex justify-center">
-                    <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[clamp(1.85rem,5.2vw,3.15rem)] font-bold leading-none tracking-tight md:text-[clamp(2rem,3.85vw,3.5rem)]">
+                    <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[clamp(2.4rem,6.76vw,4.1rem)] font-bold leading-none tracking-tight md:text-[clamp(2.6rem,5vw,4.55rem)]">
                       32,500&nbsp;U
                     </span>
                   </div>
@@ -154,21 +154,30 @@ export function HomePage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="group surface-card relative flex flex-col items-center justify-center gap-2 p-12 md:col-span-2 md:gap-2.5 md:p-14"
+                className="group surface-card relative flex flex-col items-center justify-center gap-[0.3375rem] p-[2.025rem] md:col-span-2 md:gap-2.5 md:p-14"
               >
-                <div className="absolute top-0 right-0 p-4 font-label text-[120px] leading-none font-bold opacity-[0.03]">R1</div>
-                <PrizeAwardIcon icon={Trophy} emphasis="primary" size="lg" phase={0} />
-                <div className="space-y-2 text-center">
-                  <span className="font-label block text-sm font-medium uppercase leading-snug tracking-technical text-[#b5f0d8]">
+                <div className="absolute top-0 right-0 p-4 font-label text-[81px] leading-none font-bold opacity-[0.03] md:text-[120px]">
+                  R1
+                </div>
+                <PrizeAwardIcon
+                  icon={Trophy}
+                  emphasis="primary"
+                  size="lg"
+                  phase={0}
+                  className="max-md:mb-[0.3375rem] max-md:h-[2.3625rem] max-md:w-[2.3625rem] max-md:rounded-[0.675rem]"
+                  iconClassName="max-md:h-[1.18125rem] max-md:w-[1.18125rem]"
+                />
+                <div className="space-y-[0.3375rem] text-center md:space-y-2">
+                  <span className="font-label block text-[0.590625rem] font-medium uppercase leading-snug tracking-technical text-[#b5f0d8] md:text-sm">
                     一等奖（领航者）
                   </span>
                 </div>
                 <div className="flex justify-center">
-                  <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-7xl font-bold leading-none tracking-tight md:text-8xl">
+                  <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[3.0375rem] font-bold leading-none tracking-tight md:text-8xl">
                     20,000&nbsp;U
                   </span>
                 </div>
-                <div className="w-32 h-1 bg-primary/30 group-hover:w-full transition-all duration-700 mt-1" />
+                <div className="mt-1 h-[2.7px] w-[5.4rem] bg-primary/30 transition-all duration-700 group-hover:w-full md:h-1 md:w-32" />
               </motion.div>
 
               {/* Rank 2-3 */}

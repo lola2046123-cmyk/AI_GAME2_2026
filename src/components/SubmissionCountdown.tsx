@@ -52,7 +52,7 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
     if (footer) {
       return (
         <div
-          className="countdown-liquid-glass mx-auto flex max-w-[min(100%,26.4rem)] items-center justify-center rounded-full px-10 py-3 font-mono text-sm font-medium tracking-normal text-red-400/90"
+          className="countdown-liquid-glass mx-auto flex max-w-[min(100%,15.84rem)] items-center justify-center rounded-full px-6 py-[0.45rem] font-mono text-sm font-medium tracking-normal text-red-400/90"
           role="status"
         >
           封盘中
@@ -63,8 +63,8 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
       <div
         className={
           compact
-            ? "mx-auto flex max-w-[21.6rem] items-center justify-center rounded-lg border border-white/10 bg-black/60 px-3.5 py-2.5 font-mono text-xs font-medium uppercase tracking-technical text-red-400/95 backdrop-blur-sm"
-            : "mx-auto flex w-full max-w-[600px] items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.055] px-5 py-6 font-mono text-sm font-medium uppercase tracking-technical text-red-400/95 shadow-[0_0_18px_rgba(94,210,156,0.07)] backdrop-blur-xl md:text-base"
+            ? "mx-auto flex max-w-[12.96rem] items-center justify-center rounded-lg border border-white/10 bg-black/60 px-[0.525rem] py-1.5 font-mono text-xs font-medium uppercase tracking-[0.036em] text-red-400/95 backdrop-blur-sm"
+            : "mx-auto flex w-full max-w-[360px] items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.055] px-3 py-[0.9rem] font-mono text-sm font-medium uppercase tracking-[0.036em] text-red-400/95 shadow-[0_0_18px_rgba(94,210,156,0.07)] backdrop-blur-xl md:text-base"
         }
         role="status"
       >
@@ -81,28 +81,28 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   ] as const;
 
   const shell = footer
-    ? "countdown-liquid-glass mx-auto max-w-[min(100%,528px)] rounded-full px-[1.8rem] py-3.5 font-mono md:px-12 md:py-4"
+    ? "countdown-liquid-glass mx-auto max-w-[min(100%,316.8px)] rounded-full px-[1.08rem] py-[0.525rem] font-mono md:px-[1.8rem] md:py-[0.6rem]"
     : compact
-      ? "mx-auto flex max-w-[21rem] flex-nowrap items-center justify-center gap-[0.45rem] rounded-lg border border-[#5ed29c]/28 bg-black/52 px-2.5 py-2.5 font-mono text-white shadow-[0_0_14px_rgba(94,210,156,0.12)] backdrop-blur-md"
-      : "mx-auto flex w-full max-w-[600px] flex-wrap items-center justify-center gap-[0.9rem] rounded-xl border border-white/[0.1] bg-white/[0.055] px-4 py-5 font-mono text-on-background shadow-[0_0_22px_rgba(94,210,156,0.075)] backdrop-blur-xl sm:gap-[1.05rem] sm:px-5 sm:py-[1.35rem] md:flex-nowrap md:gap-6 md:px-6";
+      ? "mx-auto flex max-w-[12.6rem] flex-nowrap items-center justify-center gap-[0.27rem] rounded-lg border border-[#5ed29c]/28 bg-black/52 px-1.5 py-1.5 font-mono text-white shadow-[0_0_14px_rgba(94,210,156,0.12)] backdrop-blur-md"
+      : "mx-auto flex w-full max-w-[360px] flex-nowrap items-center justify-center gap-[0.54rem] rounded-xl border border-white/[0.1] bg-white/[0.055] px-[0.6rem] py-[0.75rem] font-mono text-on-background shadow-[0_0_22px_rgba(94,210,156,0.075)] backdrop-blur-xl sm:gap-[0.63rem] sm:px-[0.75rem] sm:py-[0.81rem] md:gap-[0.9rem] md:px-[0.9rem] md:py-[0.81rem]";
 
   const digit = footer
-    ? "block text-[1.2rem] font-semibold leading-none text-white md:text-[1.35rem] [text-shadow:0_0_12px_rgba(94,210,156,0.35)]"
+    ? "block whitespace-nowrap text-[clamp(0.8125rem,3.1vw,1.2rem)] font-semibold leading-none text-white md:text-[1.35rem] [text-shadow:0_0_12px_rgba(94,210,156,0.35)]"
     : compact
-      ? "block text-xl font-semibold leading-none text-[#7ee5b5] [text-shadow:0_0_10px_rgba(126,229,181,0.42),0_0_20px_rgba(94,210,156,0.14)]"
-      : `block text-[2.25rem] font-semibold leading-none text-primary-container transition-opacity duration-300 sm:text-[2.7rem] md:text-[3.3rem] md:leading-none [text-shadow:0_0_12px_rgba(94,210,156,0.28),0_0_24px_rgba(94,210,156,0.12)]`;
+      ? "block whitespace-nowrap text-[clamp(0.875rem,3.6vw,1.25rem)] font-semibold leading-none text-[#7ee5b5] [text-shadow:0_0_10px_rgba(126,229,181,0.42),0_0_20px_rgba(94,210,156,0.14)]"
+      : `block whitespace-nowrap text-[clamp(1.125rem,4.6vw,2.25rem)] font-semibold leading-none text-primary-container transition-opacity duration-300 sm:text-[clamp(1.2rem,4vw,2.7rem)] md:text-[3.3rem] md:leading-none [text-shadow:0_0_12px_rgba(94,210,156,0.28),0_0_24px_rgba(94,210,156,0.12)]`;
 
   const labelCls = footer
-    ? "mt-1 block text-[0.66rem] font-normal tracking-technical text-primary/50 md:text-[0.72rem]"
+    ? "mt-1 block whitespace-nowrap text-[0.66rem] font-normal tracking-[0.036em] text-primary/50 md:text-[0.72rem]"
     : compact
-      ? "mt-0.5 block text-[0.6rem] font-normal tracking-technical text-white/45"
-      : "mt-1 block text-[0.78rem] font-normal tracking-technical text-primary/50 sm:mt-1.5 sm:text-[0.84rem]";
+      ? "mt-0.5 block whitespace-nowrap text-[0.6rem] font-normal tracking-[0.036em] text-white/45"
+      : "mt-1 block whitespace-nowrap text-[0.78rem] font-normal tracking-[0.036em] text-primary/50 sm:mt-1.5 sm:text-[0.84rem]";
 
   const blockMin = footer
-    ? "min-w-12 text-center md:min-w-[3.6rem]"
+    ? "min-w-0 flex-1 text-center md:min-w-[2.16rem] md:flex-none"
     : compact
-      ? "min-w-[2.8rem] text-center"
-      : "min-w-[3.9rem] text-center sm:min-w-[5.1rem] md:min-w-[5.4rem]";
+      ? "min-w-0 flex-1 text-center"
+      : "min-w-0 flex-1 text-center md:min-w-[3.24rem] md:flex-none";
 
   const inner = (
     <>
@@ -122,7 +122,7 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   if (footer) {
     return (
       <div className={shell} role="timer" aria-label="投稿截止倒计时">
-        <div className="relative z-[1] flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2.5 sm:flex-nowrap md:gap-6">
+        <div className="relative z-[1] flex w-full min-w-0 flex-nowrap items-center justify-center gap-x-[0.6rem] whitespace-nowrap md:gap-x-[0.9rem]">
           {inner}
         </div>
       </div>
@@ -130,7 +130,7 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   }
 
   return (
-    <div className={shell} role="timer" aria-label="投稿截止倒计时">
+    <div className={`${shell} min-w-0 whitespace-nowrap`} role="timer" aria-label="投稿截止倒计时">
       {inner}
     </div>
   );
