@@ -80,7 +80,7 @@ export function AdminPage() {
             </h1>
             <p className="font-body mt-2 text-sm text-primary/50">
               请输入 PIN（开发默认见环境变量说明；未设置时为{" "}
-              <code className="text-[#5ed29c]">2026</code>）
+              <code className="text-[#00ffcc]">2026</code>）
             </p>
             <form onSubmit={attemptLogin} className="mt-6 space-y-4">
               <input
@@ -89,7 +89,7 @@ export function AdminPage() {
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 placeholder="PIN"
-                className="w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background outline-none focus:border-[#5ed29c]/50"
+                className="w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background outline-none focus:border-[#00ffcc]/50"
               />
               {pinError && (
                 <p className="text-sm text-red-400/95">{pinError}</p>
@@ -110,7 +110,7 @@ export function AdminPage() {
         <div className="mx-auto w-full max-w-home">
           <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <span className="font-label text-xs font-medium uppercase tracking-technical text-[#5ed29c]/90">
+              <span className="font-label text-xs font-medium uppercase tracking-technical text-[#00ffcc]/90">
                 Admin
               </span>
               <h1 className="mt-1 font-headline text-3xl font-bold tracking-tight text-on-background md:text-4xl">
@@ -163,7 +163,7 @@ export function AdminPage() {
                         href={row.deployUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-body mt-1 inline-flex items-center gap-1 text-xs text-[#5ed29c]/90 hover:underline"
+                        className="font-body mt-1 inline-flex items-center gap-1 text-xs text-[#00ffcc]/90 hover:underline"
                       >
                         <ExternalLink className="h-3 w-3" />
                         {row.deployUrl}
@@ -176,7 +176,7 @@ export function AdminPage() {
                       <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-black/25 px-3 py-2 font-label text-[10px] uppercase tracking-technical text-primary/50">
                         <input
                           type="checkbox"
-                          className="accent-[#5ed29c]"
+                          className="accent-[#00ffcc]"
                           checked={row.is_visible !== false}
                           onChange={() => toggleVisible(row)}
                         />
@@ -185,7 +185,7 @@ export function AdminPage() {
                       <button
                         type="button"
                         onClick={() => openEdit(row)}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#5ed29c]/35 bg-[#5ed29c]/10 px-3 py-2 font-label text-xs font-semibold text-[#5ed29c] transition-colors hover:bg-[#5ed29c]/18"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#00ffcc]/35 bg-[#00ffcc]/10 px-3 py-2 font-label text-xs font-semibold text-[#00ffcc] transition-colors hover:bg-[#00ffcc]/18"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         编辑

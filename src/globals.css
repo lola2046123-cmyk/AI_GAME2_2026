@@ -2,18 +2,18 @@
  * 全局动画与首屏扫光（与 Tailwind 解耦，便于维护 keyframes）
  */
 
-/* 底部倒计时：流体玻璃（迁移自原首屏卡片系） */
+/* 投递截止倒计时：近乎通透，仅轻微防抖可读；便于看到 Hero 底部光与视频 */
 .countdown-liquid-glass {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(14, 14, 14, 0.14);
+  backdrop-filter: blur(2px) saturate(108%);
+  -webkit-backdrop-filter: blur(2px) saturate(108%);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.12),
-    0 9px 40px rgba(0, 0, 0, 0.32),
-    0 0 40px -12px rgba(94, 210, 156, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 1px 0 0 rgba(255, 255, 255, 0.04),
+    0 4px 20px rgba(0, 0, 0, 0.14),
+    0 0 20px -8px rgba(var(--rgb-neon), 0.05);
 }
 
 .countdown-liquid-glass::before {
@@ -24,12 +24,12 @@
   padding: 1px;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.12) 25%,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.08) 25%,
     rgba(255, 255, 255, 0) 45%,
     rgba(255, 255, 255, 0) 55%,
-    rgba(255, 255, 255, 0.12) 75%,
-    rgba(255, 255, 255, 0.45) 100%
+    rgba(255, 255, 255, 0.08) 75%,
+    rgba(255, 255, 255, 0.26) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -53,10 +53,12 @@
   overflow: hidden;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 1px 0 0 rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 8px 32px rgba(0, 0, 0, 0.35);
 }
 

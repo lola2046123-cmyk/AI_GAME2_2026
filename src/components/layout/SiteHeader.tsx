@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useOpenRegistration } from "../../context/RegistrationUiContext";
 
 const navLinkClass =
-  "site-nav-link font-label text-sm font-medium tracking-normal text-white/80 transition-colors hover:text-[#5ed29c]";
+  "site-nav-link font-label text-sm font-medium tracking-normal text-white/80 transition-colors hover:text-[#00ffcc]";
 
 /**
  * 全站统一顶栏：与首页同布局、悬停高亮、移动端全屏菜单。
@@ -52,7 +52,7 @@ export function SiteHeader() {
               to="/"
               end
               className={({ isActive }) =>
-                `${navLinkClass} ${isActive ? "site-nav-link--active text-[#5ed29c]" : ""}`
+                `${navLinkClass} ${isActive ? "site-nav-link--active text-[#00ffcc]" : ""}`
               }
             >
               首页海报
@@ -60,7 +60,7 @@ export function SiteHeader() {
             <NavLink
               to="/showcase"
               className={({ isActive }) =>
-                `${navLinkClass} ${isActive ? "site-nav-link--active text-[#5ed29c]" : ""}`
+                `${navLinkClass} ${isActive ? "site-nav-link--active text-[#00ffcc]" : ""}`
               }
             >
               参赛展示
@@ -77,7 +77,7 @@ export function SiteHeader() {
             </button>
             <Link
               to="/admin"
-              className="hidden font-label text-[10px] uppercase tracking-technical text-primary/45 transition-colors hover:text-[#5ed29c]/90 sm:inline"
+              className="hidden font-label text-[10px] uppercase tracking-technical text-primary/45 transition-colors hover:text-[#00ffcc]/90 sm:inline"
               title="管理中心"
             >
               管理
@@ -118,7 +118,7 @@ export function SiteHeader() {
               to="/"
               end
               className={({ isActive }) =>
-                `text-white/90 transition-colors hover:text-[#5ed29c] ${isActive ? "text-[#5ed29c]" : ""}`
+                `text-white/90 transition-colors hover:text-[#00ffcc] ${isActive ? "text-[#00ffcc]" : ""}`
               }
               onClick={() => setMenuOpen(false)}
             >
@@ -127,7 +127,7 @@ export function SiteHeader() {
             <NavLink
               to="/showcase"
               className={({ isActive }) =>
-                `text-white/90 transition-colors hover:text-[#5ed29c] ${isActive ? "text-[#5ed29c]" : ""}`
+                `text-white/90 transition-colors hover:text-[#00ffcc] ${isActive ? "text-[#00ffcc]" : ""}`
               }
               onClick={() => setMenuOpen(false)}
             >
@@ -135,7 +135,7 @@ export function SiteHeader() {
             </NavLink>
             <Link
               to="/admin"
-              className="text-primary/50 transition-colors hover:text-[#5ed29c]/80"
+              className="text-primary/50 transition-colors hover:text-[#00ffcc]/80"
               onClick={() => setMenuOpen(false)}
             >
               管理

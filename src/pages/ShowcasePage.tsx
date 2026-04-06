@@ -17,13 +17,13 @@ export function ShowcasePage() {
 
   return (
     <>
-      <main className="relative overflow-hidden bg-background px-6 pt-8 pb-[max(7rem,calc(env(safe-area-inset-bottom,0px)+5.5rem))] md:px-12 md:pt-12 md:pb-28">
+      <main className="relative overflow-hidden bg-background px-6 pt-6 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:px-12 md:pt-10 md:pb-20">
         <div
           className="pointer-events-none absolute inset-0 opacity-90"
           aria-hidden
         >
-          <div className="showcase-ambient-breathe absolute top-0 left-1/2 h-[min(70vh,520px)] w-[min(140%,900px)] -translate-x-1/2 bg-[radial-gradient(ellipse_at_50%_0%,rgba(94,210,156,0.12)_0%,transparent_58%)]" />
-          <div className="showcase-ambient-breathe showcase-ambient-breathe--delay absolute right-0 bottom-0 h-[320px] w-[420px] bg-[radial-gradient(ellipse_at_100%_100%,rgba(94,210,156,0.075)_0%,transparent_65%)]" />
+          <div className="showcase-ambient-breathe absolute top-0 left-1/2 h-[min(70vh,520px)] w-[min(140%,900px)] -translate-x-1/2 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,255,204,0.12)_0%,transparent_58%)]" />
+          <div className="showcase-ambient-breathe showcase-ambient-breathe--delay absolute right-0 bottom-0 h-[320px] w-[420px] bg-[radial-gradient(ellipse_at_100%_100%,rgba(0,255,204,0.075)_0%,transparent_65%)]" />
         </div>
 
         <div className="relative z-[1] mx-auto w-full max-w-home">
@@ -32,7 +32,7 @@ export function ShowcasePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px 0px -8% 0px" }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-16 text-center md:mb-24"
+            className="mb-10 text-center md:mb-14"
           >
             <SectionTitleEnDecor
               titleZh="参赛展示"
@@ -40,7 +40,7 @@ export function ShowcasePage() {
               align="center"
               headingLevel={1}
             />
-            <p className="font-body type-body-compact mx-auto mt-6 max-w-2xl text-base font-normal leading-[1.21] tracking-[0.02em] text-primary/50 md:mt-7 md:text-lg md:tracking-[0.025em]">
+            <p className="font-body type-body-compact mx-auto mt-4 max-w-2xl text-base font-normal leading-[1.21] tracking-[0.02em] text-primary/50 md:mt-5 md:text-lg md:tracking-[0.025em]">
               灵感交汇，重塑原生。
               <br />
               由 AI 赋能的 H5 游戏全景漫游，触碰卡片，开启即时体验之旅。
@@ -68,7 +68,7 @@ export function ShowcasePage() {
         </div>
       </main>
 
-      <footer className="border-t border-white/[0.06] bg-background px-6 pt-16 pb-[max(4rem,calc(env(safe-area-inset-bottom,0px)+3rem))] font-label text-[10px] font-medium uppercase tracking-technical text-primary/40 sm:pt-20 md:px-12 md:pt-24 md:pb-28">
+      <footer className="border-t border-white/[0.06] bg-background px-6 pt-10 pb-[max(3rem,calc(env(safe-area-inset-bottom,0px)+2.5rem))] font-label text-[10px] font-medium uppercase tracking-technical text-primary/40 sm:pt-12 md:px-12 md:pt-16 md:pb-20">
         <div className="mx-auto w-full max-w-home text-center">
           © 2026 AI_GAME_CONTEST · SHOWCASE
         </div>

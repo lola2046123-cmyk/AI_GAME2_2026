@@ -64,7 +64,7 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
         className={
           compact
             ? "mx-auto flex max-w-[12.96rem] items-center justify-center rounded-lg border border-white/10 bg-black/60 px-[0.525rem] py-1.5 font-mono text-xs font-medium uppercase tracking-[0.036em] text-red-400/95 backdrop-blur-sm"
-            : "mx-auto flex w-full max-w-[360px] items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.055] px-3 py-[0.9rem] font-mono text-sm font-medium uppercase tracking-[0.036em] text-red-400/95 shadow-[0_0_18px_rgba(94,210,156,0.07)] backdrop-blur-xl md:text-base"
+            : "mx-auto flex w-full max-w-[360px] items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.055] px-3 py-[0.9rem] font-mono text-sm font-medium uppercase tracking-[0.036em] text-red-400/95 shadow-[0_0_18px_rgba(0,255,204,0.07)] backdrop-blur-xl md:text-base"
         }
         role="status"
       >
@@ -83,14 +83,14 @@ export function SubmissionCountdown({ variant = "default" }: SubmissionCountdown
   const shell = footer
     ? "countdown-liquid-glass mx-auto max-w-[min(100%,316.8px)] rounded-full px-[1.08rem] py-[0.525rem] font-mono md:px-[1.8rem] md:py-[0.6rem]"
     : compact
-      ? "mx-auto flex max-w-[12.6rem] flex-nowrap items-center justify-center gap-[0.27rem] rounded-lg border border-[#5ed29c]/28 bg-black/52 px-1.5 py-1.5 font-mono text-white shadow-[0_0_14px_rgba(94,210,156,0.12)] backdrop-blur-md"
-      : "mx-auto flex w-full max-w-[360px] flex-nowrap items-center justify-center gap-[0.54rem] rounded-xl border border-white/[0.1] bg-white/[0.055] px-[0.6rem] py-[0.75rem] font-mono text-on-background shadow-[0_0_22px_rgba(94,210,156,0.075)] backdrop-blur-xl sm:gap-[0.63rem] sm:px-[0.75rem] sm:py-[0.81rem] md:gap-[0.9rem] md:px-[0.9rem] md:py-[0.81rem]";
+      ? "mx-auto flex max-w-[12.6rem] flex-nowrap items-center justify-center gap-[0.27rem] rounded-lg border border-[#00ffcc]/28 bg-black/52 px-1.5 py-1.5 font-mono text-white shadow-[0_0_14px_rgba(0,255,204,0.12)] backdrop-blur-md"
+      : "mx-auto flex w-full max-w-[360px] flex-nowrap items-center justify-center gap-[0.54rem] rounded-xl border border-white/[0.1] bg-white/[0.055] px-[0.6rem] py-[0.75rem] font-mono text-on-background shadow-[0_0_22px_rgba(0,255,204,0.075)] backdrop-blur-xl sm:gap-[0.63rem] sm:px-[0.75rem] sm:py-[0.81rem] md:gap-[0.9rem] md:px-[0.9rem] md:py-[0.81rem]";
 
   const digit = footer
-    ? "block whitespace-nowrap text-[clamp(0.8125rem,3.1vw,1.2rem)] font-semibold leading-none text-white md:text-[1.35rem] [text-shadow:0_0_12px_rgba(94,210,156,0.35)]"
+    ? "block whitespace-nowrap text-[clamp(0.8125rem,3.1vw,1.2rem)] font-semibold leading-none text-white md:text-[1.35rem] [text-shadow:0_0_12px_rgba(0,255,204,0.35)]"
     : compact
-      ? "block whitespace-nowrap text-[clamp(0.875rem,3.6vw,1.25rem)] font-semibold leading-none text-[#7ee5b5] [text-shadow:0_0_10px_rgba(126,229,181,0.42),0_0_20px_rgba(94,210,156,0.14)]"
-      : `block whitespace-nowrap text-[clamp(1.125rem,4.6vw,2.25rem)] font-semibold leading-none text-primary-container transition-opacity duration-300 sm:text-[clamp(1.2rem,4vw,2.7rem)] md:text-[3.3rem] md:leading-none [text-shadow:0_0_12px_rgba(94,210,156,0.28),0_0_24px_rgba(94,210,156,0.12)]`;
+      ? "block whitespace-nowrap text-[clamp(0.875rem,3.6vw,1.25rem)] font-semibold leading-none text-[#a8ffe1] [text-shadow:0_0_10px_rgba(168,255,225,0.42),0_0_20px_rgba(0,255,204,0.14)]"
+      : `block whitespace-nowrap text-[clamp(1.125rem,4.6vw,2.25rem)] font-semibold leading-none text-primary-container transition-opacity duration-300 sm:text-[clamp(1.2rem,4vw,2.7rem)] md:text-[3.3rem] md:leading-none [text-shadow:0_0_12px_rgba(0,255,204,0.28),0_0_24px_rgba(0,255,204,0.12)]`;
 
   const labelCls = footer
     ? "mt-1 block whitespace-nowrap text-[0.66rem] font-normal tracking-[0.036em] text-primary/50 md:text-[0.72rem]"

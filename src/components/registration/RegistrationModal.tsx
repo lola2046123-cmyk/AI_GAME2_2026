@@ -48,7 +48,7 @@ function normalizeToolLabel(raw: string): string {
 }
 
 const inputSurface =
-  "w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-primary/45 outline-none transition-[border-color,box-shadow] focus:border-[#5ed29c]/50 focus:shadow-[0_0_0_3px_rgba(94,210,156,0.18)]";
+  "w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-primary/45 outline-none transition-[border-color,box-shadow] focus:border-[#00ffcc]/50 focus:shadow-[0_0_0_3px_rgba(0,255,204,0.18)]";
 
 type Props = {
   state: RegistrationModalState;
@@ -380,7 +380,7 @@ export function RegistrationModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby="reg-modal-title"
-            className="relative z-10 flex max-h-[min(92dvh,860px)] w-full max-w-lg flex-col overflow-hidden rounded-t-[1.35rem] border border-white/[0.12] bg-background/93 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.76),0_0_36px_-14px_rgba(94,210,156,0.09),0_0_1px_rgba(94,210,156,0.32)] backdrop-blur-2xl sm:max-h-[min(92vh,860px)] sm:rounded-[1.35rem]"
+            className="glass-floating-panel relative z-10 flex max-h-[min(92dvh,860px)] w-full max-w-lg flex-col overflow-hidden rounded-t-[1.35rem] sm:max-h-[min(92vh,860px)] sm:rounded-[1.35rem]"
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -388,7 +388,7 @@ export function RegistrationModal({
           >
             <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] px-5 py-4 md:px-6">
               <div>
-                <p className="font-label text-[10px] font-medium uppercase tracking-technical text-[#5ed29c]/85">
+                <p className="font-label text-[10px] font-medium uppercase tracking-technical text-[#00ffcc]/85">
                   {isEdit ? "Admin · Edit" : "Registration · 2026"}
                 </p>
                 <h2
@@ -463,7 +463,7 @@ export function RegistrationModal({
                         <span className="font-label text-xs text-primary/50">
                           核心玩法说明
                           {gameplaySource === "ai" || gameplaySource === "local" ? (
-                            <span className="ml-2 font-normal normal-case text-[#5ed29c]/75">
+                            <span className="ml-2 font-normal normal-case text-[#00ffcc]/75">
                               ·{" "}
                               {gameplaySource === "ai"
                                 ? "已由 AI 预填，可直接修改"
@@ -516,7 +516,7 @@ export function RegistrationModal({
                             onClick={() => toggleTool(t)}
                             className={`rounded-full border px-3.5 py-2 font-label text-xs font-medium tracking-normal transition-all ${
                               on
-                                ? "border-[#5ed29c]/55 bg-[#5ed29c]/15 text-[#5ed29c] shadow-[0_0_20px_-4px_rgba(94,210,156,0.4)]"
+                                ? "border-[#00ffcc]/55 bg-[#00ffcc]/15 text-[#00ffcc] shadow-[0_0_20px_-4px_rgba(0,255,204,0.4)]"
                                 : "border-white/15 bg-black/30 text-primary/50 hover:border-white/25"
                             }`}
                           >
@@ -541,7 +541,7 @@ export function RegistrationModal({
                       <button
                         type="button"
                         onClick={addCustomTool}
-                        className="shrink-0 rounded-xl border border-[#5ed29c]/35 bg-[#5ed29c]/10 px-4 font-label text-xs font-semibold text-[#5ed29c] transition-colors hover:bg-[#5ed29c]/18"
+                        className="shrink-0 rounded-xl border border-[#00ffcc]/35 bg-[#00ffcc]/10 px-4 font-label text-xs font-semibold text-[#00ffcc] transition-colors hover:bg-[#00ffcc]/18"
                       >
                         添加
                       </button>
@@ -618,7 +618,7 @@ export function RegistrationModal({
                           <button
                             type="button"
                             onClick={() => coverInputRef.current?.click()}
-                            className="rounded-lg border border-[#5ed29c]/35 bg-[#5ed29c]/10 px-3 py-1.5 font-label text-[11px] font-semibold text-[#5ed29c] transition-colors hover:bg-[#5ed29c]/18"
+                            className="rounded-lg border border-[#00ffcc]/35 bg-[#00ffcc]/10 px-3 py-1.5 font-label text-[11px] font-semibold text-[#00ffcc] transition-colors hover:bg-[#00ffcc]/18"
                           >
                             {coverDataUrl ? "重新选择" : "上传图片"}
                           </button>
@@ -639,7 +639,7 @@ export function RegistrationModal({
                       <p className="font-body text-[11px] leading-[1.21] text-primary/45">
                         推荐上传横图；将在浏览器内压缩为 JPEG（长边约 1200px），再保存。
                         若不传图，将尝试调用后端的{" "}
-                        <code className="rounded bg-white/5 px-1 text-[#5ed29c]/85">
+                        <code className="rounded bg-white/5 px-1 text-[#00ffcc]/85">
                           POST /api/screenshot
                         </code>
                         ；纯静态部署时无此接口，会得到站内占位图。

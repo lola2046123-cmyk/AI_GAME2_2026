@@ -10,7 +10,7 @@ export function getLocalThumbnailPlaceholder(): string {
     <stop offset="0%" style="stop-color:#0e1814"/><stop offset="100%" style="stop-color:#070b0a"/>
   </linearGradient></defs>
   <rect width="640" height="400" fill="url(#g)"/>
-  <text x="320" y="188" text-anchor="middle" fill="#5ed29c" fill-opacity="0.45" font-family="system-ui,sans-serif" font-size="17">未配置截图服务</text>
+  <text x="320" y="188" text-anchor="middle" fill="#00ffcc" fill-opacity="0.45" font-family="system-ui,sans-serif" font-size="17">未配置截图服务</text>
   <text x="320" y="218" text-anchor="middle" fill="#e2faf0" fill-opacity="0.22" font-family="system-ui,sans-serif" font-size="13">请上传封面图或部署 POST /api/screenshot</text>
 </svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;

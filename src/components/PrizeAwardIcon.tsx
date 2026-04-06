@@ -22,13 +22,13 @@ export function PrizeAwardIcon({
   const reduce = useReducedMotion();
   const ring =
     emphasis === "primary"
-      ? "border-[#8af0c8]/58 bg-[#5ed29c]/26 text-[#f0fff9] shadow-[0_0_32px_rgba(126,229,181,0.48),0_0_52px_-6px_rgba(94,210,156,0.26)]"
-      : "border-[#5ed29c]/46 bg-[#5ed29c]/[0.15] text-[#b8f8da] shadow-[0_0_22px_rgba(94,210,156,0.32),0_0_36px_-8px_rgba(126,229,181,0.14)]";
+      ? "border-[#6dffdb]/58 bg-[#00ffcc]/26 text-[#f0fffc] shadow-[0_0_32px_rgba(168,255,225,0.48),0_0_52px_-6px_rgba(0,255,204,0.26)]"
+      : "border-[#00ffcc]/46 bg-[#00ffcc]/[0.15] text-[#c4fff0] shadow-[0_0_22px_rgba(0,255,204,0.32),0_0_36px_-8px_rgba(168,255,225,0.14)]";
 
   const iconGlow =
     emphasis === "primary"
       ? "drop-shadow-[0_0_10px_rgba(200,255,230,0.75)]"
-      : "drop-shadow-[0_0_8px_rgba(126,229,181,0.5)]";
+      : "drop-shadow-[0_0_8px_rgba(168,255,225,0.5)]";
 
   const box = size === "lg" ? "h-14 w-14 rounded-2xl" : "h-11 w-11 rounded-xl";
   const iconPx = size === "lg" ? "h-7 w-7" : "h-[22px] w-[22px]";

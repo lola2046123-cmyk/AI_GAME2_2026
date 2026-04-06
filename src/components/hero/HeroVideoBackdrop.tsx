@@ -22,7 +22,7 @@ export function HeroVideoBackdrop() {
         <title>ambient glow</title>
         <defs>
           <radialGradient id="codenest-hero-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#5ed29c" stopOpacity="0.34" />
+            <stop offset="0%" stopColor="#00ffcc" stopOpacity="0.34" />
             <stop offset="50%" stopColor="#1a3d2e" stopOpacity="0.22" />
             <stop offset="100%" stopColor="#0a0f0d" stopOpacity="0" />
           </radialGradient>
@@ -41,12 +41,11 @@ export function HeroVideoBackdrop() {
         className="absolute inset-y-0 left-0 z-[2] w-[min(100%,720px)] bg-gradient-to-r from-background via-background/83 to-transparent"
         aria-hidden
       />
-      {/* 底部向上可读性渐变 */}
+      {/* 底部轻遮罩：保留文案对比度，透出视频 */}
       <div
-        className="absolute right-0 bottom-0 left-0 z-[2] h-[min(55vh,520px)] bg-gradient-to-t from-background via-background/81 to-transparent"
+        className="absolute right-0 bottom-0 left-0 z-[2] h-[min(36vh,360px)] bg-gradient-to-t from-background/52 via-background/18 to-transparent"
         aria-hidden
       />
-
     </div>
   );
 }

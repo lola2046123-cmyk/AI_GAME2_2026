@@ -7,6 +7,7 @@ import { HeroVideoBackdrop } from "../components/hero/HeroVideoBackdrop";
 import { PrizeAwardIcon } from "../components/PrizeAwardIcon";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
 import { SubmissionCountdown } from "../components/SubmissionCountdown";
+import { RewardCardHud } from "../components/rewards/RewardCardHud";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -22,14 +23,6 @@ const staggerContainer = {
     }
   }
 };
-
-const CREATOR_LOG_ITEMS = [
-  "游戏名称",
-  "核心玩法说明或 PRD",
-  "使用的 AI 相关工具",
-  "作品须公网可访问（部署链接有效）",
-  "其他说明"
-] as const;
 
 function subscribeReducedMotion(cb: () => void) {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -64,14 +57,25 @@ export function HomePage() {
                 initial="initial"
                 animate="animate"
                 variants={staggerContainer}
-                className="mx-auto flex w-full max-w-4xl translate-y-[2vh] flex-col items-center space-y-8 px-4 text-center md:translate-y-[2.75vh] md:space-y-9"
+                className="mx-auto flex w-full max-w-4xl translate-y-[1vh] flex-col items-center space-y-5 px-4 text-center md:translate-y-[1.25vh] md:space-y-6 lg:space-y-7"
               >
                 <motion.h1
                   variants={fadeInUp}
-                  className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount text-balance font-headline text-[clamp(2.4rem,6.76vw,4.1rem)] font-bold leading-none tracking-tight md:text-[clamp(2.6rem,5vw,4.55rem)]"
+                  className="type-amount text-balance font-headline text-[clamp(3rem,8.45vw,5.125rem)] font-bold leading-none tracking-tight text-white md:text-[clamp(3.25rem,6.25vw,5.6875rem)]"
                 >
                   AI 游戏设计大赛
                 </motion.h1>
+
+                <motion.div
+                  variants={fadeInUp}
+                  className="flex flex-col items-center"
+                  aria-label="投稿截止倒计时"
+                >
+                  <p className="mb-1 font-body text-[13px] font-normal tracking-normal text-primary/45 md:text-[14px]">
+                    投递截止倒计时
+                  </p>
+                  <SubmissionCountdown variant="footer" />
+                </motion.div>
 
                 <motion.div
                   variants={fadeInUp}
@@ -89,13 +93,6 @@ export function HomePage() {
                   </div>
                 </motion.div>
 
-                <motion.p
-                  variants={fadeInUp}
-                  className="max-w-xl font-body text-sm font-normal tracking-[0.02em] text-primary/95 md:text-base md:tracking-[0.025em]"
-                >
-                  AI 驱动 · 全栈进化
-                </motion.p>
-
                 <motion.div variants={fadeInUp}>
                   <motion.button
                     id="hero-cta"
@@ -109,32 +106,21 @@ export function HomePage() {
                     立即参赛
                   </motion.button>
                 </motion.div>
-
-                <motion.div
-                  variants={fadeInUp}
-                  className="flex flex-col items-center"
-                  aria-label="投稿截止倒计时"
-                >
-                  <p className="mb-2 font-body text-[13px] font-normal tracking-normal text-primary/45 md:text-[14px]">
-                    投递截止倒计时
-                  </p>
-                  <SubmissionCountdown variant="footer" />
-                </motion.div>
               </motion.div>
           </div>
         </section>
 
         {/* Rewards Section */}
-        <section className="border-t border-white/[0.06] bg-background px-6 py-24 sm:py-32 md:px-12 md:py-44 lg:py-52 xl:py-60">
+        <section className="border-t border-white/[0.06] bg-background px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
           <div className="mx-auto w-full max-w-home text-center">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-20 flex flex-col items-center space-y-5 md:mb-28 md:space-y-6"
+              className="mb-10 flex flex-col items-center space-y-3 md:mb-14 md:space-y-4"
             >
               <div className="flex w-full flex-col items-center text-center">
-                <span className="font-label mb-4 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container">
+                <span className="font-label mb-2 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container md:mb-3">
                   奖金与席位
                 </span>
                 <SectionTitleEnDecor
@@ -154,8 +140,9 @@ export function HomePage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="group surface-card relative flex flex-col items-center justify-center gap-[0.3375rem] p-[2.025rem] md:col-span-2 md:gap-2.5 md:p-14"
+                className="group surface-card relative flex flex-col items-center justify-center gap-[0.3375rem] p-[2.025rem] md:col-span-2 md:gap-2.5 md:p-10 lg:p-12"
               >
+                <RewardCardHud slotIndex={0} designation="DESIGNATION: R1" />
                 <div className="absolute top-0 right-0 p-4 font-label text-[81px] leading-none font-bold opacity-[0.03] md:text-[120px]">
                   R1
                 </div>
@@ -168,7 +155,7 @@ export function HomePage() {
                   iconClassName="max-md:h-[1.18125rem] max-md:w-[1.18125rem]"
                 />
                 <div className="space-y-[0.3375rem] text-center md:space-y-2">
-                  <span className="font-label block text-[0.590625rem] font-medium uppercase leading-snug tracking-technical text-[#b5f0d8] md:text-sm">
+                  <span className="font-label block text-[0.590625rem] font-medium uppercase leading-snug tracking-technical text-[#a8ffe1] md:text-sm">
                     一等奖（领航者）
                   </span>
                 </div>
@@ -186,17 +173,18 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="group surface-card flex flex-col items-center justify-center gap-1.5 p-10 md:p-12"
+                className="group surface-card flex flex-col items-center justify-center gap-1.5 p-8 md:p-10"
               >
+                <RewardCardHud slotIndex={1} designation="DESIGNATION: R2" />
                 <PrizeAwardIcon icon={Lightbulb} phase={1} />
                 <div className="space-y-1.5 text-center">
-                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#b5f0d8]">
+                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#a8ffe1]">
                     二等奖（进化者）
                   </span>
                 </div>
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span className="type-amount text-5xl font-bold font-headline text-on-background">5,000</span>
-                  <span className="text-[2rem] font-bold font-label tracking-normal leading-none text-[#7ee5b5] self-end translate-y-[-0.05em]">
+                  <span className="text-[2rem] font-bold font-label leading-none tracking-normal text-on-background self-end translate-y-[-0.05em]">
                     U
                   </span>
                 </div>
@@ -207,17 +195,18 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="group surface-card flex flex-col items-center justify-center gap-1.5 p-10 md:p-12"
+                className="group surface-card flex flex-col items-center justify-center gap-1.5 p-8 md:p-10"
               >
+                <RewardCardHud slotIndex={2} designation="DESIGNATION: R3" />
                 <PrizeAwardIcon icon={Rocket} phase={2} />
                 <div className="space-y-1.5 text-center">
-                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#b5f0d8]">
+                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#a8ffe1]">
                     三等奖（破局者）
                   </span>
                 </div>
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span className="type-amount text-5xl font-bold font-headline text-on-background">3,000</span>
-                  <span className="text-[2rem] font-bold font-label tracking-normal leading-none text-[#7ee5b5] self-end translate-y-[-0.05em]">
+                  <span className="text-[2rem] font-bold font-label leading-none tracking-normal text-on-background self-end translate-y-[-0.05em]">
                     U
                   </span>
                 </div>
@@ -226,9 +215,9 @@ export function HomePage() {
               {/* 入围奖 ×3 — 与上行同宽齐边 */}
               <div className="grid w-full grid-cols-1 gap-3 md:col-span-2 md:grid-cols-3 md:gap-4 lg:col-span-4">
                 {[
-                  { icon: Star },
-                  { icon: Medal },
-                  { icon: Award }
+                  { icon: Star, title: "入围奖（观测者 / Observer）" },
+                  { icon: Medal, title: "入围奖（解析者 / Parser）" },
+                  { icon: Award, title: "入围奖（响应者 / Responder）" }
                 ].map((prize, idx) => (
                   <motion.div 
                     key={idx}
@@ -236,15 +225,18 @@ export function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.3 + idx * 0.1 }}
-                    className="group surface-card flex w-full min-w-0 flex-col items-center justify-center gap-1 p-10"
+                    className="group surface-card flex w-full min-w-0 flex-col items-center justify-center gap-1 p-8 md:p-9"
                   >
+                    <RewardCardHud slotIndex={3 + idx} designation="TYPE: REWARD_NODE" />
                     <PrizeAwardIcon icon={prize.icon} phase={3 + idx} />
-                    <span className="font-label text-center text-xs font-medium uppercase leading-snug tracking-technical text-[#b5f0d8]">
-                      入围奖（觉醒者）
+                    <span className="px-0.5 text-center font-label text-xs font-medium leading-snug tracking-technical text-[#a8ffe1] normal-case">
+                      {prize.title}
                     </span>
-                    <div className="flex items-baseline justify-center gap-1.5 pt-0.5">
-                      <span className="type-amount font-headline text-4xl font-bold text-on-background">1,500</span>
-                      <span className="translate-y-[-0.05em] self-end font-label text-[2rem] font-bold leading-none tracking-normal text-[#7ee5b5]">
+                    <div className="flex items-baseline justify-center gap-1 pt-0.5">
+                      <span className="type-amount font-headline text-2xl font-bold text-primary md:text-3xl">
+                        1,500
+                      </span>
+                      <span className="translate-y-[-0.05em] self-end font-label text-2xl font-bold leading-none tracking-normal text-primary md:text-3xl">
                         U
                       </span>
                     </div>
@@ -256,15 +248,15 @@ export function HomePage() {
         </section>
 
         {/* 提交规范 — max-w-home 1024px */}
-        <section className="relative overflow-x-clip border-t border-white/[0.06] bg-background px-6 py-24 sm:py-32 md:px-12 md:py-44 lg:py-52 xl:py-60">
+        <section className="relative overflow-x-clip border-t border-white/[0.06] bg-background px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
           <div className="mx-auto w-full max-w-home">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-20 flex flex-col items-center text-center md:mb-28"
+              className="mb-10 flex flex-col items-center text-center md:mb-14"
             >
-              <span className="font-label mb-4 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container">
+              <span className="font-label mb-2 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container md:mb-3">
                 Rules & Platform
               </span>
               <SectionTitleEnDecor
@@ -274,22 +266,22 @@ export function HomePage() {
               />
             </motion.div>
 
-            <div className="flex w-full flex-col gap-4 text-left md:gap-5">
+            <div className="flex w-full flex-col gap-3 text-left md:gap-4">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group surface-card w-full p-10 md:p-14"
+                className="group surface-card w-full p-8 md:p-10 lg:p-12"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-4xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#5ed29c]/45">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
                     01
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-headline mb-3 text-2xl font-semibold leading-snug tracking-tight text-on-background">作品形式</h3>
-                    <p className="font-body type-body-compact text-lg text-on-background/92">
+                    <h3 className="font-headline mb-2 text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">作品形式</h3>
+                    <p className="font-body type-body-compact text-base text-on-background/92 md:text-lg">
                       参赛作品须为
-                      <span className="font-semibold text-on-background"> HTML5 网页游戏</span>
+                      <span className="font-semibold text-on-background">公网可访问的 HTML5 网页游戏</span>
                       ，以便统一汇总至公司展示页。
                     </p>
                   </div>
@@ -301,15 +293,15 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.05 }}
-                className="group surface-card w-full p-10 md:p-12"
+                className="group surface-card w-full p-8 md:p-10"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-4xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#5ed29c]/45">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
                     02
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-headline mb-3 text-2xl font-semibold leading-snug tracking-tight text-on-background">发布路径</h3>
-                    <p className="font-body type-body-compact text-lg text-on-background/92">
+                    <h3 className="font-headline mb-2 text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">发布路径</h3>
+                    <p className="font-body type-body-compact text-base text-on-background/92 md:text-lg">
                       完成报名后，请将可访问的上线链接同步至公司群，供全员体验。
                     </p>
                   </div>
@@ -321,28 +313,22 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="group surface-card w-full p-10 md:p-12"
+                className="group surface-card w-full p-8 md:p-10"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-4xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#5ed29c]/45">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
                     03
                   </span>
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <h3 className="font-headline text-2xl font-semibold leading-snug tracking-tight text-on-background">
+                  <div className="min-w-0 flex-1 space-y-2 md:space-y-2.5">
+                    <h3 className="font-headline text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">
                       简短说明
                     </h3>
-                    <ul className="list-none space-y-1">
-                      {CREATOR_LOG_ITEMS.map((line, idx) => (
-                        <li key={line} className="flex gap-1 text-left">
-                          <span className="shrink-0 font-body text-base font-medium tabular-nums text-primary/50">
-                            {idx + 1}、
-                          </span>
-                          <span className="text-base font-normal leading-[1.21] tracking-normal text-on-background">
-                            {line}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="font-body type-body-compact space-y-1.5 text-base font-normal leading-[1.21] tracking-normal text-on-background/92 md:space-y-2 md:text-lg">
+                      <p>游戏名称</p>
+                      <p>核心玩法说明或 PRD</p>
+                      <p>使用的 AI 相关工具</p>
+                      <p>其他说明</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -351,13 +337,13 @@ export function HomePage() {
         </section>
 
         {/* Evaluation Protocol — 不用整段 overflow-hidden，避免圆环 drop-shadow 被裁切；水印单独裁剪 */}
-        <section className="relative bg-transparent px-6 py-24 sm:py-32 md:px-12 md:py-44 lg:py-52 xl:py-60">
+        <section className="relative bg-transparent px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
           <div
             className="pointer-events-none absolute inset-0 overflow-hidden"
             aria-hidden
           >
             <div className="flex h-full items-center justify-center opacity-[0.03]">
-              <span className="select-none font-headline text-[200px] font-bold tracking-tighter md:text-[400px] lg:text-[500px]">
+              <span className="select-none font-headline text-[160px] font-bold tracking-tighter md:text-[320px] lg:text-[400px]">
                 PROTOCOL
               </span>
             </div>
@@ -368,9 +354,9 @@ export function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-20 text-center md:mb-28"
+              className="mb-10 text-center md:mb-14"
             >
-              <span className="font-label mb-4 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container">
+              <span className="font-label mb-2 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container md:mb-3">
                 评分权重矩阵
               </span>
               <SectionTitleEnDecor
@@ -380,7 +366,7 @@ export function HomePage() {
               />
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-5 overflow-visible text-center md:grid-cols-3 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 gap-10 overflow-visible text-center md:grid-cols-3 md:gap-12 lg:gap-16">
               {[
                 {
                   label: "创新意识",
@@ -407,11 +393,11 @@ export function HomePage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.2 }}
-                  className="flex min-w-0 flex-col items-center overflow-visible px-2"
+                  className="flex min-w-0 flex-col items-center overflow-visible px-2 md:px-3"
                 >
-                  <div className="relative box-content flex h-64 w-64 max-w-full items-center justify-center overflow-visible p-8 md:h-[17.5rem] md:w-[17.5rem] md:p-10">
+                  <div className="relative box-content flex h-52 w-52 max-w-full shrink-0 items-center justify-center overflow-visible p-6 md:h-56 md:w-56 md:p-8 lg:h-60 lg:w-60">
                     <svg
-                      className="h-full w-full shrink-0 -rotate-90 transform overflow-visible [filter:drop-shadow(0_0_14px_rgba(94,210,156,0.22))_drop-shadow(0_0_28px_rgba(94,210,156,0.12))]"
+                      className="h-full w-full shrink-0 -rotate-90 transform overflow-visible [filter:drop-shadow(0_0_14px_rgba(0,255,204,0.22))_drop-shadow(0_0_28px_rgba(0,255,204,0.12))]"
                       viewBox="0 0 256 256"
                       overflow="visible"
                     >
@@ -421,21 +407,27 @@ export function HomePage() {
                         whileInView={{ strokeDashoffset: gauge.offset }}
                         viewport={{ once: true }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="text-primary-container [filter:drop-shadow(0_0_12px_rgba(94,210,156,0.45))_drop-shadow(0_0_24px_rgba(94,210,156,0.2))]" 
+                        className="text-primary-container [filter:drop-shadow(0_0_12px_rgba(0,255,204,0.45))_drop-shadow(0_0_24px_rgba(0,255,204,0.2))]" 
                         cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" strokeDasharray="690" strokeLinecap="round" strokeWidth="10" 
                       />
                     </svg>
-                    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-0.5 overflow-visible px-2">
-                      <span className="type-amount text-5xl font-bold text-on-background">
+                    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-px overflow-visible px-2">
+                      <span className="type-amount text-4xl font-bold leading-none text-on-background md:text-5xl">
                         {gauge.percent}%
                       </span>
-                      <span className="text-[10px] font-medium uppercase leading-normal tracking-technical text-primary/45">
+                      <span className="text-[10px] font-medium uppercase leading-tight tracking-technical text-primary/45">
                         权重比例
                       </span>
                     </div>
                   </div>
-                  <h3 className="mt-8 font-headline text-3xl font-semibold leading-snug tracking-tight text-primary">{gauge.label}</h3>
-                  <p className="mt-2 max-w-[280px] text-base font-body type-body-compact tracking-normal text-on-background/88">{gauge.desc}</p>
+                  <div className="mt-2 flex w-full max-w-[280px] flex-col items-center gap-1 text-center md:mt-2.5 md:gap-1.5">
+                    <h3 className="font-headline text-2xl font-semibold leading-tight tracking-tight text-primary md:text-3xl">
+                      {gauge.label}
+                    </h3>
+                    <p className="text-sm font-body leading-[1.38] tracking-normal text-on-background/88 md:text-base md:leading-[1.4]">
+                      {gauge.desc}
+                    </p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -445,9 +437,9 @@ export function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] bg-background px-6 pt-16 pb-[max(4rem,calc(env(safe-area-inset-bottom,0px)+3rem))] font-label text-[10px] font-medium uppercase tracking-technical text-primary/40 sm:pt-20 md:px-12 md:pt-24 md:pb-28">
+      <footer className="border-t border-white/[0.06] bg-background px-6 pt-10 pb-[max(3rem,calc(env(safe-area-inset-bottom,0px)+2.5rem))] font-label text-[10px] font-medium uppercase tracking-technical text-primary/40 sm:pt-12 md:px-12 md:pt-16 md:pb-20">
         <div className="mx-auto flex w-full max-w-home flex-col items-center justify-center">
-          <div className="mb-8 text-center">
+          <div className="mb-5 text-center md:mb-6">
             © 2026 AI_GAME_CONTEST_PROTOCOL，保留所有权利。
           </div>
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-3">

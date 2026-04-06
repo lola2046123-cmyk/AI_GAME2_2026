@@ -59,9 +59,9 @@ export function GameplayDocDropzone({ disabled, busy, onFile }: Props) {
         }}
         className={`flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-7 transition-all md:py-8 ${
           dragOver
-            ? "border-[#5ed29c]/55 bg-[#5ed29c]/[0.12] shadow-[0_0_28px_-6px_rgba(94,210,156,0.35)]"
+            ? "border-[#00ffcc]/55 bg-[#00ffcc]/[0.12] shadow-[0_0_28px_-6px_rgba(0,255,204,0.35)]"
             : "border-white/[0.22] bg-white/[0.04]"
-        } backdrop-blur-md outline-none focus-visible:ring-2 focus-visible:ring-[#5ed29c]/45 disabled:cursor-not-allowed disabled:opacity-45`}
+        } backdrop-blur-md outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc]/45 disabled:cursor-not-allowed disabled:opacity-45`}
       >
         <input
           ref={inputRef}
@@ -72,9 +72,9 @@ export function GameplayDocDropzone({ disabled, busy, onFile }: Props) {
           onChange={(e) => pick(e.target.files)}
         />
         {busy ? (
-          <Loader2 className="h-8 w-8 animate-spin text-[#5ed29c]" aria-hidden />
+          <Loader2 className="h-8 w-8 animate-spin text-[#00ffcc]" aria-hidden />
         ) : (
-          <FileUp className="h-8 w-8 text-[#5ed29c]/85" aria-hidden />
+          <FileUp className="h-8 w-8 text-[#00ffcc]/85" aria-hidden />
         )}
         <span className="font-body text-center text-sm text-on-background/90">
           {busy ? "正在解析文档并请求 AI…" : "拖拽 PDF / Markdown / Word（.docx）到此处"}
