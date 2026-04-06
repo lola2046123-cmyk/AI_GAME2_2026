@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 type TrailPoint = { x: number; y: number; life: number; width: number };
 
 const MAX_POINTS = 32;
-const COLOR = "0, 240, 255";
+const COLOR = "94, 210, 156";
 
 function playUiClick(ctx: AudioContext) {
   const t = ctx.currentTime;

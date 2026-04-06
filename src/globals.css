@@ -1,0 +1,110 @@
+/**
+ * 全局动画与首屏扫光（与 Tailwind 解耦，便于维护 keyframes）
+ */
+
+/* 底部倒计时：流体玻璃（迁移自原首屏卡片系） */
+.countdown-liquid-glass {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 9px 40px rgba(0, 0, 0, 0.32),
+    0 0 40px -12px rgba(94, 210, 156, 0.1);
+}
+
+.countdown-liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.12) 25%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0) 55%,
+    rgba(255, 255, 255, 0.12) 75%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 从左到右位移扫光（基础动画；可配合 skew 容器实现斜向视觉） */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* 主 CTA 玻璃变体：深色半透明 + 悬停斜向扫光（外层 skew，动画保持纯 translateX） */
+.hero-cta-glass {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.hero-cta-glass:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-cta-glass:active {
+  transform: scale(0.98);
+}
+
+.hero-cta-glass__shine-rotate {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: skewX(-15deg);
+  transform-origin: center;
+}
+
+.hero-cta-glass__shine {
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.06) 65%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+}
+
+.hero-cta-glass:hover .hero-cta-glass__shine {
+  animation: sweep 0.72s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta-glass:hover .hero-cta-glass__shine {
+    animation: none;
+  }
+
+  .hero-cta-glass:active {
+    transform: none;
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-game-2026.local/schemas/showcase-submissions.json",
+  "title": "AI_GAME_2026 ShowcaseSubmission[]",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "gameName",
+      "gameplay",
+      "techStack",
+      "evolution",
+      "deployUrl",
+      "thumbnailUrl",
+      "createdAt",
+      "source"
+    ],
+    "properties": {
+      "id": { "type": "string", "format": "uuid" },
+      "gameName": { "type": "string", "minLength": 1 },
+      "gameplay": { "type": "string", "minLength": 1 },
+      "cardSummary": { "type": "string" },
+      "gameplaySource": { "type": "string", "enum": ["manual", "ai", "local"] },
+      "techStack": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "evolution": { "type": "string", "minLength": 1 },
+      "deployUrl": { "type": "string", "format": "uri" },
+      "thumbnailUrl": { "type": "string", "format": "uri" },
+      "createdAt": { "type": "string", "format": "date-time" },
+      "source": { "type": "string", "enum": ["mock", "user"] },
+      "is_visible": { "type": "boolean", "default": true }
+    },
+    "additionalProperties": false
+  }
+}
