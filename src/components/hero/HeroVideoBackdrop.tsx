@@ -7,7 +7,8 @@ import { HeroMuxHlsVideo } from "../HeroMuxHlsVideo";
 export function HeroVideoBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-background" aria-hidden>
-      <div className="absolute inset-0 opacity-[0.63]">
+      {/* 移动端放大视频层，配合 object-cover 铺满可视区、减少上下/两侧露底 */}
+      <div className="absolute inset-0 origin-center opacity-[0.63] max-md:scale-[2.07]">
         <HeroMuxHlsVideo />
       </div>
 

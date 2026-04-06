@@ -7,13 +7,17 @@ type Props = {
   /** 错开各卡片的浮动相位 */
   phase?: number;
   size?: "md" | "lg";
+  className?: string;
+  iconClassName?: string;
 };
 
 export function PrizeAwardIcon({
   icon: Icon,
   emphasis = "secondary",
   phase = 0,
-  size = "md"
+  size = "md",
+  className,
+  iconClassName
 }: Props) {
   const reduce = useReducedMotion();
   const ring =
@@ -31,7 +35,7 @@ export function PrizeAwardIcon({
 
   return (
     <motion.div
-      className={`mb-2 flex shrink-0 items-center justify-center border ${box} ${ring}`}
+      className={`mb-2 flex shrink-0 items-center justify-center border ${box} ${ring}${className ? ` ${className}` : ""}`}
       animate={
         reduce
           ? undefined
@@ -64,7 +68,7 @@ export function PrizeAwardIcon({
         }}
       >
         <Icon
-          className={`${iconPx} ${iconGlow}`}
+          className={`${iconPx} ${iconGlow}${iconClassName ? ` ${iconClassName}` : ""}`}
           strokeWidth={emphasis === "primary" ? 1.65 : 1.5}
           aria-hidden
         />
