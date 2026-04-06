@@ -27,14 +27,14 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
         <img
           src={item.thumbnailUrl}
           alt=""
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.045]"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.022]"
           loading="lazy"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-95" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 to-transparent" />
 
         <div
-          className="pointer-events-none absolute top-3.5 left-3.5 flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-black/52 text-[#a8ffe1] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5),0_0_22px_-2px_rgba(0,255,204,0.22)] backdrop-blur-md transition-all duration-300 group-hover:scale-105 group-hover:text-[#b8fff2] group-hover:shadow-[0_4px_13px_-2px_rgba(0,0,0,0.42),0_0_14px_0_rgba(0,255,204,0.32)]"
+          className="pointer-events-none absolute top-3.5 left-3.5 flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-black/52 text-[#a8ffe1] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5),0_0_22px_-2px_rgba(0,255,204,0.22)] backdrop-blur-md transition-all duration-300 group-hover:scale-[1.025] group-hover:text-[#b8fff2] group-hover:shadow-[0_2px_6px_-1px_rgba(0,0,0,0.21),0_0_7px_0_rgba(0,255,204,0.16)]"
           aria-hidden
         >
           <ExternalLink className="h-[18px] w-[18px]" strokeWidth={2} />
@@ -74,7 +74,7 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
           {item.techStack.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="rounded-md border border-[#00ffcc]/28 bg-[#00ffcc]/[0.11] px-2 py-1 font-label text-[10px] font-medium tracking-normal text-[#b8fff2] transition-[border-color,background-color,box-shadow] duration-300 group-hover:border-[#00ffcc]/48 group-hover:bg-[#00ffcc]/[0.16] group-hover:shadow-[0_0_5px_-2px_rgba(0,255,204,0.25)]"
+              className="rounded-md border border-[#00ffcc]/28 bg-[#00ffcc]/[0.11] px-2 py-1 font-label text-[10px] font-medium tracking-normal text-[#b8fff2] transition-[border-color,background-color,box-shadow] duration-300 group-hover:border-[#00ffcc]/36 group-hover:bg-[#00ffcc]/[0.13] group-hover:shadow-[0_0_2px_-1px_rgba(0,255,204,0.125)]"
             >
               {tag}
             </span>
@@ -87,11 +87,11 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
         </div>
         <p
           className={`font-label mt-3.5 border-t border-white/[0.06] pt-3 text-[10px] font-medium uppercase leading-snug tracking-technical transition-colors duration-300 ${
-            canLink ? "text-primary/40 group-hover:text-[#00ffcc]/55" : "text-red-400/80"
+            canLink ? "text-primary/40 group-hover:text-[#00ffcc]/42" : "text-red-400/80"
           }`}
         >
           {canLink ? (
-            <span className="inline-flex items-center gap-0.5 transition-transform duration-300 ease-out group-hover:translate-x-1">
+            <span className="inline-flex items-center gap-0.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5">
               Open in new tab →
             </span>
           ) : (
@@ -108,7 +108,7 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
         href={item.deployUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="showcase-card-hit group relative block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="showcase-card-hit group relative block h-full rounded-[1.125rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {inner}
       </a>
@@ -116,6 +116,6 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
   }
 
   return (
-    <div className="relative block h-full cursor-not-allowed rounded-2xl opacity-[0.82]">{inner}</div>
+    <div className="relative block h-full cursor-not-allowed rounded-[1.125rem] opacity-[0.82]">{inner}</div>
   );
 }

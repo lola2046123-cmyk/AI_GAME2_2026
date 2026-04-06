@@ -212,10 +212,10 @@
       background: conic-gradient(
         from 0deg,
         transparent 0deg,
-        rgba(var(--rgb-neon), 0.42) 24deg,
+        rgba(var(--rgb-neon), 0.21) 24deg,
         transparent 56deg,
         transparent 188deg,
-        rgba(var(--rgb-neon-soft), 0.3) 210deg,
+        rgba(var(--rgb-neon-soft), 0.15) 210deg,
         transparent 268deg
       );
       -webkit-mask:
@@ -235,7 +235,7 @@
 
     .surface-card:hover::after,
     .card:hover::after {
-      opacity: 0.92;
+      opacity: 0.46;
       animation: arena-card-border-spin var(--arena-border-spin-duration) linear infinite;
     }
   }
@@ -243,28 +243,28 @@
   @media (hover: hover) {
     .surface-card:hover,
     .card:hover {
-      border-color: rgba(var(--rgb-neon), 0.42);
-      background-color: rgba(255, 255, 255, 0.078);
+      border-color: rgba(var(--rgb-neon), 0.21);
+      background-color: rgba(255, 255, 255, 0.039);
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        inset 1px 0 0 rgba(255, 255, 255, 0.14),
-        0 0 11px -3px rgba(var(--rgb-neon), 0.22),
-        0 12px 30px -12px rgba(var(--rgb-neon), 0.3),
-        0 0 24px -7px rgba(var(--rgb-neon), 0.2),
-        0 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+        inset 0 1px 0 rgba(255, 255, 255, 0.11),
+        inset 1px 0 0 rgba(255, 255, 255, 0.07),
+        0 0 6px -2px rgba(var(--rgb-neon), 0.11),
+        0 6px 15px -6px rgba(var(--rgb-neon), 0.15),
+        0 0 12px -4px rgba(var(--rgb-neon), 0.1),
+        0 0 1px 0 rgba(255, 255, 255, 0.05) inset;
     }
 
     .surface-card:hover:not(.surface-card--lift),
     .card:hover {
-      transform: scale(1.018);
+      transform: scale(1.009);
     }
 
     .group:hover .surface-card--lift {
-      transform: translateY(-6px) scale(1.015);
+      transform: translateY(-3px) scale(1.008);
     }
 
     .group:focus-visible .surface-card--lift {
-      transform: translateY(-4px) scale(1.012);
+      transform: translateY(-2px) scale(1.006);
     }
   }
 
@@ -286,12 +286,12 @@
       background: linear-gradient(
         105deg,
         transparent 0%,
-        transparent 40%,
-        rgba(255, 255, 255, 0.14) 50%,
-        transparent 60%,
+        transparent 46%,
+        rgba(255, 255, 255, 0.056) 50%,
+        transparent 54%,
         transparent 100%
       );
-      background-size: 240% 100%;
+      background-size: 175% 100%;
       background-position: 0% 50%;
       opacity: 0;
       pointer-events: none;
@@ -300,13 +300,13 @@
     }
 
     button:not(:disabled):not(.arena-no-hover-fx):hover::before {
-      opacity: 0.85;
+      opacity: 0.34;
       animation: arena-btn-shimmer var(--arena-btn-shimmer-duration) ease-in-out infinite;
     }
 
     button:not(:disabled):not(.btn-primary):not(.btn-secondary-outline):not(.arena-no-hover-fx):hover {
       transform: scale(1.03);
-      box-shadow: inset 0 0 10px rgba(var(--rgb-neon), 0.1);
+      box-shadow: inset 0 0 4px rgba(var(--rgb-neon), 0.04);
     }
   }
 
@@ -478,9 +478,9 @@
     font-family: var(--font-headline), ui-sans-serif, system-ui, sans-serif;
     font-weight: 700;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.27),
-      0 12px 44px -10px rgba(var(--rgb-neon), 0.36),
-      0 0 30px -8px rgba(var(--rgb-neon), 0.16);
+      inset 0 1px 0 rgba(255, 255, 255, 0.11),
+      0 5px 18px -4px rgba(var(--rgb-neon), 0.144),
+      0 0 12px -3px rgba(var(--rgb-neon), 0.064);
     transition:
       background-color 0.2s ease,
       transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
@@ -492,10 +492,10 @@
     background-color: #6fe0ac;
     transform: translateY(-1px) scale(1.02);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.34),
-      inset 0 0 8px rgba(255, 255, 255, 0.06),
-      0 6px 19px -5px rgba(var(--rgb-neon), 0.42),
-      0 0 14px -2px rgba(var(--rgb-neon), 0.22);
+      inset 0 1px 0 rgba(255, 255, 255, 0.136),
+      inset 0 0 3px rgba(255, 255, 255, 0.024),
+      0 2px 8px -2px rgba(var(--rgb-neon), 0.168),
+      0 0 6px -1px rgba(var(--rgb-neon), 0.088);
   }
 
   .btn-primary:active:not(:disabled) {
@@ -531,7 +531,7 @@
     color: var(--color-on-background);
     border-color: rgba(255, 255, 255, 0.22);
     transform: scale(1.02);
-    box-shadow: inset 0 0 7px rgba(var(--rgb-neon), 0.08);
+    box-shadow: inset 0 0 3px rgba(var(--rgb-neon), 0.032);
   }
 
   .btn-secondary-outline:disabled {
@@ -838,20 +838,12 @@
     }
   }
 
-  /** 展示卡片：悬停时内缘微光扫过（叠在 surface-card 之上） */
+  /**
+   * 展示页卡片外链层：只做点击热区 + focus ring。
+   * 悬停光晕仅由内层 .surface-card 承担，避免与 .showcase-card-hit 叠加成「双卡片」阴影。
+   */
   .showcase-card-hit {
     border-radius: 1.125rem;
-    transition:
-      box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @media (hover: hover) {
-    .showcase-card-hit:hover {
-      box-shadow:
-        0 10px 26px -11px rgba(var(--rgb-neon), 0.2),
-        0 0 0 1px rgba(var(--rgb-neon), 0.12);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -20,27 +20,23 @@ export function PrizeAwardIcon({
   iconClassName
 }: Props) {
   const reduce = useReducedMotion();
+  /** 扁平：无阴影发光；仅主奖（20,000 U）青绿，其余中性灰 */
   const ring =
     emphasis === "primary"
-      ? "border-[#6dffdb]/58 bg-[#00ffcc]/26 text-[#f0fffc] shadow-[0_0_32px_rgba(168,255,225,0.48),0_0_52px_-6px_rgba(0,255,204,0.26)]"
-      : "border-[#00ffcc]/46 bg-[#00ffcc]/[0.15] text-[#c4fff0] shadow-[0_0_22px_rgba(0,255,204,0.32),0_0_36px_-8px_rgba(168,255,225,0.14)]";
+      ? "border border-primary-container/50 bg-primary-container/[0.07] text-primary-container shadow-none"
+      : "border border-outline-variant bg-white/[0.02] text-on-background/46 shadow-none";
 
-  const iconGlow =
-    emphasis === "primary"
-      ? "drop-shadow-[0_0_10px_rgba(200,255,230,0.75)]"
-      : "drop-shadow-[0_0_8px_rgba(168,255,225,0.5)]";
-
-  const box = size === "lg" ? "h-14 w-14 rounded-2xl" : "h-11 w-11 rounded-xl";
+  const box = size === "lg" ? "h-14 w-14 rounded-full" : "h-11 w-11 rounded-full";
   const iconPx = size === "lg" ? "h-7 w-7" : "h-[22px] w-[22px]";
 
   return (
     <motion.div
-      className={`mb-2 flex shrink-0 items-center justify-center border ${box} ${ring}${className ? ` ${className}` : ""}`}
+      className={`mb-2 flex shrink-0 items-center justify-center ${box} ${ring}${className ? ` ${className}` : ""}`}
       animate={
         reduce
           ? undefined
           : {
-              y: [0, -4, 0]
+              y: [0, -3, 0]
             }
       }
       transition={{
@@ -49,30 +45,14 @@ export function PrizeAwardIcon({
         ease: "easeInOut",
         delay: phase * 0.4
       }}
-      whileHover={reduce ? undefined : { scale: 1.06 }}
+      whileHover={reduce ? undefined : { scale: 1.03 }}
       whileTap={reduce ? undefined : { scale: 0.98 }}
     >
-      <motion.div
-        animate={
-          reduce
-            ? undefined
-            : {
-                scale: [1, 1.04, 1]
-              }
-        }
-        transition={{
-          duration: 2.2,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: phase * 0.35
-        }}
-      >
-        <Icon
-          className={`${iconPx} ${iconGlow}${iconClassName ? ` ${iconClassName}` : ""}`}
-          strokeWidth={emphasis === "primary" ? 1.65 : 1.5}
-          aria-hidden
-        />
-      </motion.div>
+      <Icon
+        className={`${iconPx}${iconClassName ? ` ${iconClassName}` : ""}`}
+        strokeWidth={1.5}
+        aria-hidden
+      />
     </motion.div>
   );
 }

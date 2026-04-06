@@ -61,7 +61,7 @@ export function HomePage() {
               >
                 <motion.h1
                   variants={fadeInUp}
-                  className="type-amount text-balance font-headline text-[clamp(3rem,8.45vw,5.125rem)] font-bold leading-none tracking-tight text-white md:text-[clamp(3.25rem,6.25vw,5.6875rem)]"
+                  className="type-amount min-w-0 max-w-full font-headline font-bold leading-none tracking-tight text-white max-md:whitespace-nowrap max-md:text-center max-md:text-[clamp(1.375rem,11vw,3.125rem)] md:text-balance md:text-[clamp(3.25rem,6.25vw,5.6875rem)]"
                 >
                   AI 游戏设计大赛
                 </motion.h1>
@@ -130,7 +130,7 @@ export function HomePage() {
                 />
               </div>
               <p className="mx-auto max-w-xl font-body text-sm font-normal tracking-[0.02em] text-primary/95 md:text-base md:tracking-[0.025em]">
-                高额赏金，共设一等奖 1 名、二等奖 1 名、三等奖 1 名、入围奖 3 名。
+                高额赏金:一等奖 x 1 名、二等奖 x 1 名、三等奖x 1 名、入围奖 x 3 名。
               </p>
             </motion.div>
 
@@ -151,7 +151,7 @@ export function HomePage() {
                   emphasis="primary"
                   size="lg"
                   phase={0}
-                  className="max-md:mb-[0.3375rem] max-md:h-[2.3625rem] max-md:w-[2.3625rem] max-md:rounded-[0.675rem]"
+                  className="max-md:mb-[0.3375rem] max-md:h-[2.3625rem] max-md:w-[2.3625rem] max-md:rounded-full"
                   iconClassName="max-md:h-[1.18125rem] max-md:w-[1.18125rem]"
                 />
                 <div className="space-y-[0.3375rem] text-center md:space-y-2">
@@ -164,7 +164,7 @@ export function HomePage() {
                     20,000&nbsp;U
                   </span>
                 </div>
-                <div className="mt-1 h-[2.7px] w-[5.4rem] bg-primary/30 transition-all duration-700 group-hover:w-full md:h-1 md:w-32" />
+                <div className="mx-auto mt-1 h-[2.7px] w-[5.4rem] max-w-full bg-primary/30 transition-all duration-700 group-hover:w-[68%] md:h-1 md:w-32 md:group-hover:w-[62%]" />
               </motion.div>
 
               {/* Rank 2-3 */}
@@ -274,7 +274,7 @@ export function HomePage() {
                 className="group surface-card w-full p-8 md:p-10 lg:p-12"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/36 md:text-4xl">
                     01
                   </span>
                   <div className="min-w-0 flex-1">
@@ -296,7 +296,7 @@ export function HomePage() {
                 className="group surface-card w-full p-8 md:p-10"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/36 md:text-4xl">
                     02
                   </span>
                   <div className="min-w-0 flex-1">
@@ -316,7 +316,7 @@ export function HomePage() {
                 className="group surface-card w-full p-8 md:p-10"
               >
                 <div className="flex items-start gap-2">
-                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/45 md:text-4xl">
+                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/36 md:text-4xl">
                     03
                   </span>
                   <div className="min-w-0 flex-1 space-y-2 md:space-y-2.5">
