@@ -389,7 +389,7 @@ export function RegistrationModal({
             <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] px-5 py-4 md:px-6">
               <div>
                 <p className="font-label text-[10px] font-medium uppercase tracking-technical text-[#00ffcc]/85">
-                  {isEdit ? "Admin · Edit" : "Registration · 2026"}
+                  {isEdit ? "管理 · 编辑" : "提交 · 2026"}
                 </p>
                 <h2
                   id="reg-modal-title"
@@ -432,8 +432,8 @@ export function RegistrationModal({
                     transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <p className="font-label text-xs font-medium uppercase tracking-technical text-primary/50">
-                      Step 1 · 作品定义
+                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
+                      步骤 1 · 作品
                     </p>
                     <label className="block space-y-2">
                       <div className="flex items-baseline justify-between gap-2">
@@ -448,7 +448,7 @@ export function RegistrationModal({
                         onChange={(e) =>
                           setGameName(clampChars(e.target.value, MAX_GAME_NAME_CHARS))
                         }
-                        placeholder="例如：星际观测者"
+                        placeholder="填写游戏名称"
                         maxLength={MAX_GAME_NAME_CHARS * 2}
                         autoFocus
                       />
@@ -464,10 +464,7 @@ export function RegistrationModal({
                           核心玩法说明
                           {gameplaySource === "ai" || gameplaySource === "local" ? (
                             <span className="ml-2 font-normal normal-case text-[#00ffcc]/75">
-                              ·{" "}
-                              {gameplaySource === "ai"
-                                ? "已由 AI 预填，可直接修改"
-                                : "已根据文档本地摘要预填，可直接修改"}
+                              · {gameplaySource === "ai" ? "已预填，可改" : "本地摘要已填，可改"}
                             </span>
                           ) : null}
                         </span>
@@ -503,8 +500,8 @@ export function RegistrationModal({
                     transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <p className="font-label text-xs font-medium uppercase tracking-technical text-primary/50">
-                      Step 2 · AI 堆栈
+                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
+                      步骤 2 · 工具
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {PRESET_TOOLS.map((t) => {
@@ -535,7 +532,7 @@ export function RegistrationModal({
                         onKeyDown={(e) =>
                           e.key === "Enter" && (e.preventDefault(), addCustomTool())
                         }
-                        placeholder="其他工具，回车添加"
+                        placeholder="其他工具，回车加入"
                         maxLength={MAX_FIELD_CHARS * 2}
                       />
                       <button
@@ -563,8 +560,8 @@ export function RegistrationModal({
                     transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <p className="font-label text-xs font-medium uppercase tracking-technical text-primary/50">
-                      Step 3 · 上线与总结
+                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
+                      步骤 3 · 上线
                     </p>
                     <label className="block space-y-2">
                       <div className="flex items-baseline justify-between gap-2">
@@ -579,7 +576,7 @@ export function RegistrationModal({
                         onChange={(e) =>
                           setEvolution(clampChars(e.target.value, MAX_FIELD_CHARS))
                         }
-                        placeholder="简述 AI 如何帮你突破原有开发边界…"
+                        placeholder="简述 AI 如何参与开发"
                         rows={4}
                         maxLength={MAX_FIELD_CHARS * 2}
                       />
@@ -637,12 +634,11 @@ export function RegistrationModal({
                         </div>
                       </div>
                       <p className="font-body text-[11px] leading-[1.21] text-primary/45">
-                        推荐上传横图；将在浏览器内压缩为 JPEG（长边约 1200px），再保存。
-                        若不传图，将尝试调用后端的{" "}
+                        横图为宜。浏览器内压 JPEG，长边约 1200px。未上传时尝试后端{" "}
                         <code className="rounded bg-white/5 px-1 text-[#00ffcc]/85">
                           POST /api/screenshot
                         </code>
-                        ；纯静态部署时无此接口，会得到站内占位图。
+                        ；纯静态无接口则用占位图。
                       </p>
                       {coverPreviewUrl ? (
                         <div className="overflow-hidden rounded-lg border border-white/[0.08] bg-black/40">

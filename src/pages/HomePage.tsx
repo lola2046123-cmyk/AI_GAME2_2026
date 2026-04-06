@@ -121,7 +121,7 @@ export function HomePage() {
             >
               <div className="flex w-full flex-col items-center text-center">
                 <span className="font-label mb-2 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container md:mb-3">
-                  奖金与席位
+                  Prizes & Seats
                 </span>
                 <SectionTitleEnDecor
                   titleZh="奖项设置"
@@ -130,7 +130,7 @@ export function HomePage() {
                 />
               </div>
               <p className="mx-auto max-w-xl font-body text-sm font-normal tracking-[0.02em] text-primary/95 md:text-base md:tracking-[0.025em]">
-                高额赏金:一等奖 x 1 名、二等奖 x 1 名、三等奖x 1 名、入围奖 x 3 名。
+                高额赏金：一等奖 x 1 名、二等奖 x 1 名、三等奖 x 1 名、入围奖 x 3 名。
               </p>
             </motion.div>
 
@@ -154,11 +154,7 @@ export function HomePage() {
                   className="max-md:mb-[0.3375rem] max-md:h-[2.3625rem] max-md:w-[2.3625rem] max-md:rounded-full"
                   iconClassName="max-md:h-[1.18125rem] max-md:w-[1.18125rem]"
                 />
-                <div className="space-y-[0.3375rem] text-center md:space-y-2">
-                  <span className="font-label block text-[0.590625rem] font-medium uppercase leading-snug tracking-technical text-[#a8ffe1] md:text-sm">
-                    一等奖（领航者）
-                  </span>
-                </div>
+                <span className="prize-tier-name">一等奖：领航者</span>
                 <div className="flex justify-center">
                   <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[3.0375rem] font-bold leading-none tracking-tight md:text-8xl">
                     20,000&nbsp;U
@@ -177,11 +173,7 @@ export function HomePage() {
               >
                 <RewardCardHud slotIndex={1} designation="DESIGNATION: R2" />
                 <PrizeAwardIcon icon={Lightbulb} phase={1} />
-                <div className="space-y-1.5 text-center">
-                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#a8ffe1]">
-                    二等奖（进化者）
-                  </span>
-                </div>
+                <span className="prize-tier-name">二等奖：进化者</span>
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span className="type-amount text-5xl font-bold font-headline text-on-background">5,000</span>
                   <span className="text-[2rem] font-bold font-label leading-none tracking-normal text-on-background self-end translate-y-[-0.05em]">
@@ -199,11 +191,7 @@ export function HomePage() {
               >
                 <RewardCardHud slotIndex={2} designation="DESIGNATION: R3" />
                 <PrizeAwardIcon icon={Rocket} phase={2} />
-                <div className="space-y-1.5 text-center">
-                  <span className="font-label block text-xs font-medium uppercase leading-snug tracking-technical text-[#a8ffe1]">
-                    三等奖（破局者）
-                  </span>
-                </div>
+                <span className="prize-tier-name">三等奖：破局者</span>
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span className="type-amount text-5xl font-bold font-headline text-on-background">3,000</span>
                   <span className="text-[2rem] font-bold font-label leading-none tracking-normal text-on-background self-end translate-y-[-0.05em]">
@@ -215,9 +203,9 @@ export function HomePage() {
               {/* 入围奖 ×3 — 与上行同宽齐边 */}
               <div className="grid w-full grid-cols-1 gap-3 md:col-span-2 md:grid-cols-3 md:gap-4 lg:col-span-4">
                 {[
-                  { icon: Star, title: "入围奖（观测者 / Observer）" },
-                  { icon: Medal, title: "入围奖（解析者 / Parser）" },
-                  { icon: Award, title: "入围奖（响应者 / Responder）" }
+                  { icon: Star, title: "入围奖 1：观测者" },
+                  { icon: Medal, title: "入围奖 2：解析者" },
+                  { icon: Award, title: "入围奖 3：响应者" }
                 ].map((prize, idx) => (
                   <motion.div 
                     key={idx}
@@ -229,9 +217,7 @@ export function HomePage() {
                   >
                     <RewardCardHud slotIndex={3 + idx} designation="TYPE: REWARD_NODE" />
                     <PrizeAwardIcon icon={prize.icon} phase={3 + idx} />
-                    <span className="px-0.5 text-center font-label text-xs font-medium leading-snug tracking-technical text-[#a8ffe1] normal-case">
-                      {prize.title}
-                    </span>
+                    <span className="prize-tier-name px-0.5">{prize.title}</span>
                     <div className="flex items-baseline justify-center gap-1 pt-0.5">
                       <span className="type-amount font-headline text-2xl font-bold text-primary md:text-3xl">
                         1,500
@@ -280,9 +266,9 @@ export function HomePage() {
                   <div className="min-w-0 flex-1">
                     <h3 className="font-headline mb-2 text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">作品形式</h3>
                     <p className="font-body type-body-compact text-base text-on-background/92 md:text-lg">
-                      参赛作品须为
-                      <span className="font-semibold text-on-background">公网可访问的 HTML5 网页游戏</span>
-                      ，以便统一汇总至公司展示页。
+                      参赛作品须为公网可访问的
+                      <span className="font-semibold text-on-background">HTML5 网页游戏</span>
+                      ，进入公司展示列表。
                     </p>
                   </div>
                 </div>
@@ -302,7 +288,7 @@ export function HomePage() {
                   <div className="min-w-0 flex-1">
                     <h3 className="font-headline mb-2 text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">发布路径</h3>
                     <p className="font-body type-body-compact text-base text-on-background/92 md:text-lg">
-                      完成报名后，请将可访问的上线链接同步至公司群，供全员体验。
+                      报名完成后，将可访问链接同步至公司群。
                     </p>
                   </div>
                 </div>
@@ -321,13 +307,13 @@ export function HomePage() {
                   </span>
                   <div className="min-w-0 flex-1 space-y-2 md:space-y-2.5">
                     <h3 className="font-headline text-xl font-semibold leading-snug tracking-tight text-on-background md:text-2xl">
-                      简短说明
+                      投稿清单
                     </h3>
                     <div className="font-body type-body-compact space-y-1.5 text-base font-normal leading-[1.21] tracking-normal text-on-background/92 md:space-y-2 md:text-lg">
                       <p>游戏名称</p>
-                      <p>核心玩法说明或 PRD</p>
-                      <p>使用的 AI 相关工具</p>
-                      <p>其他说明</p>
+                      <p>核心玩法或 PRD</p>
+                      <p>AI 工具</p>
+                      <p>其他</p>
                     </div>
                   </div>
                 </div>
@@ -357,7 +343,7 @@ export function HomePage() {
               className="mb-10 text-center md:mb-14"
             >
               <span className="font-label mb-2 block text-sm font-medium uppercase leading-snug tracking-technical text-primary-container md:mb-3">
-                评分权重矩阵
+                Scoring Weight Matrix
               </span>
               <SectionTitleEnDecor
                 titleZh="评审协议"
@@ -397,17 +383,34 @@ export function HomePage() {
                 >
                   <div className="relative box-content flex h-52 w-52 max-w-full shrink-0 items-center justify-center overflow-visible p-6 md:h-56 md:w-56 md:p-8 lg:h-60 lg:w-60">
                     <svg
-                      className="h-full w-full shrink-0 -rotate-90 transform overflow-visible [filter:drop-shadow(0_0_14px_rgba(0,255,204,0.22))_drop-shadow(0_0_28px_rgba(0,255,204,0.12))]"
+                      className="h-full w-full shrink-0 -rotate-90 transform overflow-visible"
                       viewBox="0 0 256 256"
                       overflow="visible"
                     >
+                      <defs>
+                        <filter
+                          id={`protocol-ring-glow-${idx}`}
+                          x="-40%"
+                          y="-40%"
+                          width="180%"
+                          height="180%"
+                          colorInterpolationFilters="sRGB"
+                        >
+                          <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="3" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
                       <circle className="text-outline-variant/10" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" strokeWidth="2" />
                       <motion.circle 
                         initial={{ strokeDashoffset: 690 }}
                         whileInView={{ strokeDashoffset: gauge.offset }}
                         viewport={{ once: true }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="text-primary-container [filter:drop-shadow(0_0_12px_rgba(0,255,204,0.45))_drop-shadow(0_0_24px_rgba(0,255,204,0.2))]" 
+                        className="text-primary-container"
+                        style={{ filter: `url(#protocol-ring-glow-${idx})` }}
                         cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" strokeDasharray="690" strokeLinecap="round" strokeWidth="10" 
                       />
                     </svg>

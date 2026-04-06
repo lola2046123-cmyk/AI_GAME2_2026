@@ -8,7 +8,7 @@ const IMG = (id: string) =>
 export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   {
     id: "mock-stellar",
-    gameName: "星际观测者 (Stellar Observer)",
+    gameName: "星际观测者",
     gameplay:
       "利用 Gemini 实时分析天体数据，驱动 Unity 粒子系统生成动态星云。AI 突破了传统脚本对话的线性限制，让每一次观测都生成独一无二的视觉叙事。",
     techStack: ["Gemini", "Unity"],
@@ -20,7 +20,7 @@ export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   },
   {
     id: "mock-bonsai",
-    gameName: "赛博盆栽 (Cyber Bonsai)",
+    gameName: "赛博盆栽",
     gameplay:
       "通过 Midjourney 生成风格化纹理，Cursor 重构 3D 生长算法，极大地缩短了美术资产产出周期。玩家在极简操作中养育数字生命体。",
     techStack: ["Midjourney", "Cursor"],
@@ -33,7 +33,7 @@ export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   },
   {
     id: "mock-blackbox",
-    gameName: "黑盒解密 (The Black Box)",
+    gameName: "黑盒解密",
     gameplay:
       "纯指令驱动的解谜游戏。AI 辅助编写核心异步逻辑，并提供无限可能的关卡设计建议，使谜题密度与节奏可动态调节。",
     techStack: ["Cursor", "ChatGPT"],
@@ -45,7 +45,7 @@ export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   },
   {
     id: "mock-echoes",
-    gameName: "色彩回响 (Echoes of Color)",
+    gameName: "色彩回响",
     gameplay:
       "音乐节奏类游戏。AI 辅助优化了音频信号处理的延迟问题，实现毫秒级实时反馈，让玩家在光影与节拍之间建立通感。",
     techStack: ["Gemini", "Copilot"],
@@ -57,7 +57,7 @@ export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   },
   {
     id: "mock-wasteland",
-    gameName: "废土霓虹 (Wasteland Neon)",
+    gameName: "废土霓虹",
     gameplay:
       "复古像素动作游戏。AI 生成并补全角色动作模组，让独立开发者完成了数月的工作量，同时保持帧动画的连贯打击感。",
     techStack: ["Stable Diffusion", "Cursor"],
@@ -69,7 +69,7 @@ export const MOCK_SHOWCASE: ShowcaseSubmission[] = [
   },
   {
     id: "mock-bio",
-    gameName: "虚拟共生 (Bio-Synthesis)",
+    gameName: "虚拟共生",
     gameplay:
       "模拟生态演化。AI 模拟上千种生物进化路径，实现了真正的「涌现式」玩法，使食物链与族群行为不再完全手写规则。",
     techStack: ["Gemini", "Claude"],

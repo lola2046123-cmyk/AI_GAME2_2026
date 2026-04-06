@@ -154,6 +154,24 @@
 
 @layer components {
   /**
+   * 奖项名称（同层级）：统一字阶与字距，避免等级间样式碎片化
+   */
+  .prize-tier-name {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  @media (min-width: 768px) {
+    .prize-tier-name {
+      font-size: 1rem;
+    }
+  }
+
+  /**
    * 全站统一内容卡片：圆角、描边、叠层、毛玻璃与悬停（首页奖项/规范、展示卡、管理等）
    * .card 与 .surface-card 等价，便于语义化 class
    */
@@ -697,26 +715,29 @@
     height: 160%;
     top: -30%;
     left: -30%;
-    opacity: 0.88;
+    opacity: 0.38;
     background: linear-gradient(
       127deg,
-      transparent 38%,
-      rgba(255, 255, 255, 0.028) 46%,
-      rgba(var(--rgb-neon), 0.05) 50%,
-      rgba(255, 255, 255, 0.024) 54%,
-      transparent 62%
+      transparent 28%,
+      rgba(255, 255, 255, 0.012) 40%,
+      rgba(255, 255, 255, 0.02) 46%,
+      rgba(var(--rgb-neon), 0.028) 50%,
+      rgba(255, 255, 255, 0.016) 54%,
+      rgba(255, 255, 255, 0.01) 60%,
+      transparent 72%
     );
-    transform: rotate(45deg);
-    animation: app-atmosphere-scan 26s linear infinite;
+    filter: blur(28px);
+    transform: rotate(45deg) translateZ(0);
+    animation: app-atmosphere-scan 32s linear infinite;
     will-change: transform;
   }
 
   @keyframes app-atmosphere-scan {
     0% {
-      transform: rotate(45deg) translate3d(-12%, -12%, 0);
+      transform: rotate(45deg) translate3d(-5%, -5%, 0);
     }
     100% {
-      transform: rotate(45deg) translate3d(12%, 12%, 0);
+      transform: rotate(45deg) translate3d(5%, 5%, 0);
     }
   }
 

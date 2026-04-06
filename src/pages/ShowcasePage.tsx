@@ -41,9 +41,7 @@ export function ShowcasePage() {
               headingLevel={1}
             />
             <p className="font-body type-body-compact mx-auto mt-4 max-w-2xl text-base font-normal leading-[1.21] tracking-[0.02em] text-primary/50 md:mt-5 md:text-lg md:tracking-[0.025em]">
-              灵感交汇，重塑原生。
-              <br />
-              由 AI 赋能的 H5 游戏全景漫游，触碰卡片，开启即时体验之旅。
+              聚合参赛作品链接，在新标签页打开访问。
             </p>
           </motion.div>
 

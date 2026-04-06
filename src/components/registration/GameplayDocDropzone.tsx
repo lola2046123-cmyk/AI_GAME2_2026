@@ -29,9 +29,7 @@ export function GameplayDocDropzone({ disabled, busy, onFile }: Props) {
 
   return (
     <div className="space-y-2">
-      <span className="font-label text-xs text-primary/50">
-        上传文档（AI 解析）
-      </span>
+      <span className="font-label text-xs text-primary/50">上传文档</span>
       <button
         type="button"
         disabled={disabled || busy}
@@ -77,12 +75,10 @@ export function GameplayDocDropzone({ disabled, busy, onFile }: Props) {
           <FileUp className="h-8 w-8 text-[#00ffcc]/85" aria-hidden />
         )}
         <span className="font-body text-center text-sm text-on-background/90">
-          {busy ? "正在解析文档并请求 AI…" : "拖拽 PDF / Markdown / Word（.docx）到此处"}
+          {busy ? "解析中" : "拖拽 PDF、Markdown 或 Word（.docx）到此处"}
         </span>
         <span className="font-body text-center text-xs text-primary/45">
-          {busy
-            ? "请稍候"
-            : "或点击选择文件 · 无 API Key 时使用本地摘要；配置 Gemini Key 后自动升级为 AI 总结"}
+          {busy ? "请稍候" : "或点击选择。无 Key 用本地摘要；配置 Gemini 后用 AI 总结"}
         </span>
       </button>
     </div>

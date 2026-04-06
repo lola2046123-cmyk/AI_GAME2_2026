@@ -1,5 +1,9 @@
 # Design System Document: Cyber-Editorial High-Stakes Experience
 
+> **与代码的关系：** 本文为**视觉与体验方向**说明。落地令牌以 **`src/index.css`** 中 `@theme` 及 `:root` 变量为准（如 `--color-background`、`--color-primary`、`--rgb-neon` 等）。正文字体在实现中为 **Manrope**（`--font-body`），标题/标签为 **Inter / Space Grotesk**，与下文字体段落中部分命名以代码为准。个别规则（如圆角、描边强度）在实现中已按可读性与组件库做微调。
+
+---
+
 ## 1. Overview & Creative North Star
 
 ### Creative North Star: "The Neon Monolith"
