@@ -1,6 +1,6 @@
 # AI 游戏设计大赛 2026 · 报名与展示站
 
-面向赛事的**单页站点**：首屏海报与倒计时、奖项与投稿说明、**参赛展示**列表、**多步报名表单**（文档解析 + 可选 Gemini 摘要）、简易**管理后台**。技术栈为 **Vite 6 + React 19 + TypeScript + Tailwind CSS v4**（`@tailwindcss/vite`）。
+面向赛事的**单页站点**：首屏海报与倒计时、奖项与投稿说明、**参赛展示**列表、**多步报名表单**（含游戏名、制作者昵称、文档解析填入玩法概要等）、简易**管理后台**。技术栈为 **Vite 6 + React 19 + TypeScript + Tailwind CSS v4**（`@tailwindcss/vite`）。
 
 | 路由 | 说明 |
 |------|------|
@@ -37,7 +37,7 @@
 | `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。管理页仅为前端校验，不具备服务端权限强度。 |
 | `VITE_GEMINI_API_KEY` | 可选。写入后任何人可从构建产物中尝试提取，**演示 / 内网可接受**；公开站建议改为后端或 Edge 代理调用模型。 |
 | `VITE_API_BASE` | 可选。若需「远程截图」等能力，需自行部署可公网访问的 API，再填根 URL。 |
-| `VITE_GEMINI_MODEL` | 可选，与 Gemini 文档摘要配合使用。 |
+| `VITE_GEMINI_MODEL` | 可选；与当前报名表单文档路径无必填关联。 |
 
 复制字段名与说明见 **`.env.example`**。
 
@@ -90,10 +90,10 @@ npm run dev
 |------|------|
 | `VITE_API_BASE` | 可选。后端根 URL；用于 `POST /api/screenshot` 生成作品缩略图。留空则无远程截图，依赖用户上传封面或占位图。 |
 | `VITE_ADMIN_PIN` | 可选。`/admin` 登录 PIN；未设置时开发环境默认 `2026`（**仅前端校验**，生产须配合服务端权限）。 |
-| `VITE_GEMINI_API_KEY` | 可选。配置后报名表单上传 PDF / Markdown / Word 可走 **Gemini** 生成玩法摘要；**不配置**则使用**本地启发式摘要**（无需 Key、无需联网）。 |
-| `VITE_GEMINI_MODEL` | 可选。默认 `gemini-2.0-flash`。 |
+| `VITE_GEMINI_API_KEY` | 可选。当前报名表单**文档上传**仅使用**本地启发式**生成概要，不调用 Gemini；变量保留供后续扩展或其它功能使用。 |
+| `VITE_GEMINI_MODEL` | 可选。默认 `gemini-2.0-flash`（同上，与文档上传路径无联动时可不配置）。 |
 
-> **安全：** 前端直连 Gemini 仅适合演示；正式环境建议由后端或 Edge 代理，避免暴露密钥。
+> **说明：** 若日后在前端直连 Gemini，仅适合演示；正式环境建议由后端或 Edge 代理，避免暴露密钥。
 
 ---
 
@@ -103,7 +103,7 @@ npm run dev
 |------|------|
 | 首页 | Mux HLS 背景视频（`HeroMuxHlsVideo.tsx`）、投稿截止倒计时、奖项与投稿规范、评审权重展示；首屏底缘与奖项区背景衔接见 `DESIGN.md` §7、`HomePage.tsx` + `index.css` |
 | 参赛展示 | `showcaseMerge`：用户投稿（`localStorage`）与 `mockShowcase` 合并列表 |
-| 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ 可选 Gemini 或本地摘要回填 |
+| 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ **本地启发式**概要回填；含制作者昵称（≤20 字） |
 | 管理 | 条目可见性、编辑、删除 |
 
 **主要依赖（业务向）：** `react-router-dom`、`motion`、`hls.js`、`pdfjs-dist`、`mammoth`。

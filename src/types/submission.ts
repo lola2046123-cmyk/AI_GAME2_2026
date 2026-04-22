@@ -5,16 +5,18 @@
 export type ShowcaseSubmission = {
   id: string;
   gameName: string;
+  /** 游戏制作者昵称（≤20 字，展示用） */
+  creatorNickname?: string;
   /** 核心玩法说明 */
   gameplay: string;
   /**
-   * 首页卡片优先展示的短描述；由 AI 解析回填后与玩法同步，用户可在表单内编辑玩法以更新
+   * 首页卡片优先展示的短描述；由文档解析或手填后与玩法同步
    */
   cardSummary?: string;
   /**
    * manual：手填；
-   * ai：配置了 Gemini 并由其总结；
-   * local：无 Key 时本地启发式从文档生成（不显示「AI Generated」徽章）
+   * ai：历史数据（曾用 Gemini 总结）；
+   * local：从文档本地启发式生成
    */
   gameplaySource?: "manual" | "ai" | "local";
   techStack: string[];

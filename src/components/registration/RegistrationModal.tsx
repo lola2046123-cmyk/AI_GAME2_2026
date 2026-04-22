@@ -25,6 +25,8 @@ const PRESET_TOOLS = [
 
 /** 游戏名称上限（码位） */
 const MAX_GAME_NAME_CHARS = 20;
+/** 游戏制作者昵称上限（码位） */
+const MAX_CREATOR_NICKNAME_CHARS = 20;
 /** 玩法 / 进化论 / 链接等文本上限（码位） */
 const MAX_FIELD_CHARS = 2000;
 /** 首页卡片摘要上限（码位） */
@@ -70,6 +72,7 @@ export function RegistrationModal({
 
   const [step, setStep] = useState(1);
   const [gameName, setGameName] = useState("");
+  const [creatorNickname, setCreatorNickname] = useState("");
   const [gameplay, setGameplay] = useState("");
   const [techStack, setTechStack] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
@@ -80,17 +83,18 @@ export function RegistrationModal({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  /** 文档解析 + Gemini 请求中 */
+  /** 文档解析与本地摘要生成中 */
   const [docBusy, setDocBusy] = useState(false);
   const [gameplaySource, setGameplaySource] = useState<"manual" | "ai" | "local">(
     "manual"
   );
-  /** 与 gameplay 在 AI 模式下联动，用于首页卡片展示 */
+  /** 与 gameplay 在文档解析模式下联动，用于首页卡片展示 */
   const [cardSummary, setCardSummary] = useState<string | null>(null);
 
   const reset = () => {
     setStep(1);
     setGameName("");
+    setCreatorNickname("");
     setGameplay("");
     setTechStack([]);
     setCustomTool("");
@@ -108,6 +112,9 @@ export function RegistrationModal({
   const hydrate = (r: ShowcaseSubmission) => {
     setStep(1);
     setGameName(clampChars(r.gameName, MAX_GAME_NAME_CHARS));
+    setCreatorNickname(
+      clampChars((r.creatorNickname ?? "").trim(), MAX_CREATOR_NICKNAME_CHARS)
+    );
     setGameplay(clampChars(r.gameplay, MAX_FIELD_CHARS));
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
     setEvolution(clampChars(r.evolution, MAX_FIELD_CHARS));
@@ -170,11 +177,11 @@ export function RegistrationModal({
     try {
       const text = await extractDocumentText(file);
       if (!text.trim()) throw new Error("未能从文件中提取到文本，请换一份文档");
-      const { result: summary, mode } = await summarizeGameDocument(text);
+      const summary = await summarizeGameDocument(text);
       const g = clampChars(summary.coreGameplay, MAX_FIELD_CHARS);
       setGameplay(g);
       setCardSummary(clampChars(g.trim(), MAX_CARD_SUMMARY));
-      setGameplaySource(mode === "gemini" ? "ai" : "local");
+      setGameplaySource("local");
       setTechStack((prev) => {
         const set = new Set(prev.map((x) => normalizeToolLabel(x)).filter(Boolean));
         for (const raw of summary.aiTools) {
@@ -229,6 +236,11 @@ export function RegistrationModal({
     if (!gn) return "请填写游戏名称";
     if (countChars(gn) > MAX_GAME_NAME_CHARS) {
       return `游戏名称不超过 ${MAX_GAME_NAME_CHARS} 个字符`;
+    }
+    const nick = creatorNickname.trim();
+    if (!nick) return "请填写游戏制作者昵称";
+    if (countChars(nick) > MAX_CREATOR_NICKNAME_CHARS) {
+      return `游戏制作者昵称不超过 ${MAX_CREATOR_NICKNAME_CHARS} 个字符`;
     }
     const gp = gameplay.trim();
     if (!gp) return "请填写核心玩法说明";
@@ -310,6 +322,7 @@ export function RegistrationModal({
         }
         updateSubmission(state.record.id, {
           gameName: gameName.trim(),
+          creatorNickname: creatorNickname.trim(),
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -329,6 +342,7 @@ export function RegistrationModal({
         const entry: ShowcaseSubmission = {
           id: crypto.randomUUID(),
           gameName: gameName.trim(),
+          creatorNickname: creatorNickname.trim(),
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -453,6 +467,27 @@ export function RegistrationModal({
                         autoFocus
                       />
                     </label>
+                    <label className="block space-y-2">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="font-label text-xs text-primary/50">
+                          游戏制作者昵称
+                        </span>
+                        <span className="font-label text-[10px] tabular-nums text-primary/35">
+                          {countChars(creatorNickname)}/{MAX_CREATOR_NICKNAME_CHARS}
+                        </span>
+                      </div>
+                      <input
+                        className={inputSurface}
+                        value={creatorNickname}
+                        onChange={(e) =>
+                          setCreatorNickname(
+                            clampChars(e.target.value, MAX_CREATOR_NICKNAME_CHARS)
+                          )
+                        }
+                        placeholder="用于展示的创作者昵称"
+                        maxLength={MAX_CREATOR_NICKNAME_CHARS * 2}
+                      />
+                    </label>
                     <GameplayDocDropzone
                       busy={docBusy}
                       disabled={submitting}
@@ -464,7 +499,7 @@ export function RegistrationModal({
                           核心玩法说明
                           {gameplaySource === "ai" || gameplaySource === "local" ? (
                             <span className="ml-2 font-normal normal-case text-[#00ffcc]/75">
-                              · {gameplaySource === "ai" ? "已预填，可改" : "本地摘要已填，可改"}
+                              · 已从文档解析，可改
                             </span>
                           ) : null}
                         </span>
@@ -482,7 +517,7 @@ export function RegistrationModal({
                             setCardSummary(clampChars(v.trim(), MAX_CARD_SUMMARY));
                           }
                         }}
-                        placeholder="上传文档可自动解析并调用 AI 总结；也可直接在此手写玩法说明…"
+                        placeholder="可上传文档自动解析填入概要，或直接手写玩法说明…"
                         rows={5}
                         maxLength={MAX_FIELD_CHARS * 2}
                         disabled={docBusy}

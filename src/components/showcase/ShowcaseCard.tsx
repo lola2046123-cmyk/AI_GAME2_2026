@@ -67,6 +67,11 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
         <h2 className="font-headline text-lg font-semibold leading-snug tracking-tight text-[#FFFFFF] md:text-xl md:tracking-[-0.02em]">
           {item.gameName}
         </h2>
+        {item.creatorNickname?.trim() ? (
+          <p className="mt-1 font-label text-[11px] font-medium tracking-normal text-primary/50">
+            制作者 · {item.creatorNickname.trim()}
+          </p>
+        ) : null}
         <p className="font-body type-body-compact mt-2.5 flex-1 text-sm leading-[1.21] tracking-normal text-on-background/88 md:text-[0.95rem]">
           {excerpt(cardBlurb)}
         </p>

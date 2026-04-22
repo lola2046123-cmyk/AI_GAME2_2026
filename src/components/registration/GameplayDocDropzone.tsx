@@ -78,7 +78,7 @@ export function GameplayDocDropzone({ disabled, busy, onFile }: Props) {
           {busy ? "解析中" : "拖拽 PDF、Markdown 或 Word（.docx）到此处"}
         </span>
         <span className="font-body text-center text-xs text-primary/45">
-          {busy ? "请稍候" : "或点击选择。无 Key 用本地摘要；配置 Gemini 后用 AI 总结"}
+          {busy ? "请稍候" : "或点击选择；上传后在本地解析并填入玩法概要"}
         </span>
       </button>
     </div>
