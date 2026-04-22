@@ -65,6 +65,14 @@ export function SiteHeader() {
             >
               参赛展示
             </NavLink>
+            <NavLink
+              to="/deploy"
+              className={({ isActive }) =>
+                `${navLinkClass} ${isActive ? "site-nav-link--active text-[#00ffcc]" : ""}`
+              }
+            >
+              部署指南
+            </NavLink>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -132,6 +140,15 @@ export function SiteHeader() {
               onClick={() => setMenuOpen(false)}
             >
               参赛展示
+            </NavLink>
+            <NavLink
+              to="/deploy"
+              className={({ isActive }) =>
+                `text-white/90 transition-colors hover:text-[#00ffcc] ${isActive ? "text-[#00ffcc]" : ""}`
+              }
+              onClick={() => setMenuOpen(false)}
+            >
+              部署指南
             </NavLink>
             <Link
               to="/admin"

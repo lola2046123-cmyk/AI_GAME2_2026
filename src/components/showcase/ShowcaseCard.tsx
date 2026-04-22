@@ -64,7 +64,7 @@ export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
           </span>
         </div>
 
-        <h2 className="font-headline text-lg font-semibold leading-snug tracking-tight text-on-background md:text-xl md:tracking-[-0.02em]">
+        <h2 className="font-headline text-lg font-semibold leading-snug tracking-tight text-[#FFFFFF] md:text-xl md:tracking-[-0.02em]">
           {item.gameName}
         </h2>
         <p className="font-body type-body-compact mt-2.5 flex-1 text-sm leading-[1.21] tracking-normal text-on-background/88 md:text-[0.95rem]">

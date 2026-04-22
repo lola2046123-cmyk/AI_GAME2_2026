@@ -124,4 +124,15 @@ Use this section when reviewing or changing visuals so CSS and structure stay al
 | Grain + hero/prizes utilities | `src/index.css` (`:root`, `components` layer) |
 | Grain node + content `z-10` shell | `src/components/layout/AppChrome.tsx` |
 | Hero blend + prizes section classes | `src/pages/HomePage.tsx` |
+| Deployment guide (`/deploy`, Cyber-Editorial layout) | `src/pages/DeploymentGuidePage.tsx` |
 | Countdown / CTA animations | `src/globals.css` |
+
+---
+
+## 8. Production Deployment (Summary)
+
+This app is a **Vite SPA**: ship the **`dist/`** output of `npm run build`. Client-side routes (`/`, `/showcase`, `/deploy`, `/admin`) require the host to **rewrite unknown paths to `/index.html`** (see root **`vercel.json`** for Vercel).
+
+- **Environment:** inject `VITE_*` at **build time** via the host dashboard — never commit real secrets in `.env.local`.
+- **Security note:** `/admin` PIN and optional Gemini key are **front-end only** constraints; treat them as convenience gates, not enterprise access control.
+- **Full checklist & platform steps:** repository **`README.md`** section **「线上部署」**; player-facing generic hosting tutorial: in-app **`/deploy`**.

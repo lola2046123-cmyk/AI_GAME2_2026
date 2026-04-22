@@ -6,9 +6,52 @@
 |------|------|
 | `/` | 首页 |
 | `/showcase` | 参赛展示（`localStorage` 用户投稿 + 内置示例合并） |
+| `/deploy` | 部署指南（网页游戏 GitHub / Supabase / Vercel 流程） |
 | `/admin` | 管理（PIN 见环境变量） |
 
-视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**（含 **§7 实现备忘**：全站胶片颗粒叠放、`--film-grain-opacity`、首屏与奖项区 `.home-hero-bottom-blend` / `.home-prizes-section` 衔接等）。设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
+视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**（含 **§7 实现备忘**：全站胶片颗粒叠放、`--film-grain-opacity`、首屏与奖项区 `.home-hero-bottom-blend` / `.home-prizes-section` 衔接等；**§8 线上部署摘要**）。设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
+
+面向参赛者的**网页游戏托管流程**见站内页面 **部署指南**（路由 **`/deploy`**，上线后为 `https://<你的域名>/deploy`；本地为 `http://localhost:3000/deploy`）。该页与 README 互补：README 偏本仓库上线步骤，该页偏通用 GitHub / Supabase / Vercel 操作。
+
+---
+
+## 线上部署
+
+本仓库为 **Vite 静态 SPA**（`npm run build` → **`dist/`**），`react-router` 路由在浏览器端解析，因此托管方必须把**所有路径**回退到 **`index.html`**，否则直接访问 `/showcase`、`/deploy` 等会 404。
+
+### Vercel（推荐）
+
+1. 将代码推送到 **GitHub**（或 GitLab / Bitbucket，视 Vercel 支持而定）。
+2. 在 [Vercel](https://vercel.com) **Add New Project** → Import 该仓库。
+3. **Framework Preset** 选 **Vite**（或保持自动检测）；**Build Command** `npm run build`；**Output Directory** `dist`（多数情况下 Vite 模板会自动填好）。
+4. **Install Command** 默认 `npm install` 即可；Node 版本建议 **20.x**（与本地 README 一致）。
+5. 在 **Project → Settings → Environment Variables** 中配置下文 **`VITE_*` 变量**（Production / Preview 按需勾选），保存后 **Redeploy** 一次使构建生效。
+6. 仓库根目录已有 **`vercel.json`**：`rewrites` 将任意路径指向 `/index.html`，保证 SPA 深链与刷新可用。
+
+### 环境变量（构建期注入）
+
+`VITE_*` 在 **`npm run build` 时**打入前端产物，**不要**把含真实密钥的 `.env.local` 提交进 Git；仅在托管平台控制台配置。
+
+| 变量 | 上线建议 |
+|------|----------|
+| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。管理页仅为前端校验，不具备服务端权限强度。 |
+| `VITE_GEMINI_API_KEY` | 可选。写入后任何人可从构建产物中尝试提取，**演示 / 内网可接受**；公开站建议改为后端或 Edge 代理调用模型。 |
+| `VITE_API_BASE` | 可选。若需「远程截图」等能力，需自行部署可公网访问的 API，再填根 URL。 |
+| `VITE_GEMINI_MODEL` | 可选，与 Gemini 文档摘要配合使用。 |
+
+复制字段名与说明见 **`.env.example`**。
+
+### 上线前自检清单
+
+- [ ] 本地执行 **`npm run check`**（类型检查 + 生产构建）通过。
+- [ ] 托管平台已配置所需 **`VITE_*`**，且已对最新 commit **重新部署**。
+- [ ] 浏览器验证：**首页** `/`、**参赛展示** `/showcase`、**部署指南** `/deploy`、**管理** `/admin`（含刷新页面）均可打开。
+- [ ] 首屏 **Mux HLS** 在目标网络环境可播放（公司代理 / 地域限制可能影响 `stream.mux.com`）。
+- [ ] 已理解：投稿与展示数据在浏览器 **`localStorage`**，非服务端数据库。
+
+### 其他平台（Netlify / Cloudflare Pages / OSS 静态站）
+
+同样需配置：**构建命令** `npm run build`，**发布目录** `dist`，以及等价于 `vercel.json` 的 **SPA fallback**（全部路由 → `index.html`）。具体菜单名称因平台而异。
 
 ---
 
@@ -72,11 +115,12 @@ npm run dev
 ```
 src/
   components/     # UI、布局、报名表单、展示卡等
-  pages/          # HomePage、ShowcasePage、AdminPage
+  pages/          # HomePage、ShowcasePage、DeploymentGuidePage、AdminPage
   lib/            # 存储、展示合并、文档摘要、截图请求等
   data/           # 示例展示数据 mockShowcase
 index.html
 vite.config.ts
+vercel.json       # SPA：全部路径 → /index.html
 ```
 
 ---

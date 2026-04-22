@@ -121,6 +121,7 @@ export function HomePage() {
                   titleZh="奖项设置"
                   titleEn="PRIZES"
                   align="center"
+                  headlineClassName="text-[#FFFFFF]"
                 />
               </div>
               <p className="mx-auto max-w-xl font-body text-sm font-normal tracking-[0.02em] text-primary/95 md:text-base md:tracking-[0.025em]">
@@ -243,6 +244,7 @@ export function HomePage() {
                 titleZh="提交规范与平台"
                 titleEn="SUBMISSION"
                 align="center"
+                headlineClassName="text-[#FFFFFF]"
               />
             </motion.div>
 
@@ -343,6 +345,7 @@ export function HomePage() {
                 titleZh="评审协议"
                 titleEn="PROTOCOL"
                 align="center"
+                headlineClassName="text-[#FFFFFF]"
               />
             </motion.div>
 
