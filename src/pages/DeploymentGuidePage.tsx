@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "motion/react";
 import {
   ArrowDown,
   ArrowRight,
@@ -53,7 +51,7 @@ function CodeBlock({
   }, [code]);
 
   return (
-    <div className="deploy-code my-4 overflow-hidden rounded-xl border border-white/[0.1] bg-[#0a0f0e] shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
+    <div className="deploy-code my-4 max-w-full overflow-hidden rounded-xl border border-white/[0.1] bg-[#0a0f0e] shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between border-b border-white/[0.08] bg-white/[0.03] px-4 py-2.5">
         <span className="font-label text-[10px] font-medium uppercase tracking-technical text-primary/40">
           {lang}
@@ -104,12 +102,12 @@ function Callout({
   );
   return (
     <div
-      className={`my-4 flex gap-3 rounded-lg border border-white/[0.06] border-l-[3px] p-4 text-sm leading-relaxed md:text-[15px] ${styles[variant]}`}
+      className={`my-4 flex min-w-0 max-w-full gap-3 rounded-lg border border-white/[0.06] border-l-[3px] p-4 text-sm leading-relaxed md:text-[15px] ${styles[variant]}`}
     >
       <span className="mt-0.5 shrink-0 opacity-90" aria-hidden>
         {icon}
       </span>
-      <div>
+      <div className="min-w-0 flex-1">
         <strong className="mb-1 block font-headline text-sm font-semibold tracking-tight text-white">
           {title}
         </strong>
@@ -158,77 +156,91 @@ export function DeploymentGuidePage() {
         />
       </div>
 
-      <main className="relative bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3rem))] text-on-background">
-        {/* Hero */}
-        <header className="relative overflow-hidden border-b border-white/[0.06] bg-background px-6 pb-14 pt-8 md:px-12 md:pb-20 md:pt-12">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-100"
-            aria-hidden
-          >
-            <div className="absolute top-0 right-0 h-[min(55vh,480px)] w-[min(90%,520px)] translate-x-1/4 -translate-y-1/4 bg-[radial-gradient(ellipse_at_center,rgba(0,255,204,0.14)_0%,transparent_62%)]" />
-            <div className="absolute bottom-0 left-0 h-[280px] w-[min(100%,420px)] -translate-x-1/4 translate-y-1/4 bg-[radial-gradient(ellipse_at_center,rgba(0,255,204,0.08)_0%,transparent_70%)]" />
+      <main className="relative min-w-0 bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3rem))] text-on-background">
+        <header className="relative isolate flex min-h-[calc(100svh-var(--site-header-height))] w-full min-w-0 flex-col border-b border-white/[0.06] bg-background">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-100" aria-hidden>
+            <div className="absolute top-[-14%] left-1/2 h-[min(92vh,860px)] w-[min(100vw,1280px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_72%_58%_at_50%_38%,rgba(168,255,225,0.078)_0%,rgba(0,255,204,0.036)_40%,transparent_74%)]" />
+            <div className="absolute bottom-[-18%] left-1/2 h-[min(76vh,700px)] w-[min(100vw,1120px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_68%_52%_at_50%_72%,rgba(168,255,225,0.052)_0%,rgba(0,255,204,0.024)_42%,transparent_78%)]" />
           </div>
-          <div className="relative z-[1] mx-auto max-w-home">
-            <Link
-              to="/"
-              className="mb-6 inline-flex items-center gap-2 font-label text-[11px] font-medium uppercase tracking-technical text-primary/55 transition-colors hover:text-[#00ffcc]"
-            >
-              ← 返回首页
-            </Link>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#00ffcc]/35 bg-[rgba(0,255,204,0.06)] px-4 py-1.5 font-label text-[11px] font-semibold uppercase tracking-technical text-primary-container">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00ffcc]" />
-              部署指南 · 2026 AI 游戏设计大赛
-            </div>
-            <h1 className="font-headline text-[clamp(1.75rem,5.5vw,3rem)] font-bold leading-[1.12] tracking-tight text-white md:text-[clamp(2.25rem,4vw,3.25rem)]">
-              把你的网页游戏
-              <br />
-              <span className="bg-gradient-to-r from-white via-primary to-[#00ffcc] bg-clip-text text-transparent">
-                部署上线
-              </span>
-            </h1>
-            <p className="mt-5 max-w-xl font-body text-base leading-relaxed text-primary/70 md:text-lg">
-              你已经写好了游戏代码——按下面四步即可托管上线。以下工具均有免费档，无需自备服务器。
-            </p>
-            <div className="mt-8 flex flex-wrap gap-2.5">
-              {[
-                { icon: Github, t: "GitHub · 代码仓库", dot: "bg-white/40" },
-                { icon: Server, t: "Supabase · 数据库", dot: "bg-[#3ecf8e]" },
-                { icon: Triangle, t: "Vercel · 托管", dot: "bg-white" }
-              ].map(({ icon: Icon, t, dot }) => (
-                <div
-                  key={t}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-4 py-2 font-body text-[13px] text-white/90 backdrop-blur-sm"
-                >
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
-                  <Icon className="h-3.5 w-3.5 text-primary/80" aria-hidden />
-                  {t}
-                </div>
-              ))}
+          <div className="relative z-10 mx-auto grid min-h-[calc(100svh-var(--site-header-height))] w-full min-w-0 max-w-home shrink-0 place-content-center justify-items-center py-10 md:py-14">
+            <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center px-2 text-center sm:px-4">
+              <h1 className="font-headline text-balance text-[clamp(2.58rem,8.11vw,4.68rem)] font-bold leading-[1.12] tracking-tight text-white md:text-[clamp(3.28rem,5.93vw,4.92rem)]">
+                <span className="block">把你的网页游戏</span>
+                <span className="block bg-gradient-to-r from-white via-primary to-[#00ffcc] bg-clip-text text-transparent">
+                  部署上线
+                </span>
+              </h1>
+              <p className="mt-5 max-w-xl px-1 font-body text-[0.8rem] leading-relaxed text-[#FFFFFF] md:text-[0.9rem]">
+                你已经写好了游戏代码——按下面四步即可托管上线。
+              </p>
+              <div className="mt-8 flex w-full min-w-0 flex-wrap justify-center gap-2 sm:gap-2.5">
+                {(
+                  [
+                    {
+                      id: "github",
+                      href: "https://github.com",
+                      icon: Github,
+                      label: "GitHub · 代码仓库",
+                      dot: "bg-white/40",
+                      externalLabel: "GitHub 官网"
+                    },
+                    {
+                      id: "supabase",
+                      href: "https://supabase.com",
+                      icon: Server,
+                      label: "Supabase · 数据库",
+                      dot: "bg-[#3ecf8e]",
+                      externalLabel: "Supabase 官网"
+                    },
+                    {
+                      id: "vercel",
+                      href: "https://vercel.com",
+                      icon: Triangle,
+                      label: "Vercel · 托管",
+                      dot: "bg-white",
+                      externalLabel: "Vercel 官网"
+                    }
+                  ] as const
+                ).map(({ id, href, icon: Icon, label, dot, externalLabel }) => (
+                  <a
+                    key={id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex max-w-full min-w-0 items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3 py-2 font-body text-[12px] text-white/90 no-underline backdrop-blur-sm transition-colors hover:border-[#00ffcc]/40 hover:text-[#00ffcc] sm:px-4 sm:text-[13px]"
+                    aria-label={`${externalLabel}（新标签页打开）`}
+                  >
+                    <span className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-primary/80 transition-colors group-hover:text-[#00ffcc]" aria-hidden />
+                    <span className="min-w-0 text-balance">{label}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </header>
 
         {/* 步骤导航 */}
-        <nav className="border-b border-white/[0.06] bg-[#101010] px-6 py-8 md:px-12 md:py-10">
-          <div className="mx-auto max-w-home">
-            <p className="mb-4 font-label text-[11px] font-semibold uppercase tracking-technical text-primary/45">
+        <nav className="border-b border-white/[0.06] bg-background py-8 md:py-10">
+          <div className="mx-auto w-full min-w-0 max-w-home px-4 sm:px-6 md:px-12">
+            <p className="mb-4 font-label text-xs font-semibold uppercase tracking-technical text-primary/70 md:text-sm">
               部署路线图 — 四步完成
             </p>
-            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">
+            <div className="grid w-full min-w-0 grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">
               {STEPS.map((s) => (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => scrollToId(s.id)}
-                  className="surface-card group flex items-start gap-3 rounded-xl border border-white/[0.08] p-3.5 text-left transition-transform hover:-translate-y-0.5 md:p-4"
+                  className="surface-card group flex h-full min-w-0 w-full items-start gap-3 rounded-xl border border-white/[0.08] p-3.5 text-left transition-transform hover:-translate-y-0.5 md:p-4"
                 >
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${s.color} font-label text-[11px] font-bold text-[#0e0e0e]`}
                   >
                     {s.n}
                   </span>
-                  <span className="min-w-0">
-                    <span className="block font-headline text-sm font-semibold text-white">
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-headline text-sm font-semibold break-words text-white">
                       {s.label}
                     </span>
                     <span className="mt-0.5 block font-body text-xs text-primary/55">{s.sub}</span>
@@ -239,13 +251,13 @@ export function DeploymentGuidePage() {
           </div>
         </nav>
 
-        <div className="mx-auto max-w-home px-6 py-12 md:px-12 md:py-16">
+        <div className="mx-auto w-full min-w-0 max-w-home px-4 py-12 sm:px-6 md:px-12 md:py-16">
           {/* 架构 */}
           <section className="mb-16 md:mb-20">
-            <p className="mb-3 font-label text-[11px] font-semibold uppercase tracking-technical text-primary/45">
+            <p className="mb-3 font-label text-xs font-semibold uppercase tracking-technical text-primary/70 md:text-sm">
               整体架构
             </p>
-            <div className="surface-card flex flex-col items-center gap-3 rounded-xl border border-white/[0.1] bg-[#0c1211] p-6 md:flex-row md:flex-wrap md:justify-center md:gap-3 md:p-8">
+            <div className="surface-card flex w-full min-w-0 max-w-full flex-col items-center gap-3 overflow-x-auto rounded-xl border border-white/[0.08] p-4 sm:p-6 md:flex-row md:flex-wrap md:justify-center md:gap-3 md:p-8">
               {(
                 [
                   { emoji: "💻", t: "你的电脑", st: "本地代码" },
@@ -588,15 +600,9 @@ export function DeploymentGuidePage() {
             </SubCard>
           </DeploySection>
 
-          {/* FAQ */}
-          <section className="relative mt-16 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c1211] px-6 py-10 md:mt-20 md:px-10 md:py-14">
-            <div
-              className="pointer-events-none absolute inset-0 opacity-80"
-              aria-hidden
-            >
-              <div className="absolute top-0 left-1/2 h-40 w-[80%] -translate-x-1/2 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,255,204,0.12)_0%,transparent_65%)]" />
-            </div>
-            <div className="relative z-[1]">
+          {/* FAQ — 与正文 SubCard 同一套 surface-card */}
+          <section className="surface-card relative mt-16 max-w-full rounded-xl border border-white/[0.08] p-5 md:mt-20 md:p-8">
+            <div>
               <h2 className="font-headline text-xl font-bold text-white md:text-2xl">
                 常见问题
               </h2>
@@ -627,10 +633,10 @@ export function DeploymentGuidePage() {
                     className="group surface-card overflow-hidden rounded-xl border border-white/[0.08]"
                   >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 font-headline text-sm font-semibold text-white marker:content-none md:px-5 md:py-4 md:text-[15px] [&::-webkit-details-marker]:hidden">
-                      {faq.q}
+                      <span className="min-w-0 flex-1 pr-2 text-left break-words">{faq.q}</span>
                       <ChevronDown className="h-4 w-4 shrink-0 text-[#00ffcc] transition-transform group-open:rotate-180" />
                     </summary>
-                    <div className="border-t border-white/[0.06] px-4 py-3 font-body text-sm leading-relaxed text-primary/65 md:px-5 md:text-[15px]">
+                    <div className="border-t border-white/[0.06] px-4 py-3 font-body text-sm leading-relaxed break-words text-primary/65 md:px-5 md:text-[15px]">
                       {faq.a}
                     </div>
                   </details>
@@ -639,24 +645,18 @@ export function DeploymentGuidePage() {
             </div>
           </section>
 
-          {/* 收尾 */}
-          <section className="relative mt-12 overflow-hidden rounded-2xl border border-[#00ffcc]/25 bg-gradient-to-b from-[#0c1614] to-background px-6 py-12 text-center md:mt-16 md:py-16">
-            <div
-              className="pointer-events-none absolute inset-0"
-              aria-hidden
-            >
-              <div className="absolute top-0 left-1/2 h-48 w-[90%] -translate-x-1/2 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,255,204,0.15)_0%,transparent_60%)]" />
-            </div>
-            <h2 className="relative font-headline text-2xl font-bold text-white md:text-3xl">
+          {/* 收尾 — 与 SubCard / FAQ 外层同一套 surface-card */}
+          <section className="surface-card relative mt-12 max-w-full rounded-xl border border-white/[0.08] p-8 text-center md:mt-16 md:p-10">
+            <h2 className="font-headline text-2xl font-bold text-white md:text-3xl">
               你的游戏已上线
             </h2>
-            <p className="relative mx-auto mt-3 max-w-md font-body text-sm text-primary/65 md:text-base">
+            <p className="mx-auto mt-3 max-w-md font-body text-sm text-primary/65 md:text-base">
               把链接分享给朋友，邀请第一批玩家试玩。
             </p>
-            <div className="relative mt-6 inline-block rounded-full border border-[#00ffcc]/45 bg-[rgba(0,255,204,0.06)] px-6 py-2.5 font-label text-xs text-primary-container md:text-sm">
+            <div className="mx-auto mt-6 inline-flex max-w-full break-all items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] px-4 py-2.5 font-label text-xs text-white/90 backdrop-blur-sm sm:px-6 md:text-sm">
               https://your-game.vercel.app
             </div>
-            <p className="relative mt-6 font-label text-[10px] uppercase tracking-technical text-primary/35">
+            <p className="mt-6 font-label text-[10px] uppercase tracking-technical text-primary/35">
               GitHub · Supabase · Vercel — 免费档即可跑通
             </p>
           </section>
@@ -666,7 +666,7 @@ export function DeploymentGuidePage() {
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-6 right-6 z-[55] flex h-12 w-12 items-center justify-center rounded-full border border-white/[0.12] bg-[#00ffcc] text-[#0e0e0e] shadow-[0_8px_28px_rgba(0,255,204,0.25)] transition-transform hover:-translate-y-0.5 md:bottom-8 md:right-8"
+        className="fixed z-[55] flex h-12 w-12 items-center justify-center rounded-full border border-white/[0.12] bg-[#00ffcc] text-[#0e0e0e] shadow-[0_8px_28px_rgba(0,255,204,0.25)] transition-transform hover:-translate-y-0.5 max-md:bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] max-md:right-[max(1rem,env(safe-area-inset-right,0px))] md:bottom-[max(2rem,env(safe-area-inset-bottom,0px))] md:right-[max(2rem,env(safe-area-inset-right,0px))]"
         aria-label="回到顶部"
       >
         <ArrowDown className="h-5 w-5 rotate-180" />
@@ -695,13 +695,13 @@ function DeploySection({
       id={id}
       className="scroll-mt-[calc(var(--site-header-height)+0.5rem)] border-t border-white/[0.06] pt-12 md:pt-16"
     >
-      <div className="mb-8 flex items-start gap-4 md:gap-5">
+      <div className="mb-8 flex min-w-0 items-start gap-4 md:gap-5">
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-headline text-sm font-bold shadow-lg md:h-12 md:w-12 ${badgeClass}`}
         >
           {badge}
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <h2 className="font-headline text-xl font-bold tracking-tight text-white md:text-2xl">{title}</h2>
           <p className="mt-1 font-label text-[11px] uppercase tracking-technical text-primary/45">{subtitle}</p>
         </div>
@@ -716,7 +716,7 @@ function SubCard({ title, children }: { title: string; children: ReactNode }) {
   const stepTag = sp >= 0 ? title.slice(0, sp) : title;
   const stepTitle = sp >= 0 ? title.slice(sp + 1) : "";
   return (
-    <div className="surface-card rounded-xl border border-white/[0.08] p-5 md:p-6">
+    <div className="surface-card min-w-0 max-w-full rounded-xl border border-white/[0.08] p-5 md:p-6">
       <h3 className="mb-3 flex flex-wrap items-center gap-2 font-headline text-[15px] font-semibold text-white md:text-base">
         <span className="rounded-full bg-[rgba(0,255,204,0.12)] px-2.5 py-0.5 font-label text-[10px] font-semibold tabular-nums tracking-technical text-[#00ffcc]">
           {stepTag}

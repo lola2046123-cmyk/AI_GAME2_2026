@@ -320,7 +320,7 @@ export function RegistrationModal({
         } else {
           thumbnailUrl = state.record.thumbnailUrl;
         }
-        updateSubmission(state.record.id, {
+        await updateSubmission(state.record.id, {
           gameName: gameName.trim(),
           creatorNickname: creatorNickname.trim(),
           gameplay: gameplay.trim(),
@@ -357,7 +357,7 @@ export function RegistrationModal({
           source: "user",
           is_visible: true
         };
-        appendSubmission(entry);
+        await appendSubmission(entry);
         close();
         onSubmitted?.();
       }

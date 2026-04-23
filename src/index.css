@@ -8,9 +8,9 @@
   --font-label: "Space Grotesk", monospace;
   --font-reward-hud: "JetBrains Mono", ui-monospace, "SF Mono", "Roboto Mono", monospace;
 
-  /* DESIGN.md — Cyber-Editorial / Neon Monolith */
-  --color-background: #0e0e0e;
-  --color-surface: #0e0e0e;
+  /* DESIGN.md — Cyber-Editorial / Neon Monolith（底与顶栏 / 奖项区 #101010 对齐，略深于旧 #0e0e0e） */
+  --color-background: #101010;
+  --color-surface: #101010;
   --color-primary: #a8ffe1;
   --color-primary-container: #00ffcc;
   --color-secondary: #adaaaa;
@@ -19,7 +19,7 @@
   --color-surface-container-low: #1a1919;
   --color-surface-container-lowest: #000000;
   --color-on-background: #d8d8d8;
-  --color-on-primary-fixed: #0e0e0e;
+  --color-on-primary-fixed: #101010;
   --color-on-surface-variant: #adaaaa;
 
   --radius-xl: 0.5rem;

@@ -7,7 +7,7 @@
 6 silly lifecycle ai-game-design-contest-2026@0.0.0~predev: no script for predev, continuing
 7 info lifecycle ai-game-design-contest-2026@0.0.0~dev: ai-game-design-contest-2026@0.0.0
 8 verbose lifecycle ai-game-design-contest-2026@0.0.0~dev: unsafe-perm in lifecycle true
-9 verbose lifecycle ai-game-design-contest-2026@0.0.0~dev: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/aochuang/Desktop/AI临时文档/ai-game-design-contest-2026/node_modules/.bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/usr/local/go/bin:/Applications/Cursor.app/Contents/Resources/app/resources/helpers
+9 verbose lifecycle ai-game-design-contest-2026@0.0.0~dev: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/aochuang/Desktop/AI临时文档/ai-game-design-contest-2026/node_modules/.bin:/opt/homebrew/bin:/usr/local/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/usr/local/go/bin:/Applications/Cursor.app/Contents/Resources/app/resources/helpers
 10 verbose lifecycle ai-game-design-contest-2026@0.0.0~dev: CWD: /Users/aochuang/Desktop/AI临时文档/ai-game-design-contest-2026
 11 silly lifecycle ai-game-design-contest-2026@0.0.0~dev: Args: [ '-c', 'vite --port=3000' ]
 12 silly lifecycle ai-game-design-contest-2026@0.0.0~dev: Returned: code: 1  signal: null
@@ -24,7 +24,7 @@
 14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
 15 verbose pkgid ai-game-design-contest-2026@0.0.0
 16 verbose cwd /Users/aochuang/Desktop/AI临时文档/ai-game-design-contest-2026
-17 error Darwin 25.3.0
+17 error Darwin 25.4.0
 18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "dev"
 19 error node v6.11.2
 20 error npm  v3.10.10

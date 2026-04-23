@@ -5,7 +5,7 @@
 | 路由 | 说明 |
 |------|------|
 | `/` | 首页 |
-| `/showcase` | 参赛展示（`localStorage` 用户投稿 + 内置示例合并） |
+| `/showcase` | 参赛展示（无 Supabase 时为 `localStorage` + 内置示例；配置 Supabase 后为全员可读可见稿） |
 | `/deploy` | 部署指南（网页游戏 GitHub / Supabase / Vercel 流程） |
 | `/admin` | 管理（PIN 见环境变量） |
 
@@ -34,7 +34,10 @@
 
 | 变量 | 上线建议 |
 |------|----------|
-| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。管理页仅为前端校验，不具备服务端权限强度。 |
+| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。与 **`/api/showcase-admin`** 共用；管理 list/update/delete 经该 API + **Service Role** 执行。 |
+| `VITE_SUPABASE_URL` | 可选。与 `VITE_SUPABASE_ANON_KEY` **同时设置**时启用远端投稿与展示（见 `docs/supabase-showcase.sql`）。 |
+| `VITE_SUPABASE_ANON_KEY` | 可选。Supabase anon key；受 RLS 约束，**不要**当作私密密钥。 |
+| `SUPABASE_SERVICE_ROLE_KEY` | **仅 Vercel 服务端变量**（勿 `VITE_`）。供 `api/showcase-admin.ts` 管理数据；勿提交进 Git。 |
 | `VITE_GEMINI_API_KEY` | 可选。写入后任何人可从构建产物中尝试提取，**演示 / 内网可接受**；公开站建议改为后端或 Edge 代理调用模型。 |
 | `VITE_API_BASE` | 可选。若需「远程截图」等能力，需自行部署可公网访问的 API，再填根 URL。 |
 | `VITE_GEMINI_MODEL` | 可选；与当前报名表单文档路径无必填关联。 |
@@ -47,7 +50,17 @@
 - [ ] 托管平台已配置所需 **`VITE_*`**，且已对最新 commit **重新部署**。
 - [ ] 浏览器验证：**首页** `/`、**参赛展示** `/showcase`、**部署指南** `/deploy`、**管理** `/admin`（含刷新页面）均可打开。
 - [ ] 首屏 **Mux HLS** 在目标网络环境可播放（公司代理 / 地域限制可能影响 `stream.mux.com`）。
-- [ ] 已理解：投稿与展示数据在浏览器 **`localStorage`**，非服务端数据库。
+- [ ] 已理解：未配置 Supabase 时投稿在浏览器 **`localStorage`**；配置后全员可读可见稿（见下节）。
+
+### 跨访客：localStorage 与 Supabase「公开只读」
+
+- **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）只合并**本机**可见稿与内置 `mockShowcase`。换设备或清缓存后看不到他人本机数据。
+
+- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`**）：展示页用 anon 客户端 `SELECT` 且 **`is_visible = true`**；匿名 **`INSERT`** 投稿；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` RLS 权限。
+
+**本地 `npm run dev`**：Vite 不托管 `api/*`，管理接口与远端列表需在 **Vercel 预览 / 生产** 验证，或本地运行 **`vercel dev`**（需安装 [Vercel CLI](https://vercel.com/docs/cli)）以同时提供前端与 Serverless。
+
+其它后端方案仍可自建 API + 数据库，前端通过 `VITE_API_BASE` 等对接。
 
 ### 其他平台（Netlify / Cloudflare Pages / OSS 静态站）
 

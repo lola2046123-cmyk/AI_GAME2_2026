@@ -1,11 +1,17 @@
-import { useCallback, useMemo, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent
+} from "react";
 import { useOutletContext } from "react-router-dom";
 import { motion } from "motion/react";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import {
   deleteSubmission,
-  loadUserSubmissions,
+  loadUserSubmissionsAsync,
   setSubmissionVisibility
 } from "../lib/submissionsStorage";
 import {
@@ -21,16 +27,28 @@ export function AdminPage() {
   const [authed, setAuthed] = useState(isAdminAuthenticated);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState<string | null>(null);
-  const [list, setList] = useState<ShowcaseSubmission[]>(() =>
-    loadUserSubmissions()
-  );
+  const [list, setList] = useState<ShowcaseSubmission[]>([]);
+  const [listError, setListError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ShowcaseSubmission | null>(
     null
   );
 
-  const refresh = useCallback(() => {
-    setList(loadUserSubmissions());
+  const refresh = useCallback(async () => {
+    setListError(null);
+    try {
+      const rows = await loadUserSubmissionsAsync();
+      setList(rows);
+    } catch (e) {
+      setListError(e instanceof Error ? e.message : "加载失败");
+      setList([]);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!authed) return;
+    void refresh();
+  }, [authed, refresh]);
 
   const attemptLogin = (e: FormEvent) => {
     e.preventDefault();
@@ -49,16 +67,26 @@ export function AdminPage() {
     setAuthed(false);
   };
 
-  const toggleVisible = (row: ShowcaseSubmission) => {
-    setSubmissionVisibility(row.id, row.is_visible === false);
-    refresh();
+  const toggleVisible = async (row: ShowcaseSubmission) => {
+    setActionError(null);
+    try {
+      await setSubmissionVisibility(row.id, row.is_visible === false);
+      await refresh();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "更新失败");
+    }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
-    deleteSubmission(deleteTarget.id);
-    setDeleteTarget(null);
-    refresh();
+    setActionError(null);
+    try {
+      await deleteSubmission(deleteTarget.id);
+      setDeleteTarget(null);
+      await refresh();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "删除失败");
+    }
   };
 
   const sorted = useMemo(
@@ -119,6 +147,12 @@ export function AdminPage() {
               <p className="font-body type-body-compact mt-2 max-w-xl text-sm text-primary/50">
                 管理已提交作品：编辑、删除、控制前台展示（is_visible）。编辑时若修改部署 URL 会重新请求截图 API。
               </p>
+              {listError ? (
+                <p className="mt-2 font-body text-sm text-red-400/95">{listError}</p>
+              ) : null}
+              {actionError ? (
+                <p className="mt-2 font-body text-sm text-red-400/95">{actionError}</p>
+              ) : null}
             </div>
             <button
               type="button"

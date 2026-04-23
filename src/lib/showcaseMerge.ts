@@ -1,8 +1,9 @@
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import type { ShowcaseSubmission } from "../types/submission";
-import { loadUserSubmissions } from "./submissionsStorage";
+import { loadUserSubmissions, loadVisibleSubmissionsForShowcaseAsync } from "./submissionsStorage";
+import { isRemoteSubmissionMode } from "./supabaseClient";
 
-/** 仅参与前台展示的用户投稿（is_visible !== false） */
+/** 仅参与前台展示的用户投稿（is_visible !== false）— 仅本地模式 */
 export function getVisibleUserSubmissions(): ShowcaseSubmission[] {
   return loadUserSubmissions().filter((r) => r.is_visible !== false);
 }
@@ -11,8 +12,11 @@ export function getVisibleUserSubmissions(): ShowcaseSubmission[] {
  * 列表展示：无可见用户数据时仅 6 条 mock；
  * 有可见用户数据时用户优先，补足至至少 6 条（用 mock 填充）。
  */
-export function getShowcaseList(): ShowcaseSubmission[] {
-  const user = getVisibleUserSubmissions();
+export async function getShowcaseListAsync(): Promise<ShowcaseSubmission[]> {
+  const user = isRemoteSubmissionMode()
+    ? await loadVisibleSubmissionsForShowcaseAsync()
+    : getVisibleUserSubmissions();
+
   if (user.length === 0) return MOCK_SHOWCASE;
 
   const usedTitles = new Set(user.map((u) => u.gameName));
