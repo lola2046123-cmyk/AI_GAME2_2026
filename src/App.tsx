@@ -14,6 +14,7 @@ import { HomePage } from "./pages/HomePage";
 import { ShowcasePage } from "./pages/ShowcasePage";
 import { AdminPage } from "./pages/AdminPage";
 import { DeploymentGuidePage } from "./pages/DeploymentGuidePage";
+import { ShowcaseDetailPage } from "./pages/ShowcaseDetailPage";
 import type { RegistrationModalState } from "./types/registrationModal";
 import type { ShowcaseSubmission } from "./types/submission";
 import type { AppOutletContext } from "./types/outlet";
@@ -39,6 +40,7 @@ function RoutedTree() {
           <Route element={<Outlet context={outletCtx} />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/showcase" element={<ShowcasePage />} />
+            <Route path="/showcase/:id" element={<ShowcaseDetailPage />} />
             <Route path="/deploy" element={<DeploymentGuidePage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />

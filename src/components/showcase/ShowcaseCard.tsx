@@ -1,126 +1,170 @@
+import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 import type { ShowcaseSubmission } from "../../types/submission";
+import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
+import {
+  stripMarkdownToPlain,
+  truncatePlainText
+} from "../../lib/showcaseCardSummary";
+import type { ShowcaseVoteState } from "../../lib/showcaseVotes";
+import { ShowcaseVoteBar } from "./ShowcaseVoteBar";
 
-function excerpt(text: string, max = 100) {
-  const t = text.trim();
-  if (t.length <= max) return t;
-  return `${t.slice(0, max).trim()}…`;
-}
+/**
+ * 卡片摘要：有 summary 则优先使用（转纯文本后按需截断）；
+ * 否则从 cardSummary / gameplay / 详情 Markdown 回退并截断 120–160 字 + "..."
+ */
+export function buildShowcaseCardSummary(item: ShowcaseSubmission): string {
+  const detailMd = SHOWCASE_DETAILS[item.id]?.markdown;
 
-function isValidUrl(url: string) {
-  try {
-    const u = new URL(url);
-    return u.protocol === "http:" || u.protocol === "https:";
-  } catch {
-    return false;
+  const explicit = item.summary?.trim();
+  if (explicit) {
+    const plain = stripMarkdownToPlain(explicit);
+    return plain.length > 160 ? truncatePlainText(plain, 160) : plain;
   }
+
+  const raw =
+    item.cardSummary?.trim() ||
+    item.gameplay?.trim() ||
+    detailMd?.trim() ||
+    "";
+  const plain = stripMarkdownToPlain(raw);
+  if (!plain) return "";
+  return truncatePlainText(plain, 160);
 }
 
-export function ShowcaseCard({ item }: { item: ShowcaseSubmission }) {
-  const canLink = isValidUrl(item.deployUrl);
+type CardStatus = "winner" | "finalist" | undefined;
+
+export function ShowcaseCard({
+  item,
+  status,
+  user,
+  voteState,
+  onRequireLogin,
+  onVoteStateChange
+}: {
+  item: ShowcaseSubmission;
+  status?: CardStatus;
+  user?: User | null;
+  voteState?: ShowcaseVoteState;
+  onRequireLogin?: () => void;
+  onVoteStateChange?: (updater: (prev: ShowcaseVoteState) => ShowcaseVoteState) => void;
+}) {
   const isUser = item.source === "user";
-  const cardBlurb = (item.cardSummary?.trim() || item.gameplay).trim();
+  const blurb = buildShowcaseCardSummary(item);
 
   const inner = (
-    <article className="surface-card surface-card--lift flex h-full flex-col">
-      <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.04]">
+    <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] hover:-translate-y-0.5">
+
+      {/* 封面 16:9 */}
+      <div className="relative aspect-video overflow-hidden bg-white/[0.04]">
         <img
           src={item.thumbnailUrl}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.022]"
+          alt={item.gameName}
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.05]"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-95" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 to-transparent" />
-
         <div
-          className="pointer-events-none absolute top-3.5 left-3.5 flex h-10 w-10 items-center justify-center rounded-full border border-white/16 bg-black/52 text-[#a8ffe1] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5),0_0_22px_-2px_rgba(0,255,204,0.22)] backdrop-blur-md transition-all duration-300 group-hover:scale-[1.025] group-hover:text-[#b8fff2] group-hover:shadow-[0_2px_6px_-1px_rgba(0,0,0,0.21),0_0_7px_0_rgba(0,255,204,0.16)]"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent"
           aria-hidden
-        >
-          <ExternalLink className="h-[18px] w-[18px]" strokeWidth={2} />
+        />
+
+        {/* 右上：状态 + Live */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          {status === "winner" && (
+            <span className="rounded-full border border-yellow-400/40 bg-yellow-400/15 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-yellow-300 backdrop-blur-md">
+              Winner
+            </span>
+          )}
+          {status === "finalist" && (
+            <span className="rounded-full border border-primary/35 bg-primary/10 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary backdrop-blur-md">
+              Finalist
+            </span>
+          )}
+          {isUser && !status && (
+            <span className="rounded-full border border-[#a8ffe1]/25 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-[#a8ffe1]/80 backdrop-blur-md">
+              Live
+            </span>
+          )}
         </div>
 
-        {isUser && (
-          <span className="absolute top-3.5 right-3.5 rounded-full border border-[#a8ffe1]/35 bg-[#00ffcc]/14 px-2.5 py-1 font-label text-[10px] font-semibold uppercase leading-snug tracking-technical text-[#b8fff2] backdrop-blur-md">
-            Live
+        {/* hover：View Project */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover/card:opacity-100">
+          <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/75 px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-md">
+            View Project
+            <ExternalLink className="h-3.5 w-3.5" />
           </span>
-        )}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 md:px-6 md:pb-6">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <span className="flex flex-wrap items-center gap-1.5">
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-label text-[10px] font-medium uppercase leading-snug tracking-technical text-primary/45">
-              {isUser ? "参赛作品" : "官方示例"}
-            </span>
-            {isUser && item.gameplaySource === "ai" ? (
-              <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 font-label text-[9px] font-semibold uppercase tracking-technical text-cyan-200/90 backdrop-blur-sm">
-                AI Generated
-              </span>
-            ) : null}
+        <div className="mb-3 flex flex-wrap items-center gap-1.5">
+          <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/35">
+            {isUser ? "参赛" : "示例"}
           </span>
-          <span className="rounded-full border border-white/[0.08] bg-black/25 px-2.5 py-1 font-label text-[10px] font-normal leading-snug tracking-normal text-primary/45">
-            HTML5 · 网页游戏
+          <span className="rounded-full border border-white/[0.06] bg-transparent px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/20">
+            HTML5
           </span>
         </div>
 
-        <h2 className="font-headline text-lg font-semibold leading-snug tracking-tight text-[#FFFFFF] md:text-xl md:tracking-[-0.02em]">
+        <h2 className="font-headline text-base font-semibold leading-snug tracking-tight text-white line-clamp-1 md:text-lg">
           {item.gameName}
         </h2>
+
         {item.creatorNickname?.trim() ? (
-          <p className="mt-1 font-label text-[11px] font-medium tracking-normal text-primary/50">
-            制作者 · {item.creatorNickname.trim()}
+          <p className="mt-0.5 font-label text-[11px] text-white/35">
+            {item.creatorNickname.trim()}
           </p>
         ) : null}
-        <p className="font-body type-body-compact mt-2.5 flex-1 text-sm leading-[1.21] tracking-normal text-on-background/88 md:text-[0.95rem]">
-          {excerpt(cardBlurb)}
+
+        <p className="mt-2.5 flex-1 font-body text-sm leading-relaxed text-white/70 line-clamp-2">
+          {blurb}
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {item.techStack.slice(0, 5).map((tag) => (
+
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {item.techStack.slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="rounded-md border border-[#00ffcc]/28 bg-[#00ffcc]/[0.11] px-2 py-1 font-label text-[10px] font-medium tracking-normal text-[#b8fff2] transition-[border-color,background-color,box-shadow] duration-300 group-hover:border-[#00ffcc]/36 group-hover:bg-[#00ffcc]/[0.13] group-hover:shadow-[0_0_2px_-1px_rgba(0,255,204,0.125)]"
+              className="rounded-full border border-white/10 bg-white/10 px-2 py-1 font-label text-xs tracking-normal text-white/70 transition-colors duration-200 group-hover/card:border-white/15"
             >
               {tag}
             </span>
           ))}
-          {item.techStack.length > 5 && (
-            <span className="self-center font-label text-[10px] tracking-normal text-primary/45">
-              +{item.techStack.length - 5}
+          {item.techStack.length > 4 && (
+            <span className="self-center font-label text-[10px] text-white/25">
+              +{item.techStack.length - 4}
             </span>
           )}
         </div>
-        <p
-          className={`font-label mt-3.5 border-t border-white/[0.06] pt-3 text-[10px] font-medium uppercase leading-snug tracking-technical transition-colors duration-300 ${
-            canLink ? "text-primary/40 group-hover:text-[#00ffcc]/42" : "text-red-400/80"
-          }`}
-        >
-          {canLink ? (
-            <span className="inline-flex items-center gap-0.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5">
-              Open in new tab →
-            </span>
-          ) : (
-            "链接无效"
-          )}
+
+        {onRequireLogin ? (
+          <div className="mt-4">
+            <ShowcaseVoteBar
+              projectId={item.id}
+              user={user ?? null}
+              state={voteState}
+              compact
+              onRequireLogin={onRequireLogin}
+              onStateChange={onVoteStateChange}
+            />
+          </div>
+        ) : null}
+
+        <p className="mt-3.5 border-t border-white/[0.07] pt-3 font-label text-[10px] uppercase tracking-widest text-white/40 transition-colors duration-300 group-hover/card:text-primary/60">
+          <span className="inline-flex items-center gap-1 transition-transform duration-300 group-hover/card:translate-x-0.5">
+            查看详情 <span aria-hidden>→</span>
+          </span>
         </p>
       </div>
     </article>
   );
 
-  if (canLink) {
-    return (
-      <a
-        href={item.deployUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="showcase-card-hit group relative block h-full rounded-[1.125rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        {inner}
-      </a>
-    );
-  }
-
   return (
-    <div className="relative block h-full cursor-not-allowed rounded-[1.125rem] opacity-[0.82]">{inner}</div>
+    <Link
+      to={`/showcase/${item.id}`}
+      className="block h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      {inner}
+    </Link>
   );
 }

@@ -14,6 +14,10 @@ export type ShowcaseSubmission = {
    */
   cardSummary?: string;
   /**
+   * 展示卡片摘要（纯文本/Markdown 均可）；优先于 cardSummary / gameplay
+   */
+  summary?: string;
+  /**
    * manual：手填；
    * ai：历史数据（曾用 Gemini 总结）；
    * local：从文档本地启发式生成

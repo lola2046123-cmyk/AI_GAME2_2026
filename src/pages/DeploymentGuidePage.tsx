@@ -7,8 +7,10 @@ import {
   Check,
   ChevronDown,
   ClipboardCopy,
+  Database,
   Gamepad2,
   Github,
+  Monitor,
   Server,
   Triangle,
   Zap
@@ -157,23 +159,27 @@ export function DeploymentGuidePage() {
       </div>
 
       <main className="relative min-w-0 bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3rem))] text-on-background">
-        <header className="relative isolate flex min-h-[calc(100svh-var(--site-header-height))] w-full min-w-0 flex-col border-b border-white/[0.06] bg-background">
+        <header className="relative isolate w-full min-w-0 border-b border-white/[0.06] bg-background">
           <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-100" aria-hidden>
-            <div className="absolute top-[-14%] left-1/2 h-[min(92vh,860px)] w-[min(100vw,1280px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_72%_58%_at_50%_38%,rgba(168,255,225,0.078)_0%,rgba(0,255,204,0.036)_40%,transparent_74%)]" />
-            <div className="absolute bottom-[-18%] left-1/2 h-[min(76vh,700px)] w-[min(100vw,1120px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_68%_52%_at_50%_72%,rgba(168,255,225,0.052)_0%,rgba(0,255,204,0.024)_42%,transparent_78%)]" />
+            <div className="absolute top-[-18%] left-1/2 h-[min(52vh,520px)] w-[min(100vw,1100px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_72%_58%_at_50%_32%,rgba(168,255,225,0.072)_0%,rgba(0,255,204,0.034)_42%,transparent_74%)]" />
+            <div className="absolute bottom-[-22%] left-1/2 h-[min(44vh,420px)] w-[min(100vw,960px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_68%_52%_at_50%_78%,rgba(168,255,225,0.048)_0%,rgba(0,255,204,0.022)_44%,transparent_78%)]" />
           </div>
-          <div className="relative z-10 mx-auto grid min-h-[calc(100svh-var(--site-header-height))] w-full min-w-0 max-w-home shrink-0 place-content-center justify-items-center py-10 md:py-14">
-            <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center px-2 text-center sm:px-4">
-              <h1 className="font-headline text-balance text-[clamp(2.58rem,8.11vw,4.68rem)] font-bold leading-[1.12] tracking-tight text-white md:text-[clamp(3.28rem,5.93vw,4.92rem)]">
+          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-10 md:px-12 md:py-12 lg:py-14">
+            <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center">
+              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/40">
+                AI 游戏设计大赛 2026
+                <span className="ml-2 text-white/20">· Deploy</span>
+              </span>
+              <h1 className="font-headline text-balance text-4xl font-bold leading-[1.12] tracking-tight text-white sm:text-5xl md:text-6xl">
                 <span className="block">把你的网页游戏</span>
                 <span className="block bg-gradient-to-r from-white via-primary to-[#00ffcc] bg-clip-text text-transparent">
                   部署上线
                 </span>
               </h1>
-              <p className="mt-5 max-w-xl px-1 font-body text-[0.8rem] leading-relaxed text-[#FFFFFF] md:text-[0.9rem]">
+              <p className="mt-4 max-w-xl font-body text-sm leading-relaxed text-white/60 md:mt-5 md:text-base">
                 你已经写好了游戏代码——按下面四步即可托管上线。
               </p>
-              <div className="mt-8 flex w-full min-w-0 flex-wrap justify-center gap-2 sm:gap-2.5">
+              <div className="mt-6 flex w-full min-w-0 flex-wrap justify-center gap-2 sm:mt-7 sm:gap-2.5">
                 {(
                   [
                     {
@@ -260,10 +266,26 @@ export function DeploymentGuidePage() {
             <div className="surface-card flex w-full min-w-0 max-w-full flex-col items-center gap-3 overflow-x-auto rounded-xl border border-white/[0.08] p-4 sm:p-6 md:flex-row md:flex-wrap md:justify-center md:gap-3 md:p-8">
               {(
                 [
-                  { emoji: "💻", t: "你的电脑", st: "本地代码" },
-                  { emoji: "🐙", t: "GitHub", st: "代码仓库" },
-                  { emoji: "▲", t: "Vercel", st: "自动部署" },
-                  { emoji: "🟢", t: "Supabase", st: "数据库" }
+                  {
+                    icon: <Monitor className="h-5 w-5" strokeWidth={1.6} />,
+                    iconCls: "text-white/70",
+                    t: "你的电脑", st: "本地代码"
+                  },
+                  {
+                    icon: <Github className="h-5 w-5" strokeWidth={1.6} />,
+                    iconCls: "text-white/70",
+                    t: "GitHub", st: "代码仓库"
+                  },
+                  {
+                    icon: <Triangle className="h-5 w-5" strokeWidth={1.6} />,
+                    iconCls: "text-white/70",
+                    t: "Vercel", st: "自动部署"
+                  },
+                  {
+                    icon: <Database className="h-5 w-5" strokeWidth={1.6} />,
+                    iconCls: "text-primary",
+                    t: "Supabase", st: "数据库"
+                  }
                 ] as const
               ).flatMap((node, i, arr) => {
                 const accent = node.t === "Supabase";
@@ -276,7 +298,7 @@ export function DeploymentGuidePage() {
                         : "border-white/[0.1] bg-white/[0.04]"
                     }`}
                   >
-                    <div className="text-xl">{node.emoji}</div>
+                    <div className={`flex justify-center ${node.iconCls}`}>{node.icon}</div>
                     <div className="mt-1 font-headline text-[13px] font-semibold text-white">{node.t}</div>
                     <div className="mt-0.5 font-label text-[10px] text-primary/45">{node.st}</div>
                   </div>
