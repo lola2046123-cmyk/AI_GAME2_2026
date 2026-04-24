@@ -1,5 +1,6 @@
 import type { ShowcaseSubmission } from "../types/submission";
-import { getSupabaseAnon, getSupabaseAuth } from "./supabaseClient";
+import { getOrCreateClientId } from "./clientId";
+import { getSupabaseAnon } from "./supabaseClient";
 
 export type VoteType = "like" | "fun" | "visual" | "gameplay";
 
@@ -23,6 +24,49 @@ export type RankingEntry = {
 
 const VOTE_TABLE = "showcase_votes";
 
+/**
+ * 未配置 Supabase 时的本地兜底：仅记录"这个浏览器点过哪些项目+type"，
+ * 保证 UI 交互（禁用按钮 / +1 计数）仍能跑通。不会跨设备同步。
+ */
+const LOCAL_VOTES_KEY = "ai_game_2026_local_votes";
+
+type LocalVoteRecord = { project_id: string; type: VoteType };
+
+function readLocalVotes(): LocalVoteRecord[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_VOTES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (x): x is LocalVoteRecord =>
+        !!x &&
+        typeof x === "object" &&
+        typeof (x as LocalVoteRecord).project_id === "string" &&
+        typeof (x as LocalVoteRecord).type === "string"
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalVotes(list: LocalVoteRecord[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(LOCAL_VOTES_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
+
+function recordLocalVote(projectId: string, type: VoteType) {
+  const list = readLocalVotes();
+  if (list.some((x) => x.project_id === projectId && x.type === type)) return;
+  list.push({ project_id: projectId, type });
+  writeLocalVotes(list);
+}
+
 function emptyState(): ShowcaseVoteState {
   return {
     counts: { like: 0, fun: 0, visual: 0, gameplay: 0 },
@@ -43,56 +87,67 @@ function isDuplicateVoteError(message: string) {
   );
 }
 
-export async function likeProject(projectId: string, userId: string) {
-  const sb = getSupabaseAuth();
-  if (!sb) throw new Error("请先配置 Supabase。");
+async function insertVote(projectId: string, type: VoteType) {
+  const sb = getSupabaseAnon();
+  const clientId = getOrCreateClientId();
 
-  const { error } = await sb.from(VOTE_TABLE).insert({
-    project_id: projectId,
-    user_id: userId,
-    type: "like"
-  });
-
-  if (error) {
-    if (isDuplicateVoteError(error.message)) {
-      throw new Error("你已经点过赞了。");
-    }
-    throw new Error(error.message);
+  // 无 Supabase 时：只写本地，调用方照常视为"成功"
+  if (!sb) {
+    recordLocalVote(projectId, type);
+    return;
   }
-}
-
-export async function voteProject(
-  projectId: string,
-  userId: string,
-  type: Exclude<VoteType, "like">
-) {
-  const sb = getSupabaseAuth();
-  if (!sb) throw new Error("请先配置 Supabase。");
 
   const { error } = await sb.from(VOTE_TABLE).insert({
     project_id: projectId,
-    user_id: userId,
+    user_id: clientId,
     type
   });
 
   if (error) {
     if (isDuplicateVoteError(error.message)) {
-      throw new Error("这个分类你已经投过了。");
+      // 已经记过了，不视为失败：记本地并静默返回，避免 UI 弹红字
+      recordLocalVote(projectId, type);
+      return;
     }
     throw new Error(error.message);
   }
+
+  recordLocalVote(projectId, type);
+}
+
+export async function likeProject(projectId: string) {
+  await insertVote(projectId, "like");
+}
+
+export async function voteProject(
+  projectId: string,
+  type: Exclude<VoteType, "like">
+) {
+  await insertVote(projectId, type);
 }
 
 export async function getVoteStateForProjects(
-  projectIds: string[],
-  userId?: string
+  projectIds: string[]
 ): Promise<ShowcaseVoteStateMap> {
   if (projectIds.length === 0) return {};
 
-  const sb = getSupabaseAnon();
-  if (!sb) {
-    return Object.fromEntries(projectIds.map((id) => [id, emptyState()]));
+  const clientId = typeof window !== "undefined" ? getOrCreateClientId() : "";
+  const localVotes = readLocalVotes();
+  const map: ShowcaseVoteStateMap = {};
+  for (const id of projectIds) {
+    map[id] = emptyState();
   }
+
+  // 先把本地已投票的记回 userVotes（即使 Supabase 查不到也保持按钮禁用状态）
+  for (const record of localVotes) {
+    const state = map[record.project_id];
+    if (state && !state.userVotes.includes(record.type)) {
+      state.userVotes.push(record.type);
+    }
+  }
+
+  const sb = getSupabaseAnon();
+  if (!sb) return map;
 
   const { data, error } = await sb
     .from(VOTE_TABLE)
@@ -102,16 +157,10 @@ export async function getVoteStateForProjects(
   if (error) throw new Error(error.message);
 
   const rows = (data ?? []) as VoteRow[];
-  const map: ShowcaseVoteStateMap = {};
-
-  for (const id of projectIds) {
-    map[id] = emptyState();
-  }
-
   for (const row of rows) {
     const state = ensureState(map, row.project_id);
     state.counts[row.type] += 1;
-    if (userId && row.user_id === userId && !state.userVotes.includes(row.type)) {
+    if (row.user_id === clientId && !state.userVotes.includes(row.type)) {
       state.userVotes.push(row.type);
     }
   }

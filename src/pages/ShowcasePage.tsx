@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { LoginModal } from "../components/auth/LoginModal";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
 import { RankingList } from "../components/showcase/RankingList";
 import { ShowcaseCard } from "../components/showcase/ShowcaseCard";
 import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import {
   buildRankings,
@@ -140,12 +138,10 @@ function FilterBar({
 /* ─────────────── 页面主体 ─────────────── */
 export function ShowcasePage() {
   const { key } = useLocation();
-  const { user } = useCurrentUser();
   const [items, setItems] = useState<ShowcaseSubmission[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [category, setCategory] = useState<FilterCategory>("全部");
   const [sort, setSort] = useState<SortOrder>("最新");
-  const [loginOpen, setLoginOpen] = useState(false);
   const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
 
   useEffect(() => {
@@ -171,10 +167,7 @@ export function ShowcasePage() {
       return;
     }
 
-    void getVoteStateForProjects(
-      items.map((item) => item.id),
-      user?.id
-    )
+    void getVoteStateForProjects(items.map((item) => item.id))
       .then((map) => {
         if (!cancelled) setVoteMap(map);
       })
@@ -185,7 +178,7 @@ export function ShowcasePage() {
     return () => {
       cancelled = true;
     };
-  }, [items, user?.id]);
+  }, [items]);
 
   const filtered = useMemo(
     () => sortItems(items.filter((it) => matchCategory(it, category)), sort, voteMap),
@@ -327,9 +320,8 @@ export function ShowcasePage() {
                     <ShowcaseCard
                       item={item}
                       status={AWARD_STATUS[item.id]}
-                      user={user}
+                      showVote
                       voteState={voteMap[item.id]}
-                      onRequireLogin={() => setLoginOpen(true)}
                       onVoteStateChange={(updater) =>
                         setVoteMap((prev) => {
                           const current: ShowcaseVoteState =
@@ -357,7 +349,6 @@ export function ShowcasePage() {
           © 2026 AI_GAME_CONTEST · SHOWCASE
         </div>
       </footer>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 }

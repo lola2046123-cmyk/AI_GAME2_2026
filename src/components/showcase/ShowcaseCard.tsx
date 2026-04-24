@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
 import type { ShowcaseSubmission } from "../../types/submission";
 import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
 import {
@@ -38,16 +37,15 @@ type CardStatus = "winner" | "finalist" | undefined;
 export function ShowcaseCard({
   item,
   status,
-  user,
+  showVote = false,
   voteState,
-  onRequireLogin,
   onVoteStateChange
 }: {
   item: ShowcaseSubmission;
   status?: CardStatus;
-  user?: User | null;
+  /** 是否在卡片底部展示点赞/投票条（默认 false，首页等场景不显示） */
+  showVote?: boolean;
   voteState?: ShowcaseVoteState;
-  onRequireLogin?: () => void;
   onVoteStateChange?: (updater: (prev: ShowcaseVoteState) => ShowcaseVoteState) => void;
 }) {
   const isUser = item.source === "user";
@@ -137,14 +135,12 @@ export function ShowcaseCard({
           )}
         </div>
 
-        {onRequireLogin ? (
+        {showVote ? (
           <div className="mt-4">
             <ShowcaseVoteBar
               projectId={item.id}
-              user={user ?? null}
               state={voteState}
               compact
-              onRequireLogin={onRequireLogin}
               onStateChange={onVoteStateChange}
             />
           </div>

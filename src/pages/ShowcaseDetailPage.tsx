@@ -4,10 +4,8 @@ import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ExternalLink } from "lucide-react";
-import { LoginModal } from "../components/auth/LoginModal";
 import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import {
@@ -39,9 +37,7 @@ const proseClass = [
 export function ShowcaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [mode, setMode] = useState<"preview" | "source">("preview");
-  const { user } = useCurrentUser();
   const [item, setItem] = useState<ShowcaseSubmission | null | undefined>(undefined);
-  const [loginOpen, setLoginOpen] = useState(false);
   const [voteState, setVoteState] = useState<ShowcaseVoteState>({
     counts: { like: 0, fun: 0, visual: 0, gameplay: 0 },
     userVotes: []
@@ -78,7 +74,7 @@ export function ShowcaseDetailPage() {
     let cancelled = false;
     if (!id || !item) return;
 
-    void getVoteStateForProjects([id], user?.id)
+    void getVoteStateForProjects([id])
       .then((map) => {
         if (!cancelled && map[id]) setVoteState(map[id]);
       })
@@ -94,7 +90,7 @@ export function ShowcaseDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id, item, user?.id]);
+  }, [id, item]);
 
   const detail = id ? SHOWCASE_DETAILS[id] : undefined;
 
@@ -173,11 +169,9 @@ export function ShowcaseDetailPage() {
                   <div className="mt-5">
                     <ShowcaseVoteBar
                       projectId={item.id}
-                      user={user}
                       state={voteState}
                       prominent
                       detailHero
-                      onRequireLogin={() => setLoginOpen(true)}
                       onStateChange={(updater) => setVoteState((prev) => updater(prev))}
                     />
                   </div>
@@ -416,7 +410,6 @@ export function ShowcaseDetailPage() {
           </Link>
         </div>
       </footer>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 }

@@ -132,8 +132,31 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         res.status(400).json({ ok: false, error: "缺少 id" });
         return;
       }
-      const { error } = await admin.from("showcase_submissions").delete().eq("id", body.id);
+      const { data, error } = await admin
+        .from("showcase_submissions")
+        .delete()
+        .eq("id", body.id)
+        .select("id");
       if (error) throw error;
+      // 与 update 相同的诊断：DELETE 返回 0 行时，探测 id 是否真的存在
+      if (!data || data.length === 0) {
+        const { data: probe } = await admin
+          .from("showcase_submissions")
+          .select("id")
+          .eq("id", body.id)
+          .maybeSingle();
+        if (probe) {
+          res.status(500).json({
+            ok: false,
+            error:
+              "DELETE 被 RLS 拦截：请确认 Vercel 环境变量 SUPABASE_SERVICE_ROLE_KEY " +
+              "是 Supabase → Settings → API → service_role（jwt.io 解码 role 应为 \"service_role\"），而不是 anon key。"
+          });
+          return;
+        }
+        res.status(404).json({ ok: false, error: "记录不存在，无法删除" });
+        return;
+      }
       res.status(200).json({ ok: true });
       return;
     }
@@ -156,7 +179,28 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .maybeSingle();
       if (error) throw error;
       if (!data) {
-        res.status(404).json({ ok: false, error: "记录不存在" });
+        // 区分两种 "UPDATE 返回 0 行" 场景：
+        // 1) id 真的不在表里 → 前端列表与 DB 不一致（极少见）
+        // 2) id 在表里，但此次 UPDATE 被 RLS 拦截 → 通常意味着 SUPABASE_SERVICE_ROLE_KEY
+        //    实际是 anon key（service_role 会绕过 RLS，不会出现这种情况）
+        const { data: probe } = await admin
+          .from("showcase_submissions")
+          .select("id")
+          .eq("id", body.id)
+          .maybeSingle();
+        if (probe) {
+          res.status(500).json({
+            ok: false,
+            error:
+              "UPDATE 被 RLS 拦截：请确认 Vercel 环境变量 SUPABASE_SERVICE_ROLE_KEY " +
+              "是 Supabase → Settings → API → service_role（jwt.io 解码 role 应为 \"service_role\"），而不是 anon key。"
+          });
+          return;
+        }
+        res.status(404).json({
+          ok: false,
+          error: `记录不存在（id=${String(body.id).slice(0, 8)}…）。若 /admin 列表里有这行，可能访问的是另一个 Supabase 项目，请核对 VITE_SUPABASE_URL。`
+        });
         return;
       }
       res.status(200).json({ ok: true, item: rowToSubmission(data as DbRow) });

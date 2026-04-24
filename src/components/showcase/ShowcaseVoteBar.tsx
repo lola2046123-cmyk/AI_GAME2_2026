@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
 import type { VoteType, ShowcaseVoteState } from "../../lib/showcaseVotes";
 import { likeProject, voteProject } from "../../lib/showcaseVotes";
 
 type Props = {
   projectId: string;
-  user: User | null;
   state?: ShowcaseVoteState;
   compact?: boolean;
   /** 详情页等：高对比描边与光晕 */
   prominent?: boolean;
   /** 详情 Hero：更小体量 + 霓虹色强化，首屏无滚动 */
   detailHero?: boolean;
-  onRequireLogin: () => void;
   onStateChange?: (updater: (prev: ShowcaseVoteState) => ShowcaseVoteState) => void;
 };
 
@@ -28,12 +25,10 @@ const CATEGORY_ORDER: readonly Exclude<VoteType, "like">[] = ["visual", "gamepla
 
 export function ShowcaseVoteBar({
   projectId,
-  user,
   state,
   compact = false,
   prominent = false,
   detailHero = false,
-  onRequireLogin,
   onStateChange
 }: Props) {
   const [loadingKey, setLoadingKey] = useState<VoteType | null>(null);
@@ -50,15 +45,11 @@ export function ShowcaseVoteBar({
   const userVotes = state?.userVotes ?? [];
 
   async function handleLike() {
-    if (!user) {
-      onRequireLogin();
-      return;
-    }
     if (loadingKey || userVotes.includes("like")) return;
     try {
       setLoadingKey("like");
       setMessage("");
-      await likeProject(projectId, user.id);
+      await likeProject(projectId);
       onStateChange?.((prev) => ({
         counts: { ...prev.counts, like: prev.counts.like + 1 },
         userVotes: [...prev.userVotes, "like"]
@@ -72,15 +63,11 @@ export function ShowcaseVoteBar({
   }
 
   async function handleVote(type: Exclude<VoteType, "like">) {
-    if (!user) {
-      onRequireLogin();
-      return;
-    }
     if (loadingKey || userVotes.includes(type)) return;
     try {
       setLoadingKey(type);
       setMessage("");
-      await voteProject(projectId, user.id, type);
+      await voteProject(projectId, type);
       onStateChange?.((prev) => ({
         counts: { ...prev.counts, [type]: prev.counts[type] + 1 },
         userVotes: [...prev.userVotes, type]
