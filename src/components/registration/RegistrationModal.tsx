@@ -22,8 +22,11 @@ const PRESET_TOOLS = [
 
 /** 游戏名称上限（码位） */
 const MAX_GAME_NAME_CHARS = 20;
-/** 游戏制作者昵称上限（码位） */
-const MAX_CREATOR_NICKNAME_CHARS = 20;
+/**
+ * 创作者昵称上限（码位）
+ * 放宽到 80：组队提交时可以填多位成员的昵称（逗号/顿号分隔）
+ */
+const MAX_CREATOR_NICKNAME_CHARS = 80;
 /** 玩法 / 进化论 / 链接等文本上限（码位） */
 const MAX_FIELD_CHARS = 2000;
 /** 核心玩法说明上限（码位）—单独放宽到 4000，便于承载更完整的设计描述 */
@@ -41,8 +44,21 @@ function clampChars(s: string, max: number): string {
   return arr.slice(0, max).join("");
 }
 
+/**
+ * 创作者昵称归一化：支持组队提交，用户可用 `,` / `，` / `、` / 多空格 等任意分隔。
+ * 输出统一为 `昵称A, 昵称B, 昵称C` 的逗号空格串，便于各处展示。
+ */
+function normalizeCreatorNickname(raw: string): string {
+  if (!raw) return "";
+  return raw
+    .split(/[,，、]+/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(", ");
+}
+
 const inputSurface =
-  "w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-primary/45 outline-none transition-[border-color,box-shadow] focus:border-[#00ffcc]/50 focus:shadow-[0_0_0_3px_rgba(0,255,204,0.18)]";
+  "w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-primary/45 outline-none transition-[border-color,box-shadow] focus:border-primary-container/50 focus:shadow-[0_0_0_3px_rgba(0,255,204,0.18)]";
 
 type Props = {
   state: RegistrationModalState;
@@ -68,7 +84,6 @@ export function RegistrationModal({
   const [gameplay, setGameplay] = useState("");
   const [techStack, setTechStack] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
-  const [evolution, setEvolution] = useState("");
   const [deployUrl, setDeployUrl] = useState("");
   /** 用户新选的封面（JPEG data URL）；优先于截图服务 */
   const [coverDataUrl, setCoverDataUrl] = useState<string | null>(null);
@@ -92,7 +107,6 @@ export function RegistrationModal({
     setGameplay("");
     setTechStack([]);
     setCustomTool("");
-    setEvolution("");
     setDeployUrl("");
     setCoverDataUrl(null);
     if (coverInputRef.current) coverInputRef.current.value = "";
@@ -110,7 +124,6 @@ export function RegistrationModal({
     );
     setGameplay(clampChars(r.gameplay, MAX_GAMEPLAY_CHARS));
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
-    setEvolution(clampChars(r.evolution, MAX_FIELD_CHARS));
     setDeployUrl(clampChars(r.deployUrl, MAX_FIELD_CHARS));
     setCoverDataUrl(null);
     if (coverInputRef.current) coverInputRef.current.value = "";
@@ -200,9 +213,9 @@ export function RegistrationModal({
       return `游戏名称不超过 ${MAX_GAME_NAME_CHARS} 个字符`;
     }
     const nick = creatorNickname.trim();
-    if (!nick) return "请填写游戏制作者昵称";
+    if (!nick) return "请填写创作者昵称";
     if (countChars(nick) > MAX_CREATOR_NICKNAME_CHARS) {
-      return `游戏制作者昵称不超过 ${MAX_CREATOR_NICKNAME_CHARS} 个字符`;
+      return `创作者昵称不超过 ${MAX_CREATOR_NICKNAME_CHARS} 个字符`;
     }
     const gp = gameplay.trim();
     if (!gp) return "请填写核心玩法说明";
@@ -218,11 +231,6 @@ export function RegistrationModal({
   };
 
   const validateStep3 = () => {
-    const ev = evolution.trim();
-    if (!ev) return "请填写 AI 进化论说明";
-    if (countChars(ev) > MAX_FIELD_CHARS) {
-      return `AI 进化论说明不超过 ${MAX_FIELD_CHARS} 个字符`;
-    }
     const u = deployUrl.trim();
     if (!u) return "请填写部署链接";
     if (countChars(u) > MAX_FIELD_CHARS) {
@@ -272,6 +280,7 @@ export function RegistrationModal({
     setError(null);
     try {
       const url = deployUrl.trim();
+      const normalizedNickname = normalizeCreatorNickname(creatorNickname);
       if (isEdit && state.kind === "edit") {
         const prevUrl = state.record.deployUrl.trim();
         let thumbnailUrl: string;
@@ -284,7 +293,7 @@ export function RegistrationModal({
         }
         await updateSubmission(state.record.id, {
           gameName: gameName.trim(),
-          creatorNickname: creatorNickname.trim(),
+          creatorNickname: normalizedNickname,
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -292,7 +301,8 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
-          evolution: evolution.trim(),
+          // UI 已移除 AI 进化论输入；编辑态保留原值以免破坏历史数据
+          evolution: state.record.evolution ?? "",
           deployUrl: url,
           thumbnailUrl,
           is_visible: state.record.is_visible !== false
@@ -304,7 +314,7 @@ export function RegistrationModal({
         const entry: ShowcaseSubmission = {
           id: crypto.randomUUID(),
           gameName: gameName.trim(),
-          creatorNickname: creatorNickname.trim(),
+          creatorNickname: normalizedNickname,
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -312,7 +322,8 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
-          evolution: evolution.trim(),
+          // UI 已移除 AI 进化论输入；新建提交写空字符串
+          evolution: "",
           deployUrl: url,
           thumbnailUrl,
           createdAt: new Date().toISOString(),
@@ -338,6 +349,15 @@ export function RegistrationModal({
   };
 
   const modalTitle = isEdit ? "编辑作品" : "提交作品";
+
+  /* ── 字段标题：强化，作为视觉锚点 ── */
+  const fieldLabel = "font-label text-sm font-semibold text-white";
+  /* ── 字符计数器：极度弱化，不抢眼 ── */
+  const charCount = "font-label text-[10px] tabular-nums text-white/25";
+  /* ── 辅助提示：弱化，仅补充信息 ── */
+  const fieldHint = "mt-1.5 font-body text-[11px] leading-relaxed text-white/30";
+  /* ── 字段间分隔线 ── */
+  const fieldDivider = "border-b border-white/[0.06] pb-4 mb-1";
 
   return (
     <AnimatePresence>
@@ -369,110 +389,131 @@ export function RegistrationModal({
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] px-5 py-4 md:px-6">
-              <div>
-                <p className="font-label text-[10px] font-medium uppercase tracking-technical text-[#00ffcc]/85">
-                  {isEdit ? "管理 · 编辑" : "提交 · 2026"}
-                </p>
-                <h2
-                  id="reg-modal-title"
-                  className="mt-1 font-headline text-lg font-semibold tracking-tight text-on-background md:text-xl"
-                >
-                  {modalTitle}
-                </h2>
-              </div>
+            {/* ── 顶部 Header ── */}
+            <div className="flex items-center justify-between gap-4 border-b border-white/[0.08] px-5 py-4 md:px-6">
+              <h2
+                id="reg-modal-title"
+                className="font-headline text-lg font-semibold tracking-tight text-white md:text-xl"
+              >
+                {modalTitle}
+              </h2>
               <button
                 type="button"
                 onClick={close}
-                className="rounded-full p-2 text-primary/50 transition-colors hover:bg-white/5 hover:text-on-background"
+                aria-label="关闭"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/30 transition-colors hover:bg-white/5 hover:text-white/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <X className="h-5 w-5" strokeWidth={1.75} />
               </button>
             </div>
 
-            <div className="flex shrink-0 gap-1.5 px-5 py-3 md:px-6">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      n <= step
-                        ? "w-full bg-primary-container"
-                        : "w-0 bg-transparent"
-                    }`}
-                  />
-                </div>
-              ))}
+            {/* ── 进度条 + 步骤标签 ── */}
+            <div className="flex shrink-0 flex-col gap-2 border-b border-white/[0.05] px-5 pt-3 pb-3.5 md:px-6">
+              <div className="flex items-center justify-between">
+                {(["作品信息", "AI 工具", "发布上线"] as const).map((label, i) => {
+                  const n = i + 1;
+                  const active = step === n;
+                  const done = step > n;
+                  return (
+                    <span
+                      key={label}
+                      className={`font-label text-[10px] font-medium uppercase tracking-widest transition-colors duration-200 ${
+                        active
+                          ? "text-primary"
+                          : done
+                          ? "text-white/35"
+                          : "text-white/20"
+                      }`}
+                    >
+                      {n}&nbsp;·&nbsp;{label}
+                    </span>
+                  );
+                })}
+              </div>
+              <div className="flex gap-1.5">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+                    <div
+                      className={`h-full rounded-full transition-all duration-400 ${
+                        n <= step ? "w-full bg-primary-container" : "w-0"
+                      }`}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 md:px-6">
+            {/* ── 表单主体 ── */}
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 md:px-6">
               <AnimatePresence mode="wait">
+
+                {/* ────── 步骤 1：作品信息 ────── */}
                 {step === 1 && (
                   <motion.div
                     key="s1"
-                    initial={{ opacity: 0, x: 12 }}
+                    initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-4"
+                    className="space-y-5"
                   >
-                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
-                      步骤 1 · 作品
-                    </p>
-                    <label className="block space-y-2">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">游戏名称</span>
-                        <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(gameName)}/{MAX_GAME_NAME_CHARS}
-                        </span>
+                    {/* 游戏名称 */}
+                    <label className={`block ${fieldDivider}`}>
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>游戏名称</span>
+                        <span className={charCount}>{countChars(gameName)}/{MAX_GAME_NAME_CHARS}</span>
                       </div>
                       <input
                         className={inputSurface}
                         value={gameName}
-                        onChange={(e) =>
-                          setGameName(clampChars(e.target.value, MAX_GAME_NAME_CHARS))
-                        }
-                        placeholder="填写游戏名称"
+                        onChange={(e) => setGameName(clampChars(e.target.value, MAX_GAME_NAME_CHARS))}
+                        placeholder="你的游戏叫什么名字？"
                         maxLength={MAX_GAME_NAME_CHARS * 2}
                         autoFocus
                       />
                     </label>
-                    <label className="block space-y-2">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">
-                          游戏制作者昵称
-                        </span>
-                        <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(creatorNickname)}/{MAX_CREATOR_NICKNAME_CHARS}
-                        </span>
+
+                    {/* 创作者昵称 */}
+                    <label className={`block ${fieldDivider}`}>
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>创作者昵称</span>
+                        <span className={charCount}>{countChars(creatorNickname)}/{MAX_CREATOR_NICKNAME_CHARS}</span>
                       </div>
                       <input
                         className={inputSurface}
                         value={creatorNickname}
                         onChange={(e) =>
-                          setCreatorNickname(
-                            clampChars(e.target.value, MAX_CREATOR_NICKNAME_CHARS)
-                          )
+                          setCreatorNickname(clampChars(e.target.value, MAX_CREATOR_NICKNAME_CHARS))
                         }
-                        placeholder="用于展示的创作者昵称"
+                        placeholder="独立开发者昵称，或团队全员昵称（逗号分隔）"
                         maxLength={MAX_CREATOR_NICKNAME_CHARS * 2}
                       />
+                      <p className={fieldHint}>
+                        组队则输入全员昵称，用&nbsp;
+                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">,</code>
+                        &nbsp;/&nbsp;
+                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">，</code>
+                        &nbsp;/&nbsp;
+                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">、</code>
+                        &nbsp;分隔，提交时自动规范化
+                      </p>
                     </label>
-                    <label className="block space-y-2">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">
+
+                    {/* 核心玩法说明 */}
+                    <label className="block">
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>
                           核心玩法说明
-                          {gameplaySource === "ai" || gameplaySource === "local" ? (
-                            <span className="ml-2 font-normal normal-case text-[#00ffcc]/75">
+                          {(gameplaySource === "ai" || gameplaySource === "local") && (
+                            <span className="ml-2 font-label text-[10px] font-normal normal-case text-primary-container/70">
                               · 已从文档解析，可改
                             </span>
-                          ) : null}
+                          )}
                         </span>
-                        <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(gameplay)}/{MAX_GAMEPLAY_CHARS}
-                        </span>
+                        <span className={charCount}>{countChars(gameplay)}/{MAX_GAMEPLAY_CHARS}</span>
                       </div>
                       <textarea
-                        className={`${inputSurface} min-h-[120px] resize-y`}
+                        className={`${inputSurface} min-h-[110px] resize-y`}
                         value={gameplay}
                         onChange={(e) => {
                           const v = clampChars(e.target.value, MAX_GAMEPLAY_CHARS);
@@ -481,7 +522,7 @@ export function RegistrationModal({
                             setCardSummary(clampChars(v.trim(), MAX_CARD_SUMMARY));
                           }
                         }}
-                        placeholder="介绍你的核心玩法、节奏与关键机制…"
+                        placeholder="描述核心玩法机制与节奏，以及 AI 在开发过程中扮演的角色…"
                         rows={5}
                         maxLength={MAX_GAMEPLAY_CHARS * 2}
                       />
@@ -489,182 +530,166 @@ export function RegistrationModal({
                   </motion.div>
                 )}
 
+                {/* ────── 步骤 2：AI 工具 ────── */}
                 {step === 2 && (
                   <motion.div
                     key="s2"
-                    initial={{ opacity: 0, x: 12 }}
+                    initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-4"
+                    className="space-y-5"
                   >
-                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
-                      步骤 2 · 工具
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {PRESET_TOOLS.map((t) => {
-                        const on = techStack.includes(t);
-                        return (
-                          <button
-                            key={t}
-                            type="button"
-                            onClick={() => toggleTool(t)}
-                            className={`rounded-full border px-3.5 py-2 font-label text-xs font-medium tracking-normal transition-all ${
-                              on
-                                ? "border-[#00ffcc]/55 bg-[#00ffcc]/15 text-[#00ffcc] shadow-[0_0_20px_-4px_rgba(0,255,204,0.4)]"
-                                : "border-white/15 bg-black/30 text-primary/50 hover:border-white/25"
-                            }`}
-                          >
-                            {t}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        className={inputSurface}
-                        value={customTool}
-                        onChange={(e) =>
-                          setCustomTool(clampChars(e.target.value, MAX_FIELD_CHARS))
-                        }
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && (e.preventDefault(), addCustomTool())
-                        }
-                        placeholder="其他工具，回车加入"
-                        maxLength={MAX_FIELD_CHARS * 2}
-                      />
-                      <button
-                        type="button"
-                        onClick={addCustomTool}
-                        className="shrink-0 rounded-xl border border-[#00ffcc]/35 bg-[#00ffcc]/10 px-4 font-label text-xs font-semibold text-[#00ffcc] transition-colors hover:bg-[#00ffcc]/18"
-                      >
-                        添加
-                      </button>
-                    </div>
-                    {techStack.length > 0 && (
-                      <p className="font-body text-xs text-primary/50">
-                        已选：{techStack.join(" · ")}
+                    <div>
+                      <p className={`mb-1 ${fieldLabel}`}>使用的 AI 工具</p>
+                      <p className="mb-4 font-body text-[11px] leading-relaxed text-white/30">
+                        选择本次创作中用到的 AI 工具，至少选择一项
                       </p>
-                    )}
+                      <div className="flex flex-wrap gap-2">
+                        {PRESET_TOOLS.map((t) => {
+                          const on = techStack.includes(t);
+                          return (
+                            <button
+                              key={t}
+                              type="button"
+                              onClick={() => toggleTool(t)}
+                              className={`rounded-full border px-3.5 py-1.5 font-label text-xs font-medium tracking-normal transition-all duration-200 ${
+                                on
+                                  ? "border-primary-container/55 bg-primary-container/15 text-primary-container shadow-[0_0_18px_-4px_rgba(0,255,204,0.45)]"
+                                  : "border-white/[0.12] bg-white/[0.04] text-white/45 hover:border-white/25 hover:text-white/70"
+                              }`}
+                            >
+                              {t}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* 自定义工具输入 */}
+                      <div className="mt-4 flex gap-2">
+                        <input
+                          className={inputSurface}
+                          value={customTool}
+                          onChange={(e) => setCustomTool(clampChars(e.target.value, MAX_FIELD_CHARS))}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomTool())}
+                          placeholder="其他工具名称，回车加入"
+                          maxLength={MAX_FIELD_CHARS * 2}
+                        />
+                        <button
+                          type="button"
+                          onClick={addCustomTool}
+                          className="shrink-0 rounded-xl border border-primary-container/35 bg-primary-container/10 px-4 font-label text-xs font-semibold text-primary-container transition-colors hover:bg-primary-container/18"
+                        >
+                          添加
+                        </button>
+                      </div>
+
+                      {techStack.length > 0 && (
+                        <p className="mt-3 border-t border-white/[0.06] pt-3 font-label text-[11px] text-white/40">
+                          已选：
+                          <span className="text-primary/70">{techStack.join("  ·  ")}</span>
+                        </p>
+                      )}
+                    </div>
                   </motion.div>
                 )}
 
+                {/* ────── 步骤 3：发布上线 ────── */}
                 {step === 3 && (
                   <motion.div
                     key="s3"
-                    initial={{ opacity: 0, x: 12 }}
+                    initial={{ opacity: 0, x: 14 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-4"
+                    className="space-y-5"
                   >
-                    <p className="font-label text-xs font-medium tracking-[0.12em] text-primary/50">
-                      步骤 3 · 上线
-                    </p>
-                    <label className="block space-y-2">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">AI 进化论</span>
-                        <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(evolution)}/{MAX_FIELD_CHARS}
-                        </span>
-                      </div>
-                      <textarea
-                        className={`${inputSurface} min-h-[100px] resize-y`}
-                        value={evolution}
-                        onChange={(e) =>
-                          setEvolution(clampChars(e.target.value, MAX_FIELD_CHARS))
-                        }
-                        placeholder="简述 AI 如何参与开发"
-                        rows={4}
-                        maxLength={MAX_FIELD_CHARS * 2}
-                      />
-                    </label>
-                    <label className="block space-y-2">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">部署链接</span>
-                        <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(deployUrl)}/{MAX_FIELD_CHARS}
-                        </span>
+                    {/* 部署链接 */}
+                    <label className={`block ${fieldDivider}`}>
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>游戏链接</span>
+                        <span className={charCount}>{countChars(deployUrl)}/{MAX_FIELD_CHARS}</span>
                       </div>
                       <input
                         className={inputSurface}
                         value={deployUrl}
-                        onChange={(e) =>
-                          setDeployUrl(clampChars(e.target.value, MAX_FIELD_CHARS))
-                        }
+                        onChange={(e) => setDeployUrl(clampChars(e.target.value, MAX_FIELD_CHARS))}
                         placeholder="https://your-game.example.com"
                         inputMode="url"
                         autoComplete="url"
                         maxLength={MAX_FIELD_CHARS * 2}
                       />
+                      <p className={fieldHint}>粘贴可以在线体验的游戏地址</p>
                     </label>
 
-                    <div className="space-y-2 rounded-xl border border-white/[0.08] bg-black/20 p-3">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-label text-xs text-primary/50">封面缩略图</span>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            ref={coverInputRef}
-                            type="file"
-                            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                            className="hidden"
-                            onChange={pickCover}
-                          />
+                    {/* 封面缩略图 */}
+                    <div>
+                      <p className={`mb-3 ${fieldLabel}`}>封面图</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <input
+                          ref={coverInputRef}
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                          className="hidden"
+                          onChange={pickCover}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          className="rounded-lg border border-primary-container/35 bg-primary-container/10 px-3.5 py-2 font-label text-xs font-semibold text-primary-container transition-colors hover:bg-primary-container/18"
+                        >
+                          {coverDataUrl ? "重新选择" : "上传封面"}
+                        </button>
+                        {coverDataUrl && (
                           <button
                             type="button"
-                            onClick={() => coverInputRef.current?.click()}
-                            className="rounded-lg border border-[#00ffcc]/35 bg-[#00ffcc]/10 px-3 py-1.5 font-label text-[11px] font-semibold text-[#00ffcc] transition-colors hover:bg-[#00ffcc]/18"
+                            onClick={() => {
+                              setCoverDataUrl(null);
+                              if (coverInputRef.current) coverInputRef.current.value = "";
+                            }}
+                            className="rounded-lg border border-white/[0.12] px-3.5 py-2 font-label text-xs text-white/35 transition-colors hover:border-white/25 hover:text-white/60"
                           >
-                            {coverDataUrl ? "重新选择" : "上传图片"}
+                            移除
                           </button>
-                          {coverDataUrl ? (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setCoverDataUrl(null);
-                                if (coverInputRef.current) coverInputRef.current.value = "";
-                              }}
-                              className="rounded-lg border border-white/15 px-3 py-1.5 font-label text-[11px] text-primary/50 transition-colors hover:border-white/25 hover:text-primary/70"
-                            >
-                              移除上传
-                            </button>
-                          ) : null}
-                        </div>
+                        )}
                       </div>
-                      <p className="font-body text-[11px] leading-[1.21] text-primary/45">
-                        横图为宜。浏览器内压 JPEG，长边约 1200px。未上传时尝试后端{" "}
-                        <code className="rounded bg-white/5 px-1 text-[#00ffcc]/85">
-                          POST /api/screenshot
-                        </code>
-                        ；纯静态无接口则用占位图。
-                      </p>
+
                       {coverPreviewUrl ? (
-                        <div className="overflow-hidden rounded-lg border border-white/[0.08] bg-black/40">
+                        <div className="mt-3 overflow-hidden rounded-lg border border-white/[0.07] bg-black/40">
                           <img
                             src={coverPreviewUrl}
-                            alt=""
+                            alt="封面预览"
                             className="max-h-36 w-full object-cover object-center"
                           />
                         </div>
-                      ) : null}
+                      ) : (
+                        <p className={fieldHint}>
+                          横图为宜（16:9）。未上传时将自动截图或使用占位图
+                        </p>
+                      )}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {error && (
-                <p className="mt-3 rounded-lg border border-red-400/25 bg-red-400/10 px-3 py-2 font-body text-xs text-red-300/95">
+                <motion.p
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-3 rounded-xl border border-red-400/25 bg-red-400/[0.08] px-4 py-3 font-body text-xs leading-relaxed text-red-300/90"
+                >
                   {error}
-                </p>
+                </motion.p>
               )}
             </div>
 
+            {/* ── 底部操作栏 ── */}
             <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.08] px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] md:px-6">
               <button
                 type="button"
                 onClick={back}
                 disabled={step === 1 || submitting}
-                className="btn-secondary-outline gap-1 px-4 py-2.5 text-sm font-label font-medium disabled:opacity-35"
+                className="btn-secondary-outline gap-1.5 px-5 py-2.5 font-label text-sm font-medium disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronLeft className="h-4 w-4" />
                 上一步
@@ -674,7 +699,7 @@ export function RegistrationModal({
                 <button
                   type="button"
                   onClick={next}
-                  className="btn-primary gap-1 px-5 py-2.5 text-sm disabled:opacity-45"
+                  className="btn-primary gap-1.5 px-6 py-2.5 font-label text-sm"
                 >
                   下一步
                   <ChevronRight className="h-4 w-4" />
@@ -684,7 +709,7 @@ export function RegistrationModal({
                   type="button"
                   onClick={submit}
                   disabled={submitting}
-                  className="btn-primary gap-2 px-5 py-2.5 text-sm disabled:opacity-55"
+                  className="btn-primary gap-2 px-6 py-2.5 font-label text-sm disabled:pointer-events-none disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
@@ -694,7 +719,7 @@ export function RegistrationModal({
                   ) : isEdit ? (
                     "保存修改"
                   ) : (
-                    "提交报名"
+                    "提交作品"
                   )}
                 </button>
               )}

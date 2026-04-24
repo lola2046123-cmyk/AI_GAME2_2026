@@ -18,7 +18,7 @@
   --color-surface-container-high: #262626;
   --color-surface-container-low: #1a1919;
   --color-surface-container-lowest: #000000;
-  --color-on-background: #d8d8d8;
+  --color-on-background: #ffffff;
   --color-on-primary-fixed: #101010;
   --color-on-surface-variant: #adaaaa;
 
@@ -454,7 +454,8 @@
    */
   .glass-floating-panel {
     border: 1px solid var(--glass-border);
-    background: rgba(10, 15, 13, 0.88);
+    /* 纯中性暗底，与 --color-background (#101010) 同色系，无绿色偏移 */
+    background: rgba(16, 16, 16, 0.94);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     box-shadow:
@@ -510,6 +511,14 @@
     cursor: not-allowed;
   }
 
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--color-primary-container);
+    outline-offset: 3px;
+    box-shadow:
+      0 0 0 4px rgba(var(--rgb-neon), 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  }
+
   /** 次要线框按钮（弹窗取消、上一步等） */
   .btn-secondary-outline {
     display: inline-flex;
@@ -542,6 +551,22 @@
     cursor: not-allowed;
   }
 
+  .btn-secondary-outline:focus-visible {
+    outline: 2px solid rgba(var(--rgb-neon-soft), 0.6);
+    outline-offset: 3px;
+  }
+
+  /* 全局：减少动效偏好 — 停止无限循环动画 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-iteration-count: 1 !important;
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   /* 区块中文大标题：略收紧字距，偏展示向、不松散 */
   .tracking-sophisticated {
     letter-spacing: -0.032em;
@@ -566,7 +591,7 @@
   }
 
   /**
-   * 首屏 / 一等奖赏金：MotionSites「Superpowers」式渐变高亮（青白流动 + 微光晕）
+   * 首屏 / 一等奖赏金：青白流动渐变 + 扫光动画（Cyber-Editorial 核心高亮）
    */
   .prize-hero-gradient {
     background-image: linear-gradient(
@@ -644,6 +669,12 @@
     animation: prize-hero-sweep-shift 4s ease-in-out infinite;
     filter: drop-shadow(0 1px 20px rgba(var(--rgb-neon), 0.26))
       drop-shadow(0 0 32px rgba(var(--rgb-neon), 0.14));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prize-hero-gradient.prize-hero-sweep-text {
+      animation: none;
+    }
   }
 
   .prize-hero-gradient.prize-hero-sweep-text:hover {

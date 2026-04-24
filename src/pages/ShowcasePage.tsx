@@ -5,6 +5,7 @@ import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
 import { RankingList } from "../components/showcase/RankingList";
 import { ShowcaseCard } from "../components/showcase/ShowcaseCard";
 import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
+import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import {
@@ -139,6 +140,7 @@ function FilterBar({
 export function ShowcasePage() {
   const { key } = useLocation();
   const [items, setItems] = useState<ShowcaseSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [category, setCategory] = useState<FilterCategory>("全部");
   const [sort, setSort] = useState<SortOrder>("最新");
@@ -146,15 +148,20 @@ export function ShowcasePage() {
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     setLoadError(null);
     void getShowcaseListAsync()
       .then((list) => {
-        if (!cancelled) setItems(list);
+        if (!cancelled) {
+          setItems(list);
+          setLoading(false);
+        }
       })
       .catch((err: unknown) => {
         if (!cancelled) {
           setLoadError(err instanceof Error ? err.message : "加载失败");
           setItems([]);
+          setLoading(false);
         }
       });
     return () => { cancelled = true; };
@@ -268,7 +275,7 @@ export function ShowcasePage() {
           </div>
 
           {/* ── Filter Bar ── */}
-          {hasItems && (
+          {hasItems && !loading && (
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -284,9 +291,19 @@ export function ShowcasePage() {
             </motion.div>
           )}
 
-          {/* ── 卡片栅格 ── */}
+          {/* ── 卡片栅格（含加载态） ── */}
           <AnimatePresence mode="wait">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ShowcaseLoading count={6} />
+              </motion.div>
+            ) : filtered.length === 0 ? (
               <motion.div
                 key="empty"
                 initial={{ opacity: 0 }}

@@ -38,11 +38,16 @@ export function LoginModal({ open, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="login-modal-title"
+    >
       <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#111111] p-5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <p className="font-headline text-lg font-semibold text-white">登录后投票</p>
+            <p id="login-modal-title" className="font-headline text-lg font-semibold text-white">登录后投票</p>
             <p className="mt-1 font-body text-sm leading-relaxed text-white/45">
               使用邮箱 Magic Link 登录，无需密码。
             </p>
@@ -50,19 +55,20 @@ export function LoginModal({ open, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/45 transition-colors hover:text-white/80"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/45 transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             aria-label="关闭登录弹窗"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <label className="mb-2 block font-label text-[10px] uppercase tracking-widest text-white/30">
+        <label htmlFor="login-email" className="mb-2 block font-label text-[10px] uppercase tracking-widest text-white/30">
           邮箱
         </label>
         <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3">
           <Mail className="h-4 w-4 shrink-0 text-white/35" />
           <input
+            id="login-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

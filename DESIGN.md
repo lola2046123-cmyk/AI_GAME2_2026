@@ -91,11 +91,35 @@ We eschew traditional drop shadows for **Tonal Layering** and **Luminescence**.
 ### Don't
 *   **DON'T** use standard 1px solid borders at 100% opacity. It destroys the "glass" illusion.
 *   **DON'T** use rounded corners larger than `xl` (0.75rem). The aesthetic should feel sharp and precise, not "bubbly."
-*   **DON'T** use pure white for body text. Use `on-surface-variant` (`#adaaaa`) for long-form reading to maintain the moody atmosphere. Save pure white for headers.
+*   **DON'T** use pure white for long-form body copy. Use `on-surface-variant` (`#adaaaa`) or `text-white/55–70` opacity variants for paragraphs and descriptions. **Headings (`text-on-background`) are now pure white (`#ffffff`) — maximum contrast on void backgrounds.**
+*   **DON'T** use a greenish-tinted dark as the floating panel background. `glass-floating-panel` must use a neutral dark (`rgba(16,16,16,0.94)`), aligned with `--color-background`, with no green channel bias.
 
 ---
 
 **Director's Note:** Every pixel should feel like it belongs in a high-security data vault. When in doubt, add more "air" (vertical padding) and reduce the opacity of your borders. Let the neon do the heavy lifting.
+
+---
+
+## 9. Component Micro-Standards (Updated Rules)
+
+### 9.1 Heading / Title Color
+All heading-level text using `text-on-background` resolves to **pure white `#ffffff`** (`--color-on-background: #ffffff` in `@theme`). Long-form body paragraphs use opacity variants (`text-white/55`, `text-white/70`) or `text-on-surface-variant` to preserve atmospheric depth without dimming titles.
+
+### 9.2 Floating Panel Background
+`glass-floating-panel` uses `rgba(16, 16, 16, 0.94)` — a neutral dark matching `--color-background (#101010)` with no green channel bias. Previous `rgba(10, 15, 13)` is retired. Never introduce a green or tinted channel to modal backgrounds.
+
+### 9.3 Form Fields — Flat Layout (No Nested Cards)
+Inside modals and overlays, form field groups are laid out flat with thin `border-b border-white/[0.06]` dividers and `space-y-5` gaps. Never wrap individual fields in `rounded-xl border bg-white/[…]` card containers — nested cards violate the "Nested cards are always wrong" law. Apply visual grouping through spacing and separator lines only.
+
+### 9.4 Creator / Author Label Sizing
+The "创作者" label uses `font-label font-medium text-[#a8ffe1]/80` **without a fixed pixel size**, inheriting the parent container's font size. This ensures the label is visually flush with the creator nickname beside it. Color differentiation (neon mint vs. near-white) is sufficient to distinguish label from value — a size hierarchy is not needed here.
+
+### 9.5 Functional Navigation Text — Minimum 15px
+Small-uppercase functional navigation links ("全部作品 →", "查看详情 →", "← 返回展示") must never render below **15px**:
+- Elements previously at `text-xs` (12px) are now **`text-[18px]`** (50% increase).
+- Elements previously at `text-[10px]` are now **`text-[15px]`** (50% increase).
+
+Decorative eyebrow labels ("Community Picks", status pills) are exempt — they are editorial texture, not interactive affordances.
 
 ---
 

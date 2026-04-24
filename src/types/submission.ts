@@ -5,7 +5,10 @@
 export type ShowcaseSubmission = {
   id: string;
   gameName: string;
-  /** 游戏制作者昵称（≤20 字，展示用） */
+  /**
+   * 创作者昵称（展示用）。支持组队提交：多位成员用 `, ` 逗号分隔，例如
+   * `"小A, 小B, 小C"`；提交表单中会自动把中英文逗号/顿号归一化。上限 80 码位。
+   */
   creatorNickname?: string;
   /** 核心玩法说明 */
   gameplay: string;

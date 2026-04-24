@@ -91,16 +91,16 @@ function Callout({
   const styles = useMemo(
     () =>
       ({
-        tip: "border-l-[#00ffcc]/50 bg-[rgba(0,255,204,0.06)] text-primary/90",
-        warn: "border-l-amber-400/70 bg-amber-400/[0.07] text-amber-100/90",
-        info: "border-l-sky-400/60 bg-sky-400/[0.08] text-sky-100/85",
-        danger: "border-l-red-400/70 bg-red-500/[0.08] text-red-100/90"
+        tip: "border-[#00ffcc]/30 bg-[rgba(0,255,204,0.06)] text-primary/90",
+        warn: "border-amber-400/35 bg-amber-400/[0.07] text-amber-100/90",
+        info: "border-sky-400/30 bg-sky-400/[0.08] text-sky-100/85",
+        danger: "border-red-400/35 bg-red-500/[0.08] text-red-100/90"
       }) as const,
     []
   );
   return (
     <div
-      className={`my-4 flex min-w-0 max-w-full gap-3 rounded-lg border border-white/[0.06] border-l-[3px] p-4 text-sm leading-relaxed md:text-[15px] ${styles[variant]}`}
+      className={`my-4 flex min-w-0 max-w-full gap-3 rounded-lg border p-4 text-sm leading-relaxed md:text-[15px] ${styles[variant]}`}
     >
       <span className="mt-0.5 shrink-0 opacity-90" aria-hidden>
         {icon}
@@ -168,7 +168,7 @@ export function DeploymentGuidePage() {
               </span>
               <h1 className="font-headline text-balance text-4xl font-bold leading-[1.12] tracking-tight text-white sm:text-5xl md:text-6xl">
                 <span className="block">把你的网页游戏</span>
-                <span className="block bg-gradient-to-r from-white via-primary to-[#00ffcc] bg-clip-text text-transparent">
+                <span className="block text-primary drop-shadow-[0_0_28px_rgba(0,255,204,0.55)]">
                   部署上线
                 </span>
               </h1>
@@ -648,13 +648,13 @@ export function DeploymentGuidePage() {
                 ].map((faq) => (
                   <details
                     key={faq.q}
-                    className="group surface-card overflow-hidden rounded-xl border border-white/[0.08]"
+                    className="group border-b border-white/[0.07] last:border-b-0"
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 font-headline text-sm font-semibold text-white marker:content-none md:px-5 md:py-4 md:text-[15px] [&::-webkit-details-marker]:hidden">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3.5 font-headline text-sm font-semibold text-white marker:content-none md:py-4 md:text-[15px] [&::-webkit-details-marker]:hidden">
                       <span className="min-w-0 flex-1 pr-2 text-left break-words">{faq.q}</span>
-                      <ChevronDown className="h-4 w-4 shrink-0 text-[#00ffcc] transition-transform group-open:rotate-180" />
+                      <ChevronDown className="h-4 w-4 shrink-0 text-primary transition-transform group-open:rotate-180" />
                     </summary>
-                    <div className="border-t border-white/[0.06] px-4 py-3 font-body text-sm leading-relaxed break-words text-primary/65 md:px-5 md:text-[15px]">
+                    <div className="pb-4 font-body text-sm leading-relaxed break-words text-primary/65 md:text-[15px]">
                       {faq.a}
                     </div>
                   </details>

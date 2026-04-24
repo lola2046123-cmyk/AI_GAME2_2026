@@ -80,7 +80,7 @@ export function ShowcaseCard({
             </span>
           )}
           {isUser && !status && (
-            <span className="rounded-full border border-[#a8ffe1]/25 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-[#a8ffe1]/80 backdrop-blur-md">
+            <span className="rounded-full border border-[#a8ffe1]/25 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary/80 backdrop-blur-md">
               Live
             </span>
           )}
@@ -110,30 +110,19 @@ export function ShowcaseCard({
         </h2>
 
         {item.creatorNickname?.trim() ? (
-          <p className="mt-0.5 font-label text-[11px] text-white/35">
-            {item.creatorNickname.trim()}
+          <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-sm text-white/85 md:text-sm">
+            <span className="font-label font-medium text-primary/80">
+              创作者
+            </span>
+            <span className="line-clamp-1 text-white/90">
+              {item.creatorNickname.trim()}
+            </span>
           </p>
         ) : null}
 
         <p className="mt-2.5 flex-1 font-body text-sm leading-relaxed text-white/70 line-clamp-2">
           {blurb}
         </p>
-
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {item.techStack.slice(0, 4).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-white/10 bg-white/10 px-2 py-1 font-label text-xs tracking-normal text-white/70 transition-colors duration-200 group-hover/card:border-white/15"
-            >
-              {tag}
-            </span>
-          ))}
-          {item.techStack.length > 4 && (
-            <span className="self-center font-label text-[10px] text-white/25">
-              +{item.techStack.length - 4}
-            </span>
-          )}
-        </div>
 
         {showVote ? (
           <div className="mt-4">
@@ -146,7 +135,7 @@ export function ShowcaseCard({
           </div>
         ) : null}
 
-        <p className="mt-3.5 border-t border-white/[0.07] pt-3 font-label text-[10px] uppercase tracking-widest text-white/40 transition-colors duration-300 group-hover/card:text-primary/60">
+        <p className="mt-3.5 border-t border-white/[0.07] pt-3 font-label text-[15px] uppercase tracking-widest text-white/40 transition-colors duration-300 group-hover/card:text-primary/60">
           <span className="inline-flex items-center gap-1 transition-transform duration-300 group-hover/card:translate-x-0.5">
             查看详情 <span aria-hidden>→</span>
           </span>

@@ -117,6 +117,7 @@ export function AdminPage() {
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 placeholder="PIN"
+                aria-label="管理员 PIN"
                 className="w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background outline-none focus:border-[#00ffcc]/50"
               />
               {pinError && (
@@ -178,7 +179,7 @@ export function AdminPage() {
                     <div className="h-16 w-28 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/40">
                       <img
                         src={row.thumbnailUrl}
-                        alt=""
+                        alt={row.gameName}
                         className="h-full w-full object-cover"
                       />
                     </div>

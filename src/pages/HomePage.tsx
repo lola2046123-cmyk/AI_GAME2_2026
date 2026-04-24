@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useOutletContext, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { Award, ChevronDown, ExternalLink, Lightbulb, Medal, Rocket, Star, Trophy } from "lucide-react";
@@ -8,7 +8,13 @@ import { PrizeAwardIcon } from "../components/PrizeAwardIcon";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
 import { SubmissionCountdown } from "../components/SubmissionCountdown";
 import { RewardCardHud } from "../components/rewards/RewardCardHud";
-import { MOCK_SHOWCASE } from "../data/mockShowcase";
+import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
+import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import {
+  getVoteStateForProjects,
+  type ShowcaseVoteStateMap
+} from "../lib/showcaseVotes";
+import type { ShowcaseSubmission } from "../types/submission";
 
 /* ─────────── motion 变体 ─────────── */
 const fadeInUp = {
@@ -35,44 +41,17 @@ function getReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/* ─────────── Featured Showcase 数据 ─────────── */
-type FeaturedItem = {
-  id: string;
-  title: string;
-  cover: string;
-  description: string;
-  tags: string[];
-};
+/* ─────────── Featured Card 组件（基于用户稿/兜底 mock） ─────────── */
+function FeaturedCard({
+  item,
+  large = false
+}: {
+  item: ShowcaseSubmission;
+  large?: boolean;
+}) {
+  const description = (item.cardSummary?.trim() || item.gameplay).trim();
+  const creator = item.creatorNickname?.trim();
 
-const IMG = (id: string) =>
-  `https://images.unsplash.com/${id}?w=1200&q=80&auto=format&fit=crop`;
-
-const FEATURED_ITEMS: FeaturedItem[] = [
-  {
-    id: "mock-stellar",
-    title: "星际观测者",
-    cover: IMG("photo-1464802686167-b939a6910659"),
-    description: "利用 Gemini 实时分析天体数据，驱动粒子系统生成独一无二的动态星云视觉叙事。",
-    tags: ["Gemini", "AI", "Narrative"]
-  },
-  {
-    id: "mock-bonsai",
-    title: "赛博盆栽",
-    cover: IMG("photo-1485955900006-10f4d324d411"),
-    description: "通过 Midjourney 生成风格化纹理，在极简操作中养育数字生命体。",
-    tags: ["Midjourney", "Generative"]
-  },
-  {
-    id: "mock-blackbox",
-    title: "黑盒解密",
-    cover: IMG("photo-1555949963-aa79dcee981c"),
-    description: "纯指令驱动的解谜游戏，AI 辅助设计无限可能的关卡与谜题节奏。",
-    tags: ["ChatGPT", "Puzzle"]
-  }
-];
-
-/* ─────────── Featured Card 组件 ─────────── */
-function FeaturedCard({ item, large = false }: { item: FeaturedItem; large?: boolean }) {
   return (
     <Link
       to={`/showcase/${item.id}`}
@@ -81,8 +60,8 @@ function FeaturedCard({ item, large = false }: { item: FeaturedItem; large?: boo
       {/* 封面图 */}
       <div className={`relative overflow-hidden ${large ? "aspect-[16/10]" : "aspect-video"} bg-white/[0.03]`}>
         <img
-          src={item.cover}
-          alt={item.title}
+          src={item.thumbnailUrl}
+          alt={item.gameName}
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
           loading="lazy"
         />
@@ -91,17 +70,6 @@ function FeaturedCard({ item, large = false }: { item: FeaturedItem; large?: boo
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#161616] via-[#161616]/40 to-transparent"
           aria-hidden
         />
-        {/* 标签 */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          {item.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-[#00ffcc]/25 bg-black/60 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-[#a8ffe1]/80 backdrop-blur-md"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
         {/* hover 浮层 */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/70 px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-md">
@@ -113,10 +81,22 @@ function FeaturedCard({ item, large = false }: { item: FeaturedItem; large?: boo
       {/* 文字区 */}
       <div className={`p-5 ${large ? "md:p-7" : "md:p-5"}`}>
         <h3 className={`font-headline font-semibold tracking-tight text-white ${large ? "text-xl md:text-2xl" : "text-base md:text-lg"}`}>
-          {item.title}
+          {item.gameName}
         </h3>
-        <p className={`mt-1.5 font-body leading-relaxed text-white/55 line-clamp-2 ${large ? "text-sm md:text-base" : "text-sm"}`}>
-          {item.description}
+        {creator && (
+          <p
+            className={`mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-white/85 ${
+              large ? "text-sm md:text-base" : "text-xs md:text-sm"
+            }`}
+          >
+            <span className="font-label font-medium text-primary/80">
+              创作者
+            </span>
+            <span className="line-clamp-1 text-white/90">{creator}</span>
+          </p>
+        )}
+        <p className={`mt-2 font-body leading-relaxed text-white/55 line-clamp-2 ${large ? "text-sm md:text-base" : "text-sm"}`}>
+          {description}
         </p>
       </div>
     </Link>
@@ -124,8 +104,9 @@ function FeaturedCard({ item, large = false }: { item: FeaturedItem; large?: boo
 }
 
 /* ─────────── Latest Submission 卡片（轻量版） ─────────── */
-function LatestCard({ item }: { item: (typeof MOCK_SHOWCASE)[number] }) {
+function LatestCard({ item }: { item: ShowcaseSubmission }) {
   const cardBlurb = (item.cardSummary?.trim() || item.gameplay).trim();
+  const creator = item.creatorNickname?.trim();
 
   const inner = (
     <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
@@ -147,24 +128,17 @@ function LatestCard({ item }: { item: (typeof MOCK_SHOWCASE)[number] }) {
         <h3 className="font-headline text-sm font-semibold leading-snug tracking-tight text-white md:text-base">
           {item.gameName}
         </h3>
-        {item.creatorNickname?.trim() && (
-          <p className="mt-0.5 font-label text-[10px] text-white/35">{item.creatorNickname.trim()}</p>
+        {creator && (
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 font-body text-xs text-white/85">
+            <span className="font-label font-medium text-primary/80">
+              创作者
+            </span>
+            <span className="line-clamp-1 text-white/90">{creator}</span>
+          </p>
         )}
         <p className="mt-2 flex-1 font-body text-xs leading-relaxed text-white/55 line-clamp-2">
           {cardBlurb}
         </p>
-        {item.techStack.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1">
-            {item.techStack.slice(0, 4).map((tag) => (
-              <span
-                key={tag}
-                className="rounded border border-[#00ffcc]/15 bg-[#00ffcc]/[0.06] px-1.5 py-0.5 font-label text-[9px] tracking-normal text-[#a8ffe1]/70"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </article>
   );
@@ -187,6 +161,77 @@ export function HomePage() {
     getReducedMotion,
     () => false
   );
+
+  /**
+   * 展示数据：
+   * - `getShowcaseListAsync()` 已内置「有可见用户稿 → 用户稿；否则 → 6 条 mock」的兜底规则。
+   * - 精选作品：按点赞数降序取前 3；
+   * - 最新参赛：按 createdAt 降序取前 6。
+   */
+  const [showcaseItems, setShowcaseItems] = useState<ShowcaseSubmission[]>([]);
+  const [showcaseLoading, setShowcaseLoading] = useState(true);
+  const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    setShowcaseLoading(true);
+    void getShowcaseListAsync()
+      .then((list) => {
+        if (cancelled) return;
+        setShowcaseItems(list);
+        setShowcaseLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setShowcaseItems([]);
+        setShowcaseLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (showcaseItems.length === 0) {
+      setVoteMap({});
+      return;
+    }
+    void getVoteStateForProjects(showcaseItems.map((it) => it.id))
+      .then((map) => {
+        if (!cancelled) setVoteMap(map);
+      })
+      .catch(() => {
+        if (!cancelled) setVoteMap({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showcaseItems]);
+
+  const featuredItems = useMemo(() => {
+    if (showcaseItems.length === 0) return [];
+    return [...showcaseItems]
+      .sort((a, b) => {
+        const diff =
+          (voteMap[b.id]?.counts.like ?? 0) - (voteMap[a.id]?.counts.like ?? 0);
+        if (diff !== 0) return diff;
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      })
+      .slice(0, 3);
+  }, [showcaseItems, voteMap]);
+
+  const latestItems = useMemo(() => {
+    if (showcaseItems.length === 0) return [];
+    return [...showcaseItems]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, 6);
+  }, [showcaseItems]);
 
   return (
     <>
@@ -216,14 +261,6 @@ export function HomePage() {
               >
                 AI 游戏设计大赛
               </motion.h1>
-
-              {/* 首屏副文案 */}
-              <motion.p
-                variants={fadeInUp}
-                className="max-w-md font-body text-sm font-medium leading-relaxed tracking-[0.675em] text-white/90 [text-shadow:0_5px_10px_rgba(0,0,0,0.82),0_10px_70px_rgba(0,0,0,0.52)] md:max-w-lg md:text-base"
-              >
-                AI 不止用于回答，也用于创造
-              </motion.p>
 
               {/* 倒计时 */}
               <motion.div variants={fadeInUp} className="flex flex-col items-center">
@@ -315,46 +352,58 @@ export function HomePage() {
                   titleZh="精选作品"
                   titleEn="FEATURED"
                   align="left"
-                  headlineClassName="text-[#FFFFFF]"
+                  headlineClassName="text-white"
                 />
               </div>
               <Link
                 to="/showcase"
-                className="hidden shrink-0 items-center gap-1.5 font-label text-xs font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
+                className="hidden shrink-0 items-center gap-1.5 font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
               >
                 全部作品 <span aria-hidden>→</span>
               </Link>
             </motion.div>
 
             {/* 2+1 布局：左侧大卡片占 2 列，右侧 2 个小卡片上下 */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
-              {/* 大卡片 */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55 }}
-                className="md:col-span-2"
-              >
-                <FeaturedCard item={FEATURED_ITEMS[0]} large />
-              </motion.div>
+            {showcaseLoading ? (
+              <ShowcaseLoading
+                count={3}
+                showHeader={false}
+                columnsClass="grid-cols-1 gap-4 md:grid-cols-3 md:gap-5"
+              />
+            ) : featuredItems.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+                {/* 大卡片 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55 }}
+                  className="md:col-span-2"
+                >
+                  <FeaturedCard item={featuredItems[0]} large />
+                </motion.div>
 
-              {/* 右侧两个小卡片 */}
-              <div className="flex flex-col gap-4 md:gap-5">
-                {FEATURED_ITEMS.slice(1, 3).map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
-                    className="flex-1"
-                  >
-                    <FeaturedCard item={item} />
-                  </motion.div>
-                ))}
+                {/* 右侧两个小卡片 */}
+                <div className="flex flex-col gap-4 md:gap-5">
+                  {featuredItems.slice(1, 3).map((item, i) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
+                      className="flex-1"
+                    >
+                      <FeaturedCard item={item} />
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="py-10 text-center font-body text-sm text-white/45">
+                还没有作品，快来成为第一位参赛者。
+              </p>
+            )}
 
             {/* 移动端"全部作品"链接 */}
             <motion.div
@@ -365,7 +414,7 @@ export function HomePage() {
             >
               <Link
                 to="/showcase"
-                className="font-label text-xs font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
+                className="font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
               >
                 全部作品 →
               </Link>
@@ -392,7 +441,7 @@ export function HomePage() {
                   titleZh="奖项设置"
                   titleEn="PRIZES"
                   align="left"
-                  headlineClassName="text-[#FFFFFF]"
+                  headlineClassName="text-white"
                 />
               </div>
               <p className="max-w-xl font-body text-sm font-normal text-white/70 md:text-base">
@@ -524,30 +573,42 @@ export function HomePage() {
                   titleZh="最新参赛"
                   titleEn="LATEST"
                   align="left"
-                  headlineClassName="text-[#FFFFFF]"
+                  headlineClassName="text-white"
                 />
               </div>
               <Link
                 to="/showcase"
-                className="hidden shrink-0 items-center gap-1.5 font-label text-xs font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
+                className="hidden shrink-0 items-center gap-1.5 font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
               >
                 全部作品 <span aria-hidden>→</span>
               </Link>
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-              {MOCK_SHOWCASE.slice(0, 6).map((item, i) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.07 }}
-                >
-                  <LatestCard item={item} />
-                </motion.div>
-              ))}
-            </div>
+            {showcaseLoading ? (
+              <ShowcaseLoading
+                count={6}
+                showHeader={false}
+                columnsClass="grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3"
+              />
+            ) : latestItems.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+                {latestItems.map((item, i) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.07 }}
+                  >
+                    <LatestCard item={item} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p className="py-10 text-center font-body text-sm text-white/45">
+                暂无最新参赛作品。
+              </p>
+            )}
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -557,7 +618,7 @@ export function HomePage() {
             >
               <Link
                 to="/showcase"
-                className="font-label text-xs font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
+                className="font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
               >
                 全部作品 →
               </Link>
@@ -583,7 +644,7 @@ export function HomePage() {
                 titleZh="提交规范与平台"
                 titleEn="SUBMISSION"
                 align="left"
-                headlineClassName="text-[#FFFFFF]"
+                headlineClassName="text-white"
               />
             </motion.div>
 
@@ -683,7 +744,7 @@ export function HomePage() {
                 titleZh="评审协议"
                 titleEn="PROTOCOL"
                 align="left"
-                headlineClassName="text-[#FFFFFF]"
+                headlineClassName="text-white"
               />
             </motion.div>
 
@@ -751,7 +812,7 @@ export function HomePage() {
                       />
                     </svg>
                     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-px overflow-visible px-2">
-                      <span className="type-amount text-4xl font-bold leading-none text-[#FFFFFF] md:text-5xl">
+                      <span className="type-amount text-4xl font-bold leading-none text-white md:text-5xl">
                         {gauge.percent}%
                       </span>
                       <span className="text-[10px] font-medium uppercase leading-tight tracking-technical text-white/40">
@@ -761,7 +822,7 @@ export function HomePage() {
                   </div>
                   </div>
                   <div className="mt-2 flex w-full max-w-[320px] flex-col items-start gap-1 text-left md:mt-2.5 md:gap-1.5">
-                    <h3 className="font-headline text-2xl font-semibold leading-tight tracking-tight text-[#FFFFFF] md:text-3xl">
+                    <h3 className="font-headline text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
                       {gauge.label}
                     </h3>
                     <p className="font-body text-sm leading-relaxed text-white/70 md:text-base">

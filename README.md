@@ -120,7 +120,7 @@ npm run dev
 | 首页 | Mux HLS 背景视频（`HeroMuxHlsVideo.tsx`）、投稿截止倒计时、奖项与投稿规范、评审权重展示；首屏底缘与奖项区背景衔接见 `DESIGN.md` §7、`HomePage.tsx` + `index.css` |
 | 参赛展示 | `showcaseMerge`：可选 Supabase 远端稿 + `localStorage` + `mockShowcase`；投票与排行榜见 `showcaseVotes.ts` |
 | 作品详情 | `/showcase/:id`：Markdown 展示、Hero 叠渐变、投票条 |
-| 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ **本地启发式**概要回填；含制作者昵称（≤20 字） |
+| 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ **本地启发式**概要回填；含创作者昵称（组队可用逗号分隔，上限 80 字符，提交时自动规范化） |
 | 管理 | 条目可见性、编辑、删除 |
 
 **主要依赖（业务向）：** `react-router-dom`、`motion`、`hls.js`、`pdfjs-dist`、`mammoth`。

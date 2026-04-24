@@ -164,7 +164,12 @@ export function ShowcaseDetailPage() {
                     {item.gameName}
                   </h1>
 
-                  <p className="mt-2 font-label text-sm text-white/55 drop-shadow-md md:text-base">{author}</p>
+                  <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-sm text-white/75 drop-shadow-md md:text-base">
+                    <span className="font-label font-medium text-primary/75">
+                      创作者
+                    </span>
+                    <span className="text-white/90">{author}</span>
+                  </p>
 
                   <div className="mt-5">
                     <ShowcaseVoteBar
@@ -221,32 +226,44 @@ export function ShowcaseDetailPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="mb-8 flex items-center gap-1 rounded-xl border border-white/[0.07] bg-white/[0.025] p-1 w-fit"
+            className="mb-8 w-fit"
+            role="tablist"
+            aria-label="内容视图"
           >
-            <button
-              type="button"
-              onClick={() => setMode("preview")}
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
-                mode === "preview"
-                  ? "bg-white/[0.1] text-white"
-                  : "text-white/35 hover:text-white/65"
-              }`}
-            >
-              预览
-              <span className="text-[9px] opacity-50">Preview</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("source")}
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
-                mode === "source"
-                  ? "bg-white/[0.1] text-white"
-                  : "text-white/35 hover:text-white/65"
-              }`}
-            >
-              源码
-              <span className="text-[9px] opacity-50">Markdown</span>
-            </button>
+            <div className="flex items-center gap-1 rounded-xl border border-white/[0.07] bg-white/[0.025] p-1">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "preview"}
+                aria-controls="tab-panel-preview"
+                id="tab-preview"
+                onClick={() => setMode("preview")}
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary ${
+                  mode === "preview"
+                    ? "bg-white/[0.1] text-white"
+                    : "text-white/35 hover:text-white/65"
+                }`}
+              >
+                预览
+                <span className="text-[9px] opacity-50">Preview</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "source"}
+                aria-controls="tab-panel-source"
+                id="tab-source"
+                onClick={() => setMode("source")}
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary ${
+                  mode === "source"
+                    ? "bg-white/[0.1] text-white"
+                    : "text-white/35 hover:text-white/65"
+                }`}
+              >
+                源码
+                <span className="text-[9px] opacity-50">Markdown</span>
+              </button>
+            </div>
           </motion.div>
 
           {/* Markdown 内容 */}
@@ -258,25 +275,30 @@ export function ShowcaseDetailPage() {
             className="mx-auto max-w-3xl"
           >
             {mode === "preview" ? (
-              <div className={proseClass}>
+              <div
+                id="tab-panel-preview"
+                role="tabpanel"
+                aria-labelledby="tab-preview"
+                className={proseClass}
+              >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   disallowedElements={["html", "script"]}
                   components={{
                     h1: ({ children }) => (
-                      <h1 className="mb-4 mt-8 font-headline text-2xl font-bold tracking-tight text-white md:text-3xl first:mt-0">
-                        {children}
-                      </h1>
-                    ),
-                    h2: ({ children }) => (
-                      <h2 className="mb-3 mt-7 font-headline text-xl font-semibold tracking-tight text-white md:text-2xl">
+                      <h2 className="mb-4 mt-8 font-headline text-2xl font-bold tracking-tight text-white md:text-3xl first:mt-0">
                         {children}
                       </h2>
                     ),
-                    h3: ({ children }) => (
-                      <h3 className="mb-2 mt-5 font-headline text-base font-semibold tracking-tight text-white md:text-lg">
+                    h2: ({ children }) => (
+                      <h3 className="mb-3 mt-7 font-headline text-xl font-semibold tracking-tight text-white md:text-2xl">
                         {children}
                       </h3>
+                    ),
+                    h3: ({ children }) => (
+                      <h4 className="mb-2 mt-5 font-headline text-base font-semibold tracking-tight text-white md:text-lg">
+                        {children}
+                      </h4>
                     ),
                     p: ({ children }) => (
                       <p className="mb-4 font-body text-sm leading-relaxed text-white/70 md:text-base">
@@ -305,13 +327,13 @@ export function ShowcaseDetailPage() {
                       const isBlock = className?.includes("language-");
                       if (isBlock) {
                         return (
-                          <code className="block w-full overflow-x-auto rounded-lg border border-white/[0.07] bg-white/[0.04] p-4 font-reward-hud text-xs leading-relaxed text-[#a8ffe1]/80 md:text-sm">
+                          <code className="block w-full overflow-x-auto rounded-lg border border-white/[0.07] bg-white/[0.04] p-4 font-reward-hud text-xs leading-relaxed text-primary/80 md:text-sm">
                             {children}
                           </code>
                         );
                       }
                       return (
-                        <code className="rounded border border-white/[0.08] bg-white/[0.06] px-1.5 py-0.5 font-reward-hud text-xs text-[#a8ffe1]/90">
+                        <code className="rounded border border-white/[0.08] bg-white/[0.06] px-1.5 py-0.5 font-reward-hud text-xs text-primary/90">
                           {children}
                         </code>
                       );
@@ -334,7 +356,7 @@ export function ShowcaseDetailPage() {
                     img: ({ src, alt }) => (
                       <img
                         src={src}
-                        alt={alt ?? ""}
+                        alt={alt || "(图片)"}
                         className="my-5 w-full rounded-xl border border-white/[0.07] object-cover"
                         loading="lazy"
                       />
@@ -377,7 +399,12 @@ export function ShowcaseDetailPage() {
               </div>
             ) : (
               /* 源码视图 */
-              <div className="relative rounded-xl border border-white/[0.07] bg-[#0c0c0c]">
+              <div
+                id="tab-panel-source"
+                role="tabpanel"
+                aria-labelledby="tab-source"
+                className="relative rounded-xl border border-white/[0.07] bg-[#0c0c0c]"
+              >
                 <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
                   <span className="font-label text-[10px] uppercase tracking-widest text-white/30">
                     Markdown Source
@@ -404,7 +431,7 @@ export function ShowcaseDetailPage() {
           <span>© 2026 AI_GAME_CONTEST · {item.gameName}</span>
           <Link
             to="/showcase"
-            className="font-label text-[10px] uppercase tracking-widest text-white/25 transition-colors hover:text-white/50"
+            className="font-label text-[15px] uppercase tracking-widest text-white/25 transition-colors hover:text-white/50"
           >
             ← 返回展示
           </Link>
