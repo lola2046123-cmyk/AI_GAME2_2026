@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Env vars / secrets（Supabase URL、anon key、service_role 等绝不能入库）
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp

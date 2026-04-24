@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import {
@@ -7,9 +7,6 @@ import {
 } from "../../lib/submissionsStorage";
 import { compressImageFileToJpegDataUrl } from "../../lib/imageCompress";
 import { requestScreenshot } from "../../lib/screenshotApi";
-import { extractDocumentText } from "../../lib/extractDocumentText";
-import { summarizeGameDocument } from "../../lib/summarizeGameDocument";
-import { GameplayDocDropzone } from "./GameplayDocDropzone";
 import type { RegistrationModalState } from "../../types/registrationModal";
 import type { ShowcaseSubmission } from "../../types/submission";
 
@@ -29,6 +26,8 @@ const MAX_GAME_NAME_CHARS = 20;
 const MAX_CREATOR_NICKNAME_CHARS = 20;
 /** 玩法 / 进化论 / 链接等文本上限（码位） */
 const MAX_FIELD_CHARS = 2000;
+/** 核心玩法说明上限（码位）—单独放宽到 4000，便于承载更完整的设计描述 */
+const MAX_GAMEPLAY_CHARS = 4000;
 /** 首页卡片摘要上限（码位） */
 const MAX_CARD_SUMMARY = 220;
 
@@ -40,13 +39,6 @@ function clampChars(s: string, max: number): string {
   const arr = [...s];
   if (arr.length <= max) return s;
   return arr.slice(0, max).join("");
-}
-
-function normalizeToolLabel(raw: string): string {
-  const t = clampChars(raw.trim(), MAX_FIELD_CHARS);
-  if (!t) return "";
-  const presetHit = PRESET_TOOLS.find((p) => p.toLowerCase() === t.toLowerCase());
-  return presetHit ?? t;
 }
 
 const inputSurface =
@@ -83,8 +75,10 @@ export function RegistrationModal({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  /** 文档解析与本地摘要生成中 */
-  const [docBusy, setDocBusy] = useState(false);
+  /**
+   * 来源标记：历史记录可能带 "ai" / "local"（旧版文档解析结果），
+   * 新提交一律视为 "manual"。保留字段以便 AdminPage 查看/编辑旧数据。
+   */
   const [gameplaySource, setGameplaySource] = useState<"manual" | "ai" | "local">(
     "manual"
   );
@@ -104,7 +98,6 @@ export function RegistrationModal({
     if (coverInputRef.current) coverInputRef.current.value = "";
     setError(null);
     setSubmitting(false);
-    setDocBusy(false);
     setGameplaySource("manual");
     setCardSummary(null);
   };
@@ -115,7 +108,7 @@ export function RegistrationModal({
     setCreatorNickname(
       clampChars((r.creatorNickname ?? "").trim(), MAX_CREATOR_NICKNAME_CHARS)
     );
-    setGameplay(clampChars(r.gameplay, MAX_FIELD_CHARS));
+    setGameplay(clampChars(r.gameplay, MAX_GAMEPLAY_CHARS));
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
     setEvolution(clampChars(r.evolution, MAX_FIELD_CHARS));
     setDeployUrl(clampChars(r.deployUrl, MAX_FIELD_CHARS));
@@ -124,7 +117,6 @@ export function RegistrationModal({
     setCustomTool("");
     setError(null);
     setSubmitting(false);
-    setDocBusy(false);
     setGameplaySource(
       r.gameplaySource === "ai"
         ? "ai"
@@ -171,36 +163,6 @@ export function RegistrationModal({
     window.setTimeout(reset, 320);
   };
 
-  const handleGameplayDoc = useCallback(async (file: File) => {
-    setError(null);
-    setDocBusy(true);
-    try {
-      const text = await extractDocumentText(file);
-      if (!text.trim()) throw new Error("未能从文件中提取到文本，请换一份文档");
-      const summary = await summarizeGameDocument(text);
-      const g = clampChars(summary.coreGameplay, MAX_FIELD_CHARS);
-      setGameplay(g);
-      setCardSummary(clampChars(g.trim(), MAX_CARD_SUMMARY));
-      setGameplaySource("local");
-      setTechStack((prev) => {
-        const set = new Set(prev.map((x) => normalizeToolLabel(x)).filter(Boolean));
-        for (const raw of summary.aiTools) {
-          const n = normalizeToolLabel(raw);
-          if (n) set.add(n);
-        }
-        return [...set];
-      });
-      const prd = summary.prdSummary.trim();
-      if (prd) {
-        setEvolution(clampChars(prd, MAX_FIELD_CHARS));
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "文档解析失败");
-    } finally {
-      setDocBusy(false);
-    }
-  }, []);
-
   const pickCover = async (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
@@ -244,8 +206,8 @@ export function RegistrationModal({
     }
     const gp = gameplay.trim();
     if (!gp) return "请填写核心玩法说明";
-    if (countChars(gp) > MAX_FIELD_CHARS) {
-      return `核心玩法说明不超过 ${MAX_FIELD_CHARS} 个字符`;
+    if (countChars(gp) > MAX_GAMEPLAY_CHARS) {
+      return `核心玩法说明不超过 ${MAX_GAMEPLAY_CHARS} 个字符`;
     }
     return null;
   };
@@ -495,11 +457,6 @@ export function RegistrationModal({
                         maxLength={MAX_CREATOR_NICKNAME_CHARS * 2}
                       />
                     </label>
-                    <GameplayDocDropzone
-                      busy={docBusy}
-                      disabled={submitting}
-                      onFile={handleGameplayDoc}
-                    />
                     <label className="block space-y-2">
                       <div className="flex items-baseline justify-between gap-2">
                         <span className="font-label text-xs text-primary/50">
@@ -511,23 +468,22 @@ export function RegistrationModal({
                           ) : null}
                         </span>
                         <span className="font-label text-[10px] tabular-nums text-primary/35">
-                          {countChars(gameplay)}/{MAX_FIELD_CHARS}
+                          {countChars(gameplay)}/{MAX_GAMEPLAY_CHARS}
                         </span>
                       </div>
                       <textarea
                         className={`${inputSurface} min-h-[120px] resize-y`}
                         value={gameplay}
                         onChange={(e) => {
-                          const v = clampChars(e.target.value, MAX_FIELD_CHARS);
+                          const v = clampChars(e.target.value, MAX_GAMEPLAY_CHARS);
                           setGameplay(v);
                           if (gameplaySource === "ai" || gameplaySource === "local") {
                             setCardSummary(clampChars(v.trim(), MAX_CARD_SUMMARY));
                           }
                         }}
-                        placeholder="可上传文档自动解析填入概要，或直接手写玩法说明…"
+                        placeholder="介绍你的核心玩法、节奏与关键机制…"
                         rows={5}
-                        maxLength={MAX_FIELD_CHARS * 2}
-                        disabled={docBusy}
+                        maxLength={MAX_GAMEPLAY_CHARS * 2}
                       />
                     </label>
                   </motion.div>
@@ -707,7 +663,7 @@ export function RegistrationModal({
               <button
                 type="button"
                 onClick={back}
-                disabled={step === 1 || submitting || docBusy}
+                disabled={step === 1 || submitting}
                 className="btn-secondary-outline gap-1 px-4 py-2.5 text-sm font-label font-medium disabled:opacity-35"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -718,7 +674,6 @@ export function RegistrationModal({
                 <button
                   type="button"
                   onClick={next}
-                  disabled={docBusy}
                   className="btn-primary gap-1 px-5 py-2.5 text-sm disabled:opacity-45"
                 >
                   下一步

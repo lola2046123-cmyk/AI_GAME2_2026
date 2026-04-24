@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
-import { ArenaCursorTrail } from "../arena/ArenaCursorTrail";
 import { SiteHeader } from "./SiteHeader";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen min-h-[100dvh] bg-background text-on-background">
-      <ArenaCursorTrail />
       <div className="app-atmosphere bg-background" aria-hidden>
         <span className="app-atmosphere__grid" />
         <span className="app-atmosphere__beam" />
