@@ -381,7 +381,7 @@ export function RegistrationModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-x-0 top-0 z-[100] flex h-dvh items-end justify-center p-0 sm:inset-0 sm:h-auto sm:items-center sm:p-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
+          className="fixed inset-x-0 top-0 z-[100] flex h-dvh items-center justify-center px-4 py-[max(1rem,env(safe-area-inset-top,0.5rem))] pb-[max(1rem,env(safe-area-inset-bottom,0.5rem))] sm:inset-0 sm:h-auto sm:p-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -401,7 +401,7 @@ export function RegistrationModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby="reg-modal-title"
-            className="glass-floating-panel relative z-10 flex max-h-dvh w-full max-w-lg flex-col overflow-hidden rounded-t-[1.35rem] sm:max-h-[min(92vh,860px)] sm:rounded-[1.35rem]"
+            className="glass-floating-panel relative z-10 flex max-h-[calc(100dvh-2.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-[1.35rem] sm:max-h-[min(92vh,860px)]"
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -705,7 +705,7 @@ export function RegistrationModal({
             </div>
 
             {/* ── 底部操作栏 ── */}
-            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.08] px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom,0.25rem))] md:px-6 md:py-4">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.08] px-5 py-4 md:px-6">
               <button
                 type="button"
                 onClick={back}

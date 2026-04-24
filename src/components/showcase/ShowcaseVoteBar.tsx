@@ -7,10 +7,8 @@ type Props = {
   projectId: string;
   state?: ShowcaseVoteState;
   compact?: boolean;
-  /** 详情页等：高对比描边与光晕 */
-  prominent?: boolean;
-  /** 详情 Hero：更小体量 + 霓虹色强化，首屏无滚动 */
-  detailHero?: boolean;
+  /** 详情页侧边栏竖排卡片模式 */
+  panel?: boolean;
   onStateChange?: (updater: (prev: ShowcaseVoteState) => ShowcaseVoteState) => void;
 };
 
@@ -20,15 +18,13 @@ const CATEGORY_LABEL: Record<Exclude<VoteType, "like">, string> = {
   fun: "最想氪金"
 };
 
-/** 分类票展示顺序：与排行榜区块顺序一致，「最想氪金」置末 */
 const CATEGORY_ORDER: readonly Exclude<VoteType, "like">[] = ["visual", "gameplay", "fun"];
 
 export function ShowcaseVoteBar({
   projectId,
   state,
   compact = false,
-  prominent = false,
-  detailHero = false,
+  panel = false,
   onStateChange
 }: Props) {
   const [loadingKey, setLoadingKey] = useState<VoteType | null>(null);
@@ -80,21 +76,95 @@ export function ShowcaseVoteBar({
     }
   }
 
-  const vivid = prominent || detailHero;
-  const chipBase = detailHero
-    ? "inline-flex items-center justify-center rounded-full border font-label font-semibold tracking-widest transition-all active:scale-[0.98] shadow-[0_0_16px_rgba(0,255,204,0.12)]"
-    : prominent
-      ? "inline-flex items-center justify-center rounded-full border-2 font-label font-semibold tracking-widest transition-all shadow-[0_0_20px_rgba(0,255,204,0.06)] active:scale-[0.98]"
-      : "inline-flex items-center rounded-full border font-label font-medium tracking-widest transition-colors";
-  const sizeClass = compact
-    ? "text-[10px] px-2.5 py-1"
-    : detailHero
-      ? "text-[10px] px-2 py-1 sm:px-2.5 sm:py-1.5 sm:text-[11px]"
-      : prominent
-        ? "text-xs px-4 py-2.5 sm:text-sm sm:px-5 sm:py-3"
-        : "text-xs px-2.5 py-1";
-  const gapClass = detailHero ? "gap-1.5" : prominent ? "gap-2.5 sm:gap-3" : "gap-2";
-  const heartClass = detailHero ? "mr-1 h-3 w-3" : prominent ? "mr-1.5 h-4 w-4 sm:h-[1.125rem] sm:w-[1.125rem]" : "mr-1 h-3 w-3";
+  /* ── 侧边栏竖排卡片模式 ── */
+  if (panel) {
+    const likeActive = userVotes.includes("like");
+    return (
+      <div className="relative space-y-1.5">
+        {/* 点赞 */}
+        <button
+          type="button"
+          onClick={handleLike}
+          disabled={loadingKey !== null || likeActive}
+          className={`group flex w-full items-center justify-between rounded-xl border px-4 py-3 transition-all duration-200 disabled:cursor-not-allowed ${
+            likeActive
+              ? "border-rose-400/50 bg-rose-500/15 shadow-[0_0_20px_rgba(251,113,133,0.15)]"
+              : "border-white/[0.09] bg-white/[0.03] hover:border-rose-400/35 hover:bg-rose-500/[0.07]"
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <Heart
+              className={`h-4 w-4 shrink-0 transition-colors ${likeActive ? "text-rose-300" : "text-white/40 group-hover:text-rose-300/70"}`}
+              fill={likeActive ? "currentColor" : "none"}
+              strokeWidth={2}
+            />
+            <span className={`font-label text-xs font-semibold tracking-wide ${likeActive ? "text-rose-200" : "text-white/55 group-hover:text-white/80"}`}>
+              点赞
+            </span>
+            {likeActive && (
+              <span className="rounded-full bg-rose-400/20 px-1.5 py-0.5 font-label text-[9px] text-rose-300/80">
+                已赞
+              </span>
+            )}
+          </span>
+          <span className={`font-reward-hud text-base font-bold leading-none ${likeActive ? "text-rose-300" : "text-white/30 group-hover:text-white/50"}`}>
+            {counts.like}
+          </span>
+        </button>
+
+        {/* 分类投票 */}
+        {CATEGORY_ORDER.map((type) => {
+          const active = userVotes.includes(type);
+          return (
+            <button
+              key={type}
+              type="button"
+              onClick={() => void handleVote(type)}
+              disabled={loadingKey !== null || active}
+              className={`group flex w-full items-center justify-between rounded-xl border px-4 py-3 transition-all duration-200 disabled:cursor-not-allowed ${
+                active
+                  ? "border-primary/50 bg-primary/[0.12] shadow-[0_0_20px_rgba(168,255,225,0.12)]"
+                  : "border-white/[0.09] bg-white/[0.03] hover:border-primary/30 hover:bg-primary/[0.06]"
+              }`}
+            >
+              <span className="flex items-center gap-2.5">
+                <span
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? "bg-primary" : "bg-white/25 group-hover:bg-primary/60"}`}
+                  aria-hidden
+                />
+                <span className={`font-label text-xs font-semibold tracking-wide ${active ? "text-primary/90" : "text-white/55 group-hover:text-white/80"}`}>
+                  {CATEGORY_LABEL[type]}
+                </span>
+                {active && (
+                  <span className="rounded-full bg-primary/15 px-1.5 py-0.5 font-label text-[9px] text-primary/70">
+                    已投
+                  </span>
+                )}
+              </span>
+              <span className={`font-reward-hud text-base font-bold leading-none ${active ? "text-primary/80" : "text-white/30 group-hover:text-white/50"}`}>
+                {counts[type]}
+              </span>
+            </button>
+          );
+        })}
+
+        {flash && (
+          <span className="pointer-events-none absolute -top-5 left-4 font-label text-[10px] uppercase tracking-widest text-primary/90">
+            +1
+          </span>
+        )}
+        {message && (
+          <p className="pt-1 font-body text-xs leading-relaxed text-white/40">{message}</p>
+        )}
+      </div>
+    );
+  }
+
+  /* ── 卡片列表 compact 模式（ShowcasePage） ── */
+  const chipBase = "inline-flex items-center rounded-full border font-label font-medium tracking-widest transition-colors";
+  const sizeClass = compact ? "text-[10px] px-2.5 py-1" : "text-xs px-2.5 py-1";
+  const gapClass = "gap-2";
+  const heartClass = "mr-1 h-3 w-3";
 
   return (
     <div className="relative">
@@ -105,19 +175,11 @@ export function ShowcaseVoteBar({
           disabled={loadingKey !== null || userVotes.includes("like")}
           className={`${chipBase} ${sizeClass} ${
             userVotes.includes("like")
-              ? detailHero
-                ? "border-rose-400/70 bg-rose-500/25 text-rose-50 shadow-[0_0_18px_rgba(251,113,133,0.35)]"
-                : vivid
-                  ? "border-red-400/50 bg-red-500/20 text-red-200 shadow-[0_0_24px_rgba(248,113,113,0.12)]"
-                  : "border-red-400/25 bg-red-400/12 text-red-300"
-              : detailHero
-                ? "border-rose-400/45 bg-rose-950/40 text-rose-100/95 hover:border-[#00ffcc]/55 hover:bg-[rgba(0,255,204,0.12)] hover:text-white hover:shadow-[0_0_20px_rgba(0,255,204,0.22)]"
-                : vivid
-                  ? "border-white/20 bg-white/[0.12] text-white/85 hover:border-primary/40 hover:bg-white/[0.16] hover:text-white hover:shadow-[0_0_28px_rgba(0,255,204,0.1)]"
-                  : "border-white/10 bg-white/10 text-white/65 hover:border-white/20 hover:text-white/85"
+              ? "border-red-400/25 bg-red-400/12 text-red-300"
+              : "border-white/10 bg-white/10 text-white/65 hover:border-white/20 hover:text-white/85"
           } disabled:cursor-not-allowed disabled:opacity-70`}
         >
-          <Heart className={heartClass} fill={userVotes.includes("like") ? "currentColor" : "none"} strokeWidth={vivid ? 2 : 1.5} />
+          <Heart className={heartClass} fill={userVotes.includes("like") ? "currentColor" : "none"} strokeWidth={1.5} />
           {counts.like}
         </button>
 
@@ -131,44 +193,25 @@ export function ShowcaseVoteBar({
               disabled={loadingKey !== null || active}
               className={`${chipBase} ${sizeClass} ${
                 active
-                  ? detailHero
-                    ? "border-[#00ffcc]/70 bg-[rgba(0,255,204,0.18)] text-[#b8fff0] shadow-[0_0_20px_rgba(0,255,204,0.28)]"
-                    : vivid
-                      ? "border-primary/50 bg-primary/18 text-primary shadow-[0_0_24px_rgba(168,255,225,0.14)]"
-                      : "border-primary/25 bg-primary/12 text-primary"
-                  : detailHero
-                    ? "border-[#00ffcc]/40 bg-[rgba(0,255,204,0.08)] text-[#d2fff0] hover:border-[#00ffcc]/65 hover:bg-[rgba(0,255,204,0.14)] hover:shadow-[0_0_18px_rgba(0,255,204,0.25)]"
-                    : vivid
-                      ? "border-white/18 bg-white/[0.08] text-white/75 hover:border-primary/35 hover:bg-primary/[0.08] hover:text-primary"
-                      : "border-white/10 bg-white/10 text-white/55 hover:border-white/20 hover:text-white/80"
+                  ? "border-primary/25 bg-primary/12 text-primary"
+                  : "border-white/10 bg-white/10 text-white/55 hover:border-white/20 hover:text-white/80"
               } disabled:cursor-not-allowed disabled:opacity-70`}
             >
               {CATEGORY_LABEL[type]}
-              <span
-                className={
-                  detailHero
-                    ? "ml-1.5 font-reward-hud text-[10px] text-[#00ffcc]/80 sm:text-[11px]"
-                    : prominent
-                      ? "ml-2 font-reward-hud text-[0.7rem] text-white/45 sm:text-xs"
-                      : "ml-1 text-white/35"
-                }
-              >
-                {counts[type]}
-              </span>
+              <span className="ml-1 text-white/35">{counts[type]}</span>
             </button>
           );
         })}
       </div>
 
-      {flash ? (
+      {flash && (
         <span className="pointer-events-none absolute -top-5 left-2 font-label text-[10px] uppercase tracking-widest text-primary/90">
           +1
         </span>
-      ) : null}
-
-      {message ? (
+      )}
+      {message && (
         <p className="mt-2 font-body text-xs leading-relaxed text-white/40">{message}</p>
-      ) : null}
+      )}
     </div>
   );
 }

@@ -711,27 +711,45 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════
-            6. Evaluation Protocol（降低视觉权重）
-        ════════════════════════════════════ */}
-        <section className="relative border-t border-white/[0.06] bg-background px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
-          <div
-            className="pointer-events-none absolute inset-0 overflow-hidden"
-            aria-hidden
-          >
-            <div className="flex h-full items-center justify-center opacity-[0.02]">
-              <span className="select-none font-headline text-[160px] font-bold tracking-tighter md:text-[320px] lg:text-[400px]">
-                PROTOCOL
-              </span>
-            </div>
-          </div>
+      </main>
 
-          <div className="relative z-10 mx-auto w-full max-w-home text-left">
+      {/* ════════════════════════════════════
+          6. 评审协议 + Footer — 共享游戏背景图
+      ════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+
+        {/* ── 背景图层 ── */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <img
+            src="/game_home_2.jpg"
+            alt=""
+            className="h-full w-full object-cover object-bottom"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        {/* ── 统一暗化遮罩，保证文字可读 ── */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-black/72"
+          aria-hidden
+        />
+
+        {/* ── 顶部渐变：background → 透明，覆盖上 ~35%
+              使评审协议标题 / 前 1/3 内容与前一屏背景无缝衔接 ── */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-background via-background/75 to-transparent"
+          aria-hidden
+        />
+
+        {/* ── 评审协议 section ── */}
+        <section className="relative border-t border-white/[0.04] px-6 py-14 sm:py-16 md:px-12 md:py-20 lg:py-24 xl:py-28">
+          <div className="relative z-10 mx-auto w-full max-w-home text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-10 flex flex-col items-start md:mb-14"
+              className="mb-10 flex flex-col items-center md:mb-14"
             >
               <span className="font-label mb-2 block text-xs font-medium uppercase tracking-widest text-white/40 md:mb-3">
                 Scoring Weight Matrix
@@ -739,12 +757,12 @@ export function HomePage() {
               <SectionTitleEnDecor
                 titleZh="评审协议"
                 titleEn="PROTOCOL"
-                align="left"
+                align="center"
                 headlineClassName="text-white"
               />
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-10 overflow-visible md:grid-cols-3 md:gap-12 lg:gap-16">
+            <div className="grid grid-cols-1 gap-12 overflow-visible sm:grid-cols-3 sm:gap-8 md:gap-12 lg:gap-16">
               {[
                 {
                   label: "创新意识",
@@ -771,10 +789,10 @@ export function HomePage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.2 }}
-                  className="flex min-w-0 flex-col items-stretch overflow-visible"
+                  className="flex min-w-0 flex-col items-center overflow-visible"
                 >
                   <div className="flex w-full justify-center overflow-visible px-2 md:px-3">
-                  <div className="relative box-content flex h-52 w-52 max-w-full shrink-0 items-center justify-center overflow-visible p-6 md:h-56 md:w-56 md:p-8 lg:h-60 lg:w-60">
+                  <div className="relative box-content flex h-44 w-44 max-w-full shrink-0 items-center justify-center overflow-visible p-5 sm:h-48 sm:w-48 md:h-56 md:w-56 md:p-8 lg:h-60 lg:w-60">
                     <svg
                       className="h-full w-full shrink-0 -rotate-90 transform overflow-visible"
                       viewBox="0 0 256 256"
@@ -817,8 +835,8 @@ export function HomePage() {
                     </div>
                   </div>
                   </div>
-                  <div className="mt-2 flex w-full max-w-[320px] flex-col items-start gap-1 text-left md:mt-2.5 md:gap-1.5">
-                    <h3 className="font-headline text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
+                  <div className="mt-2 flex w-full flex-col items-center gap-1 text-center md:mt-2.5 md:gap-1.5">
+                    <h3 className="font-headline text-xl font-semibold leading-tight tracking-tight text-white sm:text-2xl md:text-3xl">
                       {gauge.label}
                     </h3>
                     <p className="font-body text-sm leading-relaxed text-white/70 md:text-base">
@@ -831,27 +849,29 @@ export function HomePage() {
           </div>
         </section>
 
-      </main>
+        {/* ── Footer ── */}
+        <footer className="relative border-t border-white/[0.06] px-6 pt-10 pb-[max(4.3rem,calc(env(safe-area-inset-bottom,0px)+3.6rem))] font-label text-[10px] font-medium uppercase tracking-technical sm:pt-12 md:px-12 md:pt-16 md:pb-[7.15rem]">
+          <div
+            className="mx-auto flex w-full max-w-home flex-col items-center justify-center text-white/45 [text-shadow:0_2px_12px_rgba(0,0,0,1),0_4px_32px_rgba(0,0,0,0.95),0_0_48px_rgba(0,0,0,0.8)]"
+          >
+            <div className="mb-5 text-center md:mb-6">
+              © 2026 AI_GAME_CONTEST_PROTOCOL，保留所有权利。
+            </div>
+            <div className="flex flex-wrap justify-center gap-x-12 gap-y-3">
+              <a href="#" className="footer-link-micro hover:text-primary/70">
+                安全日志
+              </a>
+              <a href="#" className="footer-link-micro hover:text-primary/70">
+                隐私缓冲
+              </a>
+              <a href="#" className="footer-link-micro hover:text-primary/70">
+                同步条款
+              </a>
+            </div>
+          </div>
+        </footer>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] bg-background px-6 pt-10 pb-[max(3rem,calc(env(safe-area-inset-bottom,0px)+2.5rem))] font-label text-[10px] font-medium uppercase tracking-technical text-white/25 sm:pt-12 md:px-12 md:pt-16 md:pb-20">
-        <div className="mx-auto flex w-full max-w-home flex-col items-center justify-center">
-          <div className="mb-5 text-center md:mb-6">
-            © 2026 AI_GAME_CONTEST_PROTOCOL，保留所有权利。
-          </div>
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-3">
-            <a href="#" className="footer-link-micro hover:text-primary/60">
-              安全日志
-            </a>
-            <a href="#" className="footer-link-micro hover:text-primary/60">
-              隐私缓冲
-            </a>
-            <a href="#" className="footer-link-micro hover:text-primary/60">
-              同步条款
-            </a>
-          </div>
-        </div>
-      </footer>
+      </div>
     </>
   );
 }

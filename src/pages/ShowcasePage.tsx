@@ -96,22 +96,41 @@ export function ShowcasePage() {
     <>
       <main className="relative min-w-0 overflow-hidden bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
 
-        {/* 与「部署指南」一致的二级首屏：固定高度节奏 + 同款光晕 */}
-        <header className="relative isolate w-full min-w-0 border-b border-white/[0.06] bg-background">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-100" aria-hidden>
-            <div className="absolute top-[-18%] left-1/2 h-[min(52vh,520px)] w-[min(100vw,1100px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_72%_58%_at_50%_32%,rgba(168,255,225,0.072)_0%,rgba(0,255,204,0.034)_42%,transparent_74%)]" />
-            <div className="absolute bottom-[-22%] left-1/2 h-[min(44vh,420px)] w-[min(100vw,960px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_68%_52%_at_50%_78%,rgba(168,255,225,0.048)_0%,rgba(0,255,204,0.022)_44%,transparent_78%)]" />
+        {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
+        <header className="relative isolate w-full min-w-0 overflow-hidden">
+          {/* 背景图 */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            <img
+              src="/game_BG2.jpg"
+              alt=""
+              className="h-full w-full object-cover object-[center_30%] sm:object-center"
+              fetchPriority="high"
+              decoding="async"
+            />
           </div>
-          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-10 md:px-12 md:py-12 lg:py-14">
+
+          {/* 全局暗化遮罩 */}
+          <div
+            className="pointer-events-none absolute inset-0 bg-black/62"
+            aria-hidden
+          />
+
+          {/* 底部渐变：从透明过渡到 background #101010，无缝衔接第二屏 */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-background via-background/80 to-transparent"
+            aria-hidden
+          />
+
+          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-12 sm:py-14 md:px-12 md:py-16 lg:py-20">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center antialiased [transform:translateZ(0)]"
             >
-              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/50">
+              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/60">
                 AI 游戏设计大赛 2026
-                <span className="ml-2 text-white/35">· Showcase</span>
+                <span className="ml-2 text-white/45">· Showcase</span>
               </span>
               <SectionTitleEnDecor
                 titleZh="参赛作品"
@@ -120,7 +139,7 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/60 md:mt-6 md:text-lg md:leading-[1.9]">
+              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/70 md:mt-6 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
               {loadError && (
