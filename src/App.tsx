@@ -22,6 +22,7 @@ import type { AppOutletContext } from "./types/outlet";
 function RoutedTree() {
   const navigate = useNavigate();
   const [modal, setModal] = useState<RegistrationModalState>({ kind: "closed" });
+  const [adminSaveSignal, setAdminSaveSignal] = useState(0);
 
   const openRegister = useCallback(() => setModal({ kind: "create" }), []);
   const openEdit = useCallback((record: ShowcaseSubmission) => {
@@ -29,8 +30,8 @@ function RoutedTree() {
   }, []);
 
   const outletCtx = useMemo<AppOutletContext>(
-    () => ({ openRegister, openEdit }),
-    [openRegister, openEdit]
+    () => ({ openRegister, openEdit, adminSaveSignal }),
+    [openRegister, openEdit, adminSaveSignal]
   );
 
   return (
@@ -50,7 +51,10 @@ function RoutedTree() {
           state={modal}
           onStateChange={setModal}
           onSubmitted={() => navigate("/showcase")}
-          onAdminSaved={() => navigate("/admin")}
+          onAdminSaved={() => {
+            setAdminSaveSignal((n) => n + 1);
+            navigate("/admin");
+          }}
         />
       </AppChrome>
     </RegistrationUiContext.Provider>

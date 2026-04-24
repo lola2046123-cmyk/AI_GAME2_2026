@@ -23,7 +23,7 @@ import type { AppOutletContext } from "../types/outlet";
 import type { ShowcaseSubmission } from "../types/submission";
 
 export function AdminPage() {
-  const { openEdit } = useOutletContext<AppOutletContext>();
+  const { openEdit, adminSaveSignal } = useOutletContext<AppOutletContext>();
   const [authed, setAuthed] = useState(isAdminAuthenticated);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function AdminPage() {
   useEffect(() => {
     if (!authed) return;
     void refresh();
-  }, [authed, refresh]);
+  }, [authed, refresh, adminSaveSignal]);
 
   const attemptLogin = (e: FormEvent) => {
     e.preventDefault();

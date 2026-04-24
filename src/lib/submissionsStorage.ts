@@ -89,7 +89,12 @@ export async function appendSubmission(entry: ShowcaseSubmission): Promise<void>
   const { error } = await sb.from("showcase_submissions").insert(
     submissionToInsertRow(row) as Record<string, unknown>
   );
-  if (error) throw new Error(error.message);
+  if (error) {
+    const parts = [error.message, error.code, error.hint, error.details]
+      .filter((s): s is string => Boolean(s && s.trim()))
+      .join(" · ");
+    throw new Error(parts || "Supabase insert 失败");
+  }
 }
 
 export async function updateSubmission(

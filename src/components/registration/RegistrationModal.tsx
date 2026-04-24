@@ -361,8 +361,15 @@ export function RegistrationModal({
         close();
         onSubmitted?.();
       }
-    } catch {
-      setError("提交失败，请检查网络或稍后重试");
+    } catch (err) {
+      const detail =
+        err instanceof Error && err.message ? err.message : String(err ?? "");
+      console.error("[RegistrationModal] submit failed", err);
+      setError(
+        detail
+          ? `提交失败：${detail}`
+          : "提交失败，请检查网络或稍后重试"
+      );
     } finally {
       setSubmitting(false);
     }
