@@ -57,7 +57,7 @@
 
 ### 跨访客：localStorage 与 Supabase「公开只读」
 
-- **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）只合并**本机**可见稿与内置 `mockShowcase`。换设备或清缓存后看不到他人本机数据。
+- **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）无用户稿时展示 `mockShowcase` 6 条兜底；**一旦存在可见用户稿**，列表即切换为纯用户稿展示，不再混入 mock（避免"首位 mock 被挤掉"造成修改错觉）。换设备或清缓存后看不到他人本机数据。
 
 - **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` 稿件权限。
 

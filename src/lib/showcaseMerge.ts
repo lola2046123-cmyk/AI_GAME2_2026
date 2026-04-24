@@ -9,8 +9,10 @@ export function getVisibleUserSubmissions(): ShowcaseSubmission[] {
 }
 
 /**
- * 列表展示：无可见用户数据时仅 6 条 mock；
- * 有可见用户数据时用户优先，补足至至少 6 条（用 mock 填充）。
+ * 列表展示：
+ * - 无可见用户数据时以 6 条 mock 作为兜底示例；
+ * - 一旦存在可见用户数据，即进入「正式参赛」展示，完全由用户稿占位，不再混入 mock，
+ *   避免首位被「挤掉一条 mock」造成修改错觉。
  */
 export async function getShowcaseListAsync(): Promise<ShowcaseSubmission[]> {
   const user = isRemoteSubmissionMode()
@@ -18,9 +20,5 @@ export async function getShowcaseListAsync(): Promise<ShowcaseSubmission[]> {
     : getVisibleUserSubmissions();
 
   if (user.length === 0) return MOCK_SHOWCASE;
-
-  const usedTitles = new Set(user.map((u) => u.gameName));
-  const filler = MOCK_SHOWCASE.filter((m) => !usedTitles.has(m.gameName));
-  const need = Math.max(0, 6 - user.length);
-  return [...user, ...filler.slice(0, need)];
+  return user;
 }

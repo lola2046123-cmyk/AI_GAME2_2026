@@ -100,7 +100,7 @@
 | **正文** | Markdown 安全渲染；`预览` / `源码` 切换 |
 | **互动** | `ShowcaseVoteBar` 全功能条；未登录时触发 `LoginModal` |
 
-数据来源：`getShowcaseListAsync()` 解析当前 `id`（含 mock 与用户投稿）；富文本 Markdown 优先读 `SHOWCASE_DETAILS[id]`，无则回退作品字段。
+数据来源：`getShowcaseListAsync()` 查 `id`（仅无用户稿时返回 mock），若未命中再回退查 `MOCK_SHOWCASE`，保证"最新投稿"区点 mock 也能进详情页；富文本 Markdown 优先读 `SHOWCASE_DETAILS[id]`，无则回退作品字段。
 
 ### 3.6 部署指南 `DeploymentGuidePage`
 
@@ -149,7 +149,7 @@
 
 ### 4.4 参赛展示（列表 + 排行榜 + 投票）
 
-- **列表数据**：`getShowcaseListAsync()`（合并 mock、本地与 Supabase 可见稿件，逻辑见 `showcaseMerge` / `submissionsStorage`）
+- **列表数据**：`getShowcaseListAsync()`（无用户稿时全量 mock 兜底；一旦出现可见用户稿则只展示用户稿，不再混入 mock；逻辑见 `showcaseMerge` / `submissionsStorage`）
 - **投票读数**：`getVoteStateForProjects(projectIds, user?.id)`，经 **`getSupabaseAnon()`** 查询表 `showcase_votes`（未配置 Supabase 时返回全零计数）
 - **排行榜**：`buildRankings(items, voteMap)` 在客户端聚合四类票数，各取 Top 5；仅展示票数大于 0 的条目
 - **排序「热门」**：按投票状态中的 `like` 计数排序（与真实点赞一致）

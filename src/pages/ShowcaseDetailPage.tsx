@@ -9,6 +9,7 @@ import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import {
   getVoteStateForProjects,
   type ShowcaseVoteState
@@ -55,12 +56,17 @@ export function ShowcaseDetailPage() {
 
     void getShowcaseListAsync()
       .then((list) => {
-        if (!cancelled) {
-          setItem(list.find((entry) => entry.id === id) ?? null);
-        }
+        if (cancelled) return;
+        const hit =
+          list.find((entry) => entry.id === id) ??
+          MOCK_SHOWCASE.find((entry) => entry.id === id) ??
+          null;
+        setItem(hit);
       })
       .catch(() => {
-        if (!cancelled) setItem(null);
+        if (!cancelled) {
+          setItem(MOCK_SHOWCASE.find((entry) => entry.id === id) ?? null);
+        }
       });
 
     return () => {
