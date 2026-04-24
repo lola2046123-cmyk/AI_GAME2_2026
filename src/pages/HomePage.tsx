@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useOutletContext, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { Award, ChevronDown, ExternalLink, Lightbulb, Medal, Rocket, Star, Trophy } from "lucide-react";
+import { ThinArrow } from "../components/ThinArrow";
 import type { AppOutletContext } from "../types/outlet";
 import { HeroVideoBackdrop } from "../components/hero/HeroVideoBackdrop";
 import { PrizeAwardIcon } from "../components/PrizeAwardIcon";
@@ -58,7 +59,7 @@ function FeaturedCard({
       className="group relative block h-full overflow-hidden rounded-2xl border border-white/10 bg-[#161616] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
     >
       {/* 封面图 */}
-      <div className={`relative overflow-hidden ${large ? "aspect-[16/10]" : "aspect-video"} bg-white/[0.03]`}>
+      <div className={`relative overflow-hidden ${large ? "aspect-[4/3]" : "aspect-video"} bg-white/[0.03]`}>
         <img
           src={item.thumbnailUrl}
           alt={item.gameName}
@@ -79,7 +80,7 @@ function FeaturedCard({
       </div>
 
       {/* 文字区 */}
-      <div className={`p-5 ${large ? "md:p-7" : "md:p-5"}`}>
+      <div className={`px-5 pb-5 pt-4 ${large ? "md:px-6 md:pb-6" : "md:px-5 md:pb-5"}`}>
         <h3 className={`font-headline font-semibold tracking-tight text-white ${large ? "text-xl md:text-2xl" : "text-base md:text-lg"}`}>
           {item.gameName}
         </h3>
@@ -118,11 +119,6 @@ function LatestCard({ item }: { item: ShowcaseSubmission }) {
           loading="lazy"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/65 via-background/10 to-transparent" aria-hidden />
-        <div className="absolute top-2.5 right-2.5">
-          <span className="rounded-full border border-white/10 bg-black/55 px-2 py-0.5 font-label text-[9px] uppercase tracking-widest text-white/40 backdrop-blur-sm">
-            HTML5
-          </span>
-        </div>
       </div>
       <div className="flex flex-1 flex-col px-4 pb-4 pt-3.5 md:px-5 md:pb-5">
         <h3 className="font-headline text-sm font-semibold leading-snug tracking-tight text-white md:text-base">
@@ -357,9 +353,9 @@ export function HomePage() {
               </div>
               <Link
                 to="/showcase"
-                className="hidden shrink-0 items-center gap-1.5 font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
+                className="hidden shrink-0 items-center gap-1.5 font-label text-sm font-medium tracking-normal text-white/40 transition-colors hover:text-primary/70 md:flex"
               >
-                全部作品 <span aria-hidden>→</span>
+                全部作品 <ThinArrow />
               </Link>
             </motion.div>
 
@@ -368,10 +364,10 @@ export function HomePage() {
               <ShowcaseLoading
                 count={3}
                 showHeader={false}
-                columnsClass="grid-cols-1 gap-4 md:grid-cols-3 md:gap-5"
+                columnsClass="grid-cols-1 gap-5 md:grid-cols-3 md:gap-6"
               />
             ) : featuredItems.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
                 {/* 大卡片 */}
                 <motion.div
                   initial={{ opacity: 0, y: 24 }}
@@ -384,7 +380,7 @@ export function HomePage() {
                 </motion.div>
 
                 {/* 右侧两个小卡片 */}
-                <div className="flex flex-col gap-4 md:gap-5">
+                <div className="flex flex-col gap-5 md:gap-6">
                   {featuredItems.slice(1, 3).map((item, i) => (
                     <motion.div
                       key={item.id}
@@ -414,9 +410,9 @@ export function HomePage() {
             >
               <Link
                 to="/showcase"
-                className="font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
+                className="inline-flex items-center gap-1.5 font-label text-sm font-medium tracking-normal text-white/40 transition-colors hover:text-primary/70"
               >
-                全部作品 →
+                全部作品 <ThinArrow />
               </Link>
             </motion.div>
           </div>
@@ -578,9 +574,9 @@ export function HomePage() {
               </div>
               <Link
                 to="/showcase"
-                className="hidden shrink-0 items-center gap-1.5 font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70 md:flex"
+                className="hidden shrink-0 items-center gap-1.5 font-label text-sm font-medium tracking-normal text-white/40 transition-colors hover:text-primary/70 md:flex"
               >
-                全部作品 <span aria-hidden>→</span>
+                全部作品 <ThinArrow />
               </Link>
             </motion.div>
 
@@ -588,10 +584,10 @@ export function HomePage() {
               <ShowcaseLoading
                 count={6}
                 showHeader={false}
-                columnsClass="grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3"
+                columnsClass="grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3"
               />
             ) : latestItems.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
                 {latestItems.map((item, i) => (
                   <motion.div
                     key={item.id}
@@ -618,9 +614,9 @@ export function HomePage() {
             >
               <Link
                 to="/showcase"
-                className="font-label text-[18px] font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-primary/70"
+                className="inline-flex items-center gap-1.5 font-label text-sm font-medium tracking-normal text-white/40 transition-colors hover:text-primary/70"
               >
-                全部作品 →
+                全部作品 <ThinArrow />
               </Link>
             </motion.div>
           </div>

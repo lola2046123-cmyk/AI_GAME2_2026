@@ -16,125 +16,12 @@ import {
 } from "../lib/showcaseVotes";
 import type { ShowcaseSubmission } from "../types/submission";
 
-/* ─────────────── 类型 ─────────────── */
-type FilterCategory = "全部" | "AI" | "叙事" | "策略" | "实验";
-type SortOrder = "最新" | "热门" | "获奖";
-
-const CATEGORIES: FilterCategory[] = ["全部", "AI", "叙事", "策略", "实验"];
-const SORTS: SortOrder[] = ["最新", "热门", "获奖"];
-
-/* ─────────────── 获奖状态（示例映射，生产环境可从 DB 读取） ─────────────── */
+/* ─────────────── 获奖状态（生产环境可从 DB 读取） ─────────────── */
 const AWARD_STATUS: Record<string, "winner" | "finalist"> = {
   "mock-stellar": "winner",
   "mock-echoes": "finalist",
   "mock-bonsai": "finalist"
 };
-
-/* ─────────────── AI 工具关键词 ─────────────── */
-const AI_TOOLS = ["gemini", "chatgpt", "claude", "copilot", "gpt", "midjourney", "stable diffusion", "ai"];
-
-/* ─────────────── 过滤逻辑 ─────────────── */
-function matchCategory(item: ShowcaseSubmission, cat: FilterCategory): boolean {
-  if (cat === "全部") return true;
-  const stack = item.techStack.map((t) => t.toLowerCase());
-  const gameplay = (item.gameplay + " " + (item.cardSummary ?? "")).toLowerCase();
-  switch (cat) {
-    case "AI":
-      return stack.some((t) => AI_TOOLS.includes(t));
-    case "叙事":
-      return gameplay.includes("叙事") || gameplay.includes("对话") || gameplay.includes("故事") || gameplay.includes("narrative");
-    case "策略":
-      return gameplay.includes("策略") || gameplay.includes("战略") || gameplay.includes("决策") || gameplay.includes("strategy");
-    case "实验":
-      return stack.some((t) => t.includes("stable diffusion") || t.includes("midjourney") || t.includes("generative"));
-    default:
-      return true;
-  }
-}
-
-function sortItems(
-  items: ShowcaseSubmission[],
-  sort: SortOrder,
-  voteMap: ShowcaseVoteStateMap
-): ShowcaseSubmission[] {
-  const copy = [...items];
-  if (sort === "最新") {
-    return copy.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }
-  if (sort === "热门") {
-    return copy.sort(
-      (a, b) =>
-        (voteMap[b.id]?.counts.like ?? 0) - (voteMap[a.id]?.counts.like ?? 0)
-    );
-  }
-  if (sort === "获奖") {
-    const rank = (id: string) =>
-      AWARD_STATUS[id] === "winner" ? 0 : AWARD_STATUS[id] === "finalist" ? 1 : 2;
-    return copy.sort((a, b) => rank(a.id) - rank(b.id));
-  }
-  return copy;
-}
-
-/* ─────────────── Filter Bar 子组件 ─────────────── */
-function FilterBar({
-  category,
-  sort,
-  onCategory,
-  onSort
-}: {
-  category: FilterCategory;
-  sort: SortOrder;
-  onCategory: (v: FilterCategory) => void;
-  onSort: (v: SortOrder) => void;
-}) {
-  return (
-    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-      {/* 分类 */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => onCategory(cat)}
-            className={`rounded-full px-3.5 py-1.5 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
-              category === cat
-                ? "bg-primary/15 border border-primary/30 text-primary"
-                : "border border-white/[0.08] bg-white/[0.04] text-white/40 hover:border-white/15 hover:bg-white/[0.07] hover:text-white/70"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* 分隔 */}
-      <div className="hidden h-4 w-px bg-white/[0.08] sm:block" aria-hidden />
-
-      {/* 排序 */}
-      <div className="flex items-center gap-1">
-        <span className="mr-1 font-label text-[10px] uppercase tracking-widest text-white/25">
-          排序
-        </span>
-        {SORTS.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onSort(s)}
-            className={`rounded px-3 py-1.5 font-label text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
-              sort === s
-                ? "bg-white/[0.1] text-white/80"
-                : "text-white/30 hover:text-white/60"
-            }`}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* ─────────────── 页面主体 ─────────────── */
 export function ShowcasePage() {
@@ -142,8 +29,6 @@ export function ShowcasePage() {
   const [items, setItems] = useState<ShowcaseSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [category, setCategory] = useState<FilterCategory>("全部");
-  const [sort, setSort] = useState<SortOrder>("最新");
   const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
 
   useEffect(() => {
@@ -187,15 +72,25 @@ export function ShowcasePage() {
     };
   }, [items]);
 
+  /** 按最新时间排序 */
   const filtered = useMemo(
-    () => sortItems(items.filter((it) => matchCategory(it, category)), sort, voteMap),
-    [items, category, sort, voteMap]
+    () => [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [items]
   );
 
   const rankings = useMemo(() => buildRankings(items, voteMap), [items, voteMap]);
 
+  /** 每个项目对应的排行标签（优先级：热门 > 视觉最佳 > 最有趣 > 最想氪金） */
+  const rankLabelMap = useMemo<Record<string, string>>(() => {
+    const map: Record<string, string> = {};
+    rankings.fun.slice(0, 3).forEach((e) => { map[e.project.id] = "最想氪金"; });
+    rankings.gameplay.slice(0, 3).forEach((e) => { map[e.project.id] = "最有趣"; });
+    rankings.visual.slice(0, 3).forEach((e) => { map[e.project.id] = "视觉最佳"; });
+    rankings.like.slice(0, 3).forEach((e) => { map[e.project.id] = "热门作品"; });
+    return map;
+  }, [rankings]);
+
   const hasItems = items.length > 0;
-  const isFiltered = category !== "全部" || sort !== "最新";
 
   return (
     <>
@@ -212,11 +107,11 @@ export function ShowcasePage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center"
+              className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center antialiased [transform:translateZ(0)]"
             >
-              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/40">
+              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/50">
                 AI 游戏设计大赛 2026
-                <span className="ml-2 text-white/20">· Showcase</span>
+                <span className="ml-2 text-white/35">· Showcase</span>
               </span>
               <SectionTitleEnDecor
                 titleZh="参赛作品"
@@ -225,16 +120,17 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-4 max-w-xl font-body text-sm leading-relaxed text-white/60 md:mt-5 md:text-base">
+              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/60 md:mt-6 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
-              </p>
-              <p className="mt-1.5 font-label text-[10px] uppercase tracking-widest text-white/25 md:text-xs">
-                Humans × AI · Odd game anthology
               </p>
               {loadError && (
                 <p className="mx-auto mt-4 font-body text-sm text-red-400/90">{loadError}</p>
               )}
-              <ShowcaseStatBar count={filtered.length} total={items.length} />
+              <ShowcaseStatBar
+                count={filtered.length}
+                total={items.length}
+                isLoading={loading}
+              />
             </motion.div>
           </div>
         </header>
@@ -245,7 +141,7 @@ export function ShowcasePage() {
             <RankingList
               title="热门作品"
               iconKey="flame"
-              topN={5}
+              topN={3}
               items={rankings.like}
               voteCount={(e) => e.votes}
               emptyText="还没有点赞记录"
@@ -253,43 +149,26 @@ export function ShowcasePage() {
             <RankingList
               title="视觉最佳"
               iconKey="sparkles"
-              topN={5}
+              topN={3}
               items={rankings.visual}
               voteCount={(e) => e.votes}
             />
             <RankingList
               title="最有趣"
               iconKey="gamepad"
-              topN={5}
+              topN={3}
               items={rankings.gameplay}
               voteCount={(e) => e.votes}
             />
             <RankingList
               title="最想氪金"
               iconKey="coin"
-              topN={5}
+              topN={3}
               items={rankings.fun}
               voteCount={(e) => e.votes}
               emptyText="还没有「最想氪金」投票"
             />
           </div>
-
-          {/* ── Filter Bar ── */}
-          {hasItems && !loading && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-8 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 md:px-5 md:py-3.5"
-            >
-              <FilterBar
-                category={category}
-                sort={sort}
-                onCategory={setCategory}
-                onSort={setSort}
-              />
-            </motion.div>
-          )}
 
           {/* ── 卡片栅格（含加载态） ── */}
           <AnimatePresence mode="wait">
@@ -311,16 +190,16 @@ export function ShowcasePage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <ShowcaseEmpty filtered={hasItems && isFiltered} />
+                <ShowcaseEmpty />
               </motion.div>
             ) : (
               <motion.div
-                key={`${category}-${sort}`}
+                key="items"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-7 lg:grid-cols-3 lg:gap-8"
+                className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3"
               >
                 {filtered.map((item, idx) => (
                   <motion.div
@@ -337,6 +216,7 @@ export function ShowcasePage() {
                     <ShowcaseCard
                       item={item}
                       status={AWARD_STATUS[item.id]}
+                      rankLabel={rankLabelMap[item.id]}
                       showVote
                       voteState={voteMap[item.id]}
                       onVoteStateChange={(updater) =>

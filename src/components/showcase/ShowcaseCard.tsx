@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
+import { ThinArrow } from "../ThinArrow";
 import type { ShowcaseSubmission } from "../../types/submission";
 import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
 import {
@@ -37,12 +38,15 @@ type CardStatus = "winner" | "finalist" | undefined;
 export function ShowcaseCard({
   item,
   status,
+  rankLabel,
   showVote = false,
   voteState,
   onVoteStateChange
 }: {
   item: ShowcaseSubmission;
   status?: CardStatus;
+  /** 根据投票排行展示的荣誉标签，无数据时留空 */
+  rankLabel?: string;
   /** 是否在卡片底部展示点赞/投票条（默认 false，首页等场景不显示） */
   showVote?: boolean;
   voteState?: ShowcaseVoteState;
@@ -96,14 +100,19 @@ export function ShowcaseCard({
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 md:px-6 md:pb-6">
-        <div className="mb-3 flex flex-wrap items-center gap-1.5">
-          <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/35">
-            {isUser ? "参赛" : "示例"}
-          </span>
-          <span className="rounded-full border border-white/[0.06] bg-transparent px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/20">
-            HTML5
-          </span>
-        </div>
+        {rankLabel ? (
+          <div className="mb-3">
+            <span className="rounded-full border border-primary/30 bg-primary/[0.08] px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary/80">
+              {rankLabel}
+            </span>
+          </div>
+        ) : !isUser ? (
+          <div className="mb-3">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
+              示例
+            </span>
+          </div>
+        ) : null}
 
         <h2 className="font-headline text-base font-semibold leading-snug tracking-tight text-white line-clamp-1 md:text-lg">
           {item.gameName}
@@ -137,7 +146,7 @@ export function ShowcaseCard({
 
         <p className="mt-3.5 border-t border-white/[0.07] pt-3 font-label text-[15px] uppercase tracking-widest text-white/40 transition-colors duration-300 group-hover/card:text-primary/60">
           <span className="inline-flex items-center gap-1 transition-transform duration-300 group-hover/card:translate-x-0.5">
-            查看详情 <span aria-hidden>→</span>
+            查看详情 <ThinArrow />
           </span>
         </p>
       </div>

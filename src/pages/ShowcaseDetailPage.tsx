@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ExternalLink } from "lucide-react";
+import { ThinArrow } from "../components/ThinArrow";
 import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
@@ -431,9 +432,9 @@ export function ShowcaseDetailPage() {
           <span>© 2026 AI_GAME_CONTEST · {item.gameName}</span>
           <Link
             to="/showcase"
-            className="font-label text-[15px] uppercase tracking-widest text-white/25 transition-colors hover:text-white/50"
+            className="inline-flex items-center gap-2 font-label text-[13px] uppercase tracking-widest text-white/25 transition-colors hover:text-white/50"
           >
-            ← 返回展示
+            <ThinArrow dir="left" className="h-[10px] w-[14px] shrink-0" /> 返回展示
           </Link>
         </div>
       </footer>

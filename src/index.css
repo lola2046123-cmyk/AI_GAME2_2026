@@ -209,7 +209,7 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .surface-card::after,
+    .surface-card:not(.surface-card--quiet)::after,
     .card::after {
       content: "";
       position: absolute;
@@ -241,7 +241,7 @@
       transition: opacity 0.32s ease;
     }
 
-    .surface-card:hover::after,
+    .surface-card:not(.surface-card--quiet):hover::after,
     .card:hover::after {
       opacity: 0.46;
       animation: arena-card-border-spin var(--arena-border-spin-duration) linear infinite;
@@ -249,7 +249,7 @@
   }
 
   @media (hover: hover) {
-    .surface-card:hover,
+    .surface-card:hover:not(.surface-card--quiet),
     .card:hover {
       border-color: rgba(var(--rgb-neon), 0.16);
       background-color: rgba(255, 255, 255, 0.039);
@@ -259,9 +259,17 @@
         0 0 12px -4px rgba(var(--rgb-neon), 0.1);
     }
 
-    .surface-card:hover:not(.surface-card--lift),
+    .surface-card:hover:not(.surface-card--lift):not(.surface-card--quiet),
     .card:hover {
       transform: scale(1.009);
+    }
+
+    /** 部署指南：仅轻微提亮，无霓虹 scale / 无旋转描边，减少与 backdrop 合成闪屏 */
+    .surface-card.surface-card--quiet:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.042);
+      box-shadow: 0 10px 40px -22px rgba(0, 0, 0, 0.62);
     }
 
     .group:hover .surface-card--lift {
@@ -973,7 +981,7 @@
       transform: none;
     }
 
-    .surface-card::after,
+    .surface-card:not(.surface-card--quiet)::after,
     .card::after {
       animation: none !important;
       opacity: 0 !important;

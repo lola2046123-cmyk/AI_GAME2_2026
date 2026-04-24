@@ -1,4 +1,5 @@
 import { useOutletContext } from "react-router-dom";
+import { ThinArrow } from "../ThinArrow";
 import type { AppOutletContext } from "../../types/outlet";
 
 type Props = { filtered?: boolean };
@@ -48,7 +49,7 @@ export function ShowcaseEmpty({ filtered = false }: Props) {
               onClick={openRegister}
               className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-6 py-2.5 font-label text-xs font-medium uppercase tracking-widest text-white/60 transition-colors duration-200 hover:border-white/25 hover:text-white/90"
             >
-              提交作品 <span aria-hidden>→</span>
+              提交作品 <ThinArrow />
             </button>
           )}
         </>

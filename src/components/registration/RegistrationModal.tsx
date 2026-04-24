@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { ThinArrow } from "../ThinArrow";
 import {
   appendSubmission,
   updateSubmission
@@ -88,6 +89,8 @@ export function RegistrationModal({
   /** 用户新选的封面（JPEG data URL）；优先于截图服务 */
   const [coverDataUrl, setCoverDataUrl] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  /** 表单滚动容器 ref，用于移动端键盘弹出时将焦点元素滚动到视口 */
+  const formScrollRef = useRef<HTMLDivElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /**
@@ -170,6 +173,21 @@ export function RegistrationModal({
       document.body.style.overflow = prev;
     };
   }, [open, onStateChange]);
+
+  /** 移动端键盘弹出后，把聚焦的输入框滚动到可见区域 */
+  useEffect(() => {
+    const el = formScrollRef.current;
+    if (!el) return;
+    const onFocusin = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+      window.setTimeout(() => {
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }, 100);
+    };
+    el.addEventListener("focusin", onFocusin);
+    return () => el.removeEventListener("focusin", onFocusin);
+  }, []);
 
   const close = () => {
     onStateChange({ kind: "closed" });
@@ -363,7 +381,7 @@ export function RegistrationModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
+          className="fixed inset-x-0 top-0 z-[100] flex h-dvh items-end justify-center p-0 sm:inset-0 sm:h-auto sm:items-center sm:p-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -383,7 +401,7 @@ export function RegistrationModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby="reg-modal-title"
-            className="glass-floating-panel relative z-10 flex max-h-[min(92dvh,860px)] w-full max-w-lg flex-col overflow-hidden rounded-t-[1.35rem] sm:max-h-[min(92vh,860px)] sm:rounded-[1.35rem]"
+            className="glass-floating-panel relative z-10 flex max-h-dvh w-full max-w-lg flex-col overflow-hidden rounded-t-[1.35rem] sm:max-h-[min(92vh,860px)] sm:rounded-[1.35rem]"
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -444,7 +462,7 @@ export function RegistrationModal({
             </div>
 
             {/* ── 表单主体 ── */}
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 md:px-6">
+            <div ref={formScrollRef} className="min-h-0 flex-1 overflow-y-auto scroll-smooth px-5 py-5 pb-3 scroll-pb-6 md:px-6 md:pb-5">
               <AnimatePresence mode="wait">
 
                 {/* ────── 步骤 1：作品信息 ────── */}
@@ -469,7 +487,7 @@ export function RegistrationModal({
                         onChange={(e) => setGameName(clampChars(e.target.value, MAX_GAME_NAME_CHARS))}
                         placeholder="你的游戏叫什么名字？"
                         maxLength={MAX_GAME_NAME_CHARS * 2}
-                        autoFocus
+                        enterKeyHint="next"
                       />
                     </label>
 
@@ -487,6 +505,7 @@ export function RegistrationModal({
                         }
                         placeholder="独立开发者昵称，或团队全员昵称（逗号分隔）"
                         maxLength={MAX_CREATOR_NICKNAME_CHARS * 2}
+                        enterKeyHint="next"
                       />
                       <p className={fieldHint}>
                         组队则输入全员昵称，用&nbsp;
@@ -523,8 +542,9 @@ export function RegistrationModal({
                           }
                         }}
                         placeholder="描述核心玩法机制与节奏，以及 AI 在开发过程中扮演的角色…"
-                        rows={5}
+                        rows={4}
                         maxLength={MAX_GAMEPLAY_CHARS * 2}
+                        enterKeyHint="next"
                       />
                     </label>
                   </motion.div>
@@ -618,6 +638,7 @@ export function RegistrationModal({
                         inputMode="url"
                         autoComplete="url"
                         maxLength={MAX_FIELD_CHARS * 2}
+                        enterKeyHint="done"
                       />
                       <p className={fieldHint}>粘贴可以在线体验的游戏地址</p>
                     </label>
@@ -684,14 +705,14 @@ export function RegistrationModal({
             </div>
 
             {/* ── 底部操作栏 ── */}
-            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.08] px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] md:px-6">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.08] px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom,0.25rem))] md:px-6 md:py-4">
               <button
                 type="button"
                 onClick={back}
                 disabled={step === 1 || submitting}
-                className="btn-secondary-outline gap-1.5 px-5 py-2.5 font-label text-sm font-medium disabled:pointer-events-none disabled:opacity-30"
+                className="btn-secondary-outline gap-2 px-5 py-2.5 font-label text-sm font-medium disabled:pointer-events-none disabled:opacity-30"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ThinArrow dir="left" />
                 上一步
               </button>
 
@@ -702,7 +723,7 @@ export function RegistrationModal({
                   className="btn-primary gap-1.5 px-6 py-2.5 font-label text-sm"
                 >
                   下一步
-                  <ChevronRight className="h-4 w-4" />
+                  <ThinArrow />
                 </button>
               ) : (
                 <button

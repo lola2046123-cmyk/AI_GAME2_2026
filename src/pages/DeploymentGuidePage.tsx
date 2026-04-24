@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUpDown,
   BookOpen,
   Check,
@@ -15,6 +14,7 @@ import {
   Triangle,
   Zap
 } from "lucide-react";
+import { ThinArrow } from "../components/ThinArrow";
 
 function useScrollProgress() {
   const [pct, setPct] = useState(0);
@@ -234,7 +234,7 @@ export function DeploymentGuidePage() {
                   key={s.id}
                   type="button"
                   onClick={() => scrollToId(s.id)}
-                  className="surface-card group flex h-full min-w-0 w-full items-start gap-3 rounded-xl border border-white/[0.08] p-3.5 text-left transition-transform hover:-translate-y-0.5 md:p-4"
+                  className="surface-card surface-card--quiet group flex h-full min-w-0 w-full items-start gap-3 rounded-xl border border-white/[0.08] p-3.5 text-left transition-[transform,border-color] duration-300 ease-out hover:-translate-y-px md:p-4"
                 >
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${s.color} font-label text-[11px] font-bold text-[#0e0e0e]`}
@@ -259,7 +259,7 @@ export function DeploymentGuidePage() {
             <p className="mb-3 font-label text-xs font-semibold uppercase tracking-technical text-primary/70 md:text-sm">
               整体架构
             </p>
-            <div className="surface-card flex w-full min-w-0 max-w-full flex-col items-center gap-3 overflow-x-auto rounded-xl border border-white/[0.08] p-4 sm:p-6 md:flex-row md:flex-wrap md:justify-center md:gap-3 md:p-8">
+            <div className="surface-card surface-card--quiet flex w-full min-w-0 max-w-full flex-col items-center gap-3 overflow-x-auto rounded-xl border border-white/[0.08] p-4 sm:p-6 md:flex-row md:flex-wrap md:justify-center md:gap-3 md:p-8">
               {(
                 [
                   {
@@ -308,10 +308,9 @@ export function DeploymentGuidePage() {
                       aria-hidden
                     />
                   ) : (
-                    <ArrowRight
+                    <ThinArrow
                       key={`a-${i}`}
-                      className="h-5 w-5 shrink-0 rotate-90 text-primary/45 md:rotate-0"
-                      aria-hidden
+                      className="h-[10px] w-[14px] shrink-0 rotate-90 text-primary/45 md:rotate-0"
                     />
                   );
                 return [box, arrow];
@@ -334,7 +333,7 @@ export function DeploymentGuidePage() {
               <p className="font-body text-sm leading-relaxed text-primary/85 md:text-[15px]">
                 在以下平台注册免费账号（建议同一邮箱，便于管理）：
               </p>
-              <ul className="mt-3 space-y-0 border border-white/[0.06] rounded-lg divide-y divide-white/[0.06]">
+              <ul className="mt-3 divide-y divide-white/[0.06] overflow-hidden rounded-lg border border-white/[0.06]">
                 {[
                   { k: "gh", label: "GitHub：github.com — 邮箱注册，Free 计划" },
                   { k: "sb", label: "Supabase：supabase.com — 推荐用 GitHub 登录" },
@@ -344,18 +343,31 @@ export function DeploymentGuidePage() {
                     <button
                       type="button"
                       onClick={() => toggleCheck(k)}
-                      className="flex w-full items-start gap-3 px-4 py-3 text-left font-body text-sm text-primary/88 transition-colors hover:bg-white/[0.03] md:text-[15px]"
+                      aria-pressed={checks[k]}
+                      className="group/row flex w-full items-start gap-3.5 px-4 py-3.5 text-left font-body text-sm text-primary/88 transition-[background-color,color] duration-200 ease-out hover:bg-white/[0.04] md:px-5 md:py-3.5 md:text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40"
                     >
                       <span
-                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 text-[10px] font-bold ${
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-[border-color,background-color,box-shadow] duration-200 ease-out ${
                           checks[k]
-                            ? "border-[#00ffcc] bg-[#00ffcc] text-[#0e0e0e]"
-                            : "border-white/20 bg-transparent text-transparent"
+                            ? "border-primary-container/70 bg-primary-container text-background shadow-[0_0_12px_-2px_rgba(0,255,204,0.35)]"
+                            : "border-white/18 bg-white/[0.02] group-hover/row:border-white/28 group-hover/row:bg-white/[0.05]"
+                        }`}
+                        aria-hidden
+                      >
+                        <Check
+                          strokeWidth={2.75}
+                          className={`h-3.5 w-3.5 transition-[opacity,transform] duration-200 ease-out ${
+                            checks[k] ? "scale-100 opacity-100" : "scale-90 opacity-0"
+                          }`}
+                        />
+                      </span>
+                      <span
+                        className={`min-w-0 flex-1 transition-[color,opacity] duration-200 ${
+                          checks[k] ? "text-primary/50 line-through" : "text-primary/88"
                         }`}
                       >
-                        ✓
+                        {label}
                       </span>
-                      <span className={checks[k] ? "text-primary/45 line-through" : ""}>{label}</span>
                     </button>
                   </li>
                 ))}
@@ -734,9 +746,9 @@ function SubCard({ title, children }: { title: string; children: ReactNode }) {
   const stepTag = sp >= 0 ? title.slice(0, sp) : title;
   const stepTitle = sp >= 0 ? title.slice(sp + 1) : "";
   return (
-    <div className="surface-card min-w-0 max-w-full rounded-xl border border-white/[0.08] p-5 md:p-6">
+    <div className="surface-card surface-card--quiet min-w-0 max-w-full rounded-xl border border-white/[0.08] p-5 md:p-6">
       <h3 className="mb-3 flex flex-wrap items-center gap-2 font-headline text-[15px] font-semibold text-white md:text-base">
-        <span className="rounded-full bg-[rgba(0,255,204,0.12)] px-2.5 py-0.5 font-label text-[10px] font-semibold tabular-nums tracking-technical text-[#00ffcc]">
+        <span className="rounded-full bg-primary-container/12 px-2.5 py-0.5 font-label text-[10px] font-semibold tabular-nums tracking-technical text-primary-container">
           {stepTag}
         </span>
         {stepTitle || title}

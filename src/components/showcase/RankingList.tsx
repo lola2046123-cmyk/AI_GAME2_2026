@@ -33,7 +33,7 @@ function rankStyle(index: number): string {
 type Props = {
   title: string;
   iconKey: RankingIconKey;
-  /** 榜单展示条数，默认 5 */
+  /** 榜单展示条数，默认 3 */
   topN?: number;
   emptyText?: string;
   voteCount: (entry: RankingEntry) => number;
@@ -43,7 +43,7 @@ type Props = {
 export function RankingList({
   title,
   iconKey,
-  topN = 5,
+  topN = 3,
   items,
   voteCount,
   emptyText = "暂无投票数据"
@@ -76,7 +76,7 @@ export function RankingList({
         <p className="font-body text-sm text-white/40">{emptyText}</p>
       ) : (
         <ol className="space-y-2">
-          {items.map((entry, index) => {
+          {items.slice(0, topN).map((entry, index) => {
             const count = voteCount(entry);
             return (
               <li
