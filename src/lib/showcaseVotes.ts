@@ -123,7 +123,7 @@ function rankByType(
   items: ShowcaseSubmission[],
   voteMap: ShowcaseVoteStateMap,
   type: VoteType,
-  limit = 10
+  limit = 5
 ): RankingEntry[] {
   return [...items]
     .map((project) => ({

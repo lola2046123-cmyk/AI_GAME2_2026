@@ -6,12 +6,10 @@
 /** 不依赖外网的占位缩略图（避免外链图被墙或拦截） */
 export function getLocalThumbnailPlaceholder(): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
-  <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" style="stop-color:#0e1814"/><stop offset="100%" style="stop-color:#070b0a"/>
-  </linearGradient></defs>
-  <rect width="640" height="400" fill="url(#g)"/>
-  <text x="320" y="188" text-anchor="middle" fill="#00ffcc" fill-opacity="0.45" font-family="system-ui,sans-serif" font-size="17">未配置截图服务</text>
-  <text x="320" y="218" text-anchor="middle" fill="#e2faf0" fill-opacity="0.22" font-family="system-ui,sans-serif" font-size="13">请上传封面图或部署 POST /api/screenshot</text>
+  <rect width="640" height="400" fill="#121212"/>
+  <rect x="248" y="132" width="144" height="108" rx="8" fill="none" stroke="rgba(168,255,225,0.14)" stroke-width="1.25"/>
+  <path d="M272 200h96M272 216h64" stroke="rgba(168,255,225,0.1)" stroke-width="1" stroke-linecap="round"/>
+  <text x="320" y="278" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-family="system-ui,-apple-system,sans-serif" font-size="11" letter-spacing="0.08em">暂无封面</text>
 </svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }

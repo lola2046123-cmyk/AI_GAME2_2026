@@ -4,10 +4,13 @@
 
 | 路由 | 说明 |
 |------|------|
-| `/` | 首页 |
-| `/showcase` | 参赛展示（无 Supabase 时为 `localStorage` + 内置示例；配置 Supabase 后为全员可读可见稿） |
+| `/` | 首页（Hero、精选、奖项、最新投稿、提交规范、评审协议等） |
+| `/showcase` | 参赛展示：排行榜、筛选/排序、卡片；可选 **Supabase 投票**（Magic Link） |
+| `/showcase/:id` | 作品详情：封面叠渐变、Markdown 预览/源码、投票 |
 | `/deploy` | 部署指南（网页游戏 GitHub / Supabase / Vercel 流程） |
 | `/admin` | 管理（PIN 见环境变量） |
+
+**Supabase 从零配置**：按 **[docs/SUPABASE.md](./docs/SUPABASE.md)** 执行（含 SQL 顺序与 Auth 设置）。
 
 视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**（含 **§7 实现备忘**：全站胶片颗粒叠放、`--film-grain-opacity`、首屏与奖项区 `.home-hero-bottom-blend` / `.home-prizes-section` 衔接等；**§8 线上部署摘要**）。设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
 
@@ -35,7 +38,7 @@
 | 变量 | 上线建议 |
 |------|----------|
 | `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。与 **`/api/showcase-admin`** 共用；管理 list/update/delete 经该 API + **Service Role** 执行。 |
-| `VITE_SUPABASE_URL` | 可选。与 `VITE_SUPABASE_ANON_KEY` **同时设置**时启用远端投稿与展示（见 `docs/supabase-showcase.sql`）。 |
+| `VITE_SUPABASE_URL` | 可选。与 `VITE_SUPABASE_ANON_KEY` **同时设置**时启用远端投稿、展示与 **Auth 投票**（SQL 见 `docs/supabase-showcase.sql` + `docs/supabase-votes.sql`）。 |
 | `VITE_SUPABASE_ANON_KEY` | 可选。Supabase anon key；受 RLS 约束，**不要**当作私密密钥。 |
 | `SUPABASE_SERVICE_ROLE_KEY` | **仅 Vercel 服务端变量**（勿 `VITE_`）。供 `api/showcase-admin.ts` 管理数据；勿提交进 Git。 |
 | `VITE_GEMINI_API_KEY` | 可选。写入后任何人可从构建产物中尝试提取，**演示 / 内网可接受**；公开站建议改为后端或 Edge 代理调用模型。 |
@@ -56,7 +59,7 @@
 
 - **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）只合并**本机**可见稿与内置 `mockShowcase`。换设备或清缓存后看不到他人本机数据。
 
-- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`**）：展示页用 anon 客户端 `SELECT` 且 **`is_visible = true`**；匿名 **`INSERT`** 投稿；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` RLS 权限。
+- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` 稿件权限。
 
 **本地 `npm run dev`**：Vite 不托管 `api/*`，管理接口与远端列表需在 **Vercel 预览 / 生产** 验证，或本地运行 **`vercel dev`**（需安装 [Vercel CLI](https://vercel.com/docs/cli)）以同时提供前端与 Serverless。
 
@@ -115,7 +118,8 @@ npm run dev
 | 模块 | 说明 |
 |------|------|
 | 首页 | Mux HLS 背景视频（`HeroMuxHlsVideo.tsx`）、投稿截止倒计时、奖项与投稿规范、评审权重展示；首屏底缘与奖项区背景衔接见 `DESIGN.md` §7、`HomePage.tsx` + `index.css` |
-| 参赛展示 | `showcaseMerge`：用户投稿（`localStorage`）与 `mockShowcase` 合并列表 |
+| 参赛展示 | `showcaseMerge`：可选 Supabase 远端稿 + `localStorage` + `mockShowcase`；投票与排行榜见 `showcaseVotes.ts` |
+| 作品详情 | `/showcase/:id`：Markdown 展示、Hero 叠渐变、投票条 |
 | 提交作品 | 多步表单；文档 → 抽文本（pdf.js、mammoth）→ **本地启发式**概要回填；含制作者昵称（≤20 字） |
 | 管理 | 条目可见性、编辑、删除 |
 
@@ -128,7 +132,7 @@ npm run dev
 ```
 src/
   components/     # UI、布局、报名表单、展示卡等
-  pages/          # HomePage、ShowcasePage、DeploymentGuidePage、AdminPage
+  pages/          # HomePage、ShowcasePage、ShowcaseDetailPage、DeploymentGuidePage、AdminPage
   lib/            # 存储、展示合并、文档摘要、截图请求等
   data/           # 示例展示数据 mockShowcase
 index.html

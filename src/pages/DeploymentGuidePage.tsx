@@ -6,7 +6,7 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  ClipboardCopy,
+  Copy,
   Database,
   Gamepad2,
   Github,
@@ -54,24 +54,20 @@ function CodeBlock({
 
   return (
     <div className="deploy-code my-4 max-w-full overflow-hidden rounded-xl border border-white/[0.1] bg-[#0a0f0e] shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
-      <div className="flex items-center justify-between border-b border-white/[0.08] bg-white/[0.03] px-4 py-2.5">
-        <span className="font-label text-[10px] font-medium uppercase tracking-technical text-primary/40">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2 md:px-4">
+        <span className="font-label text-[10px] font-medium uppercase tracking-technical text-white/30">
           {lang}
         </span>
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-transparent px-3 py-1 font-label text-[10px] font-medium uppercase tracking-technical text-primary/60 transition-colors hover:border-[#00ffcc]/40 hover:text-[#00ffcc]"
+          title={copied ? "已复制" : "复制"}
+          aria-label={copied ? "已复制到剪贴板" : "复制代码到剪贴板"}
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-white/[0.06] hover:text-primary ${
+            copied ? "text-primary" : "text-white/35"
+          }`}
         >
-          {copied ? (
-            <>
-              <Check className="h-3 w-3" /> 已复制
-            </>
-          ) : (
-            <>
-              <ClipboardCopy className="h-3 w-3" /> 复制
-            </>
-          )}
+          {copied ? <Check className="h-4 w-4" strokeWidth={2} /> : <Copy className="h-4 w-4" strokeWidth={1.75} />}
         </button>
       </div>
       <pre className="deploy-pre overflow-x-auto whitespace-pre-wrap break-words p-4 font-label text-[13px] leading-relaxed text-primary/88 md:p-5 md:text-[13.5px]">

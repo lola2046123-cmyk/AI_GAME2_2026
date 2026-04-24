@@ -245,27 +245,32 @@ export function ShowcasePage() {
             <RankingList
               title="热门作品"
               iconKey="flame"
+              topN={5}
               items={rankings.like}
               voteCount={(e) => e.votes}
               emptyText="还没有点赞记录"
             />
             <RankingList
-              title="最搞怪"
-              iconKey="zap"
-              items={rankings.fun}
-              voteCount={(e) => e.votes}
-            />
-            <RankingList
               title="视觉最佳"
               iconKey="sparkles"
+              topN={5}
               items={rankings.visual}
               voteCount={(e) => e.votes}
             />
             <RankingList
               title="最有趣"
               iconKey="gamepad"
+              topN={5}
               items={rankings.gameplay}
               voteCount={(e) => e.votes}
+            />
+            <RankingList
+              title="最想氪金"
+              iconKey="coin"
+              topN={5}
+              items={rankings.fun}
+              voteCount={(e) => e.votes}
+              emptyText="还没有「最想氪金」投票"
             />
           </div>
 

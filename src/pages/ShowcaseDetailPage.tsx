@@ -3,7 +3,7 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { LoginModal } from "../components/auth/LoginModal";
 import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
@@ -14,6 +14,7 @@ import {
   type ShowcaseVoteState
 } from "../lib/showcaseVotes";
 import type { ShowcaseSubmission } from "../types/submission";
+import { stripMarkdownToPlain } from "../lib/showcaseCardSummary";
 
 /* ────────────────────────────────────────
    奖项状态映射（与 ShowcasePage 保持一致）
@@ -93,7 +94,7 @@ export function ShowcaseDetailPage() {
 
   if (item === undefined) {
     return (
-      <main className="min-h-[50vh] bg-background px-6 py-20 text-center text-white/55 md:px-12">
+      <main className="min-h-[50vh] -mt-[var(--site-header-height)] scroll-mt-[var(--site-header-height)] bg-background px-6 pt-[calc(var(--site-header-height)+2.5rem)] pb-20 text-center text-white/55 md:px-12 md:pt-[calc(var(--site-header-height)+3rem)]">
         加载中...
       </main>
     );
@@ -103,6 +104,7 @@ export function ShowcaseDetailPage() {
 
   const status = id ? AWARD_STATUS[id] : undefined;
   const summary = detail?.summary ?? item.cardSummary ?? item.gameplay;
+  const summaryPlainHero = stripMarkdownToPlain(summary);
   const markdown = detail?.markdown ?? `# ${item.gameName}\n\n${item.gameplay}`;
   const author = detail?.author ?? item.creatorNickname ?? "—";
 
@@ -118,133 +120,101 @@ export function ShowcaseDetailPage() {
 
   return (
     <>
-      <main className="relative bg-background pb-[max(6rem,calc(env(safe-area-inset-bottom,0px)+5rem))]">
-
-        {/* ── Hero 封面区 ── */}
-        <div className="relative isolate w-full overflow-hidden">
-          {/* 封面图 */}
-          <div className="aspect-[21/9] w-full overflow-hidden sm:aspect-[3/1] md:aspect-[4/1]">
+      <main className="relative -mt-[var(--site-header-height)] scroll-mt-[var(--site-header-height)] bg-background pt-[calc(var(--site-header-height)+0.5rem)] pb-[max(6rem,calc(env(safe-area-inset-bottom,0px)+5rem))]">
+        {/* ── Hero：封面 + 叠渐变；简介仅行截断；底部再叠一层黑渐变与下方正文区衔接 */}
+        <div className="relative isolate w-full overflow-x-clip">
+          <div className="relative w-full min-h-[min(42svh,17rem)] md:min-h-[min(46vh,22rem)]">
             <img
               src={item.thumbnailUrl}
               alt={item.gameName}
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
-          </div>
-          {/* 渐变遮罩 */}
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10"
-            aria-hidden
-          />
-
-          {/* Hero 内容层 */}
-          <div className="absolute inset-0 flex flex-col justify-end px-6 pb-10 md:px-12 md:pb-14">
-            <div className="mx-auto w-full max-w-home">
-              {/* 返回按钮 */}
-              <motion.div
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4 }}
-                className="mb-6"
-              >
-                <Link
-                  to="/showcase"
-                  className="inline-flex items-center gap-1.5 font-label text-xs font-medium uppercase tracking-widest text-white/40 transition-colors hover:text-white/75"
+            <div
+              className="pointer-events-none absolute inset-0 z-0 max-md:bg-gradient-to-b max-md:from-background/90 max-md:via-background/48 max-md:to-background/92 md:bg-gradient-to-t md:from-background/25 md:via-background/65 md:to-background"
+              aria-hidden
+            />
+            {/* 底部压暗条：与 main 背景 #101010 自然过渡到下方面板 */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(40%,12rem)] min-h-[5.5rem] bg-gradient-to-b from-transparent via-background/75 to-background md:h-[min(38%,14rem)] md:min-h-[6.5rem]"
+              aria-hidden
+            />
+            <div className="relative z-[2] px-4 pb-10 pt-8 sm:px-6 md:px-12 md:pb-14 md:pt-12">
+              <div className="mx-auto w-full max-w-home">
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  返回展示
-                </Link>
-              </motion.div>
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    {status === "winner" && (
+                      <span className="rounded-full border border-yellow-400/45 bg-yellow-400/15 px-3 py-1 font-label text-xs font-semibold uppercase tracking-widest text-yellow-200">
+                        获奖作品
+                      </span>
+                    )}
+                    {status === "finalist" && (
+                      <span className="rounded-full border border-primary/45 bg-primary/12 px-3 py-1 font-label text-xs font-semibold uppercase tracking-widest text-primary">
+                        入围作品
+                      </span>
+                    )}
+                  </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {/* 状态徽章 */}
-                <div className="mb-3 flex flex-wrap items-center gap-2">
-                  {status === "winner" && (
-                    <span className="rounded-full border border-yellow-400/40 bg-yellow-400/15 px-3 py-1 font-label text-xs font-semibold uppercase tracking-widest text-yellow-300">
-                      获奖作品
-                    </span>
-                  )}
-                  {status === "finalist" && (
-                    <span className="rounded-full border border-primary/35 bg-primary/10 px-3 py-1 font-label text-xs font-semibold uppercase tracking-widest text-primary">
-                      入围作品
-                    </span>
-                  )}
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.06] px-3 py-1 font-label text-xs uppercase tracking-widest text-white/35">
-                    HTML5
-                  </span>
-                </div>
+                  <h1 className="font-headline text-2xl font-bold leading-snug tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:text-3xl md:text-4xl lg:text-5xl">
+                    {item.gameName}
+                  </h1>
 
-                {/* 标题 */}
-                <h1 className="font-headline text-3xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
-                  {item.gameName}
-                </h1>
+                  <p className="mt-2 font-label text-sm text-white/55 drop-shadow-md md:text-base">{author}</p>
 
-                {/* 作者 */}
-                <p className="mt-2 font-label text-sm text-white/40">
-                  {author}
-                </p>
+                  <div className="mt-5">
+                    <ShowcaseVoteBar
+                      projectId={item.id}
+                      user={user}
+                      state={voteState}
+                      prominent
+                      detailHero
+                      onRequireLogin={() => setLoginOpen(true)}
+                      onStateChange={(updater) => setVoteState((prev) => updater(prev))}
+                    />
+                  </div>
 
-                {/* 简介 */}
-                <p className="mt-4 max-w-2xl font-body text-sm leading-relaxed text-white/65 md:text-base">
-                  {summary}
-                </p>
+                  <p
+                    className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-white/75 drop-shadow-[0_1px_12px_rgba(0,0,0,0.45)] md:text-base line-clamp-4 md:line-clamp-3"
+                    title={summaryPlainHero}
+                  >
+                    {summaryPlainHero}
+                  </p>
 
-                {/* 技术标签 */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {item.techStack.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-[#00ffcc]/20 bg-[#00ffcc]/[0.07] px-3 py-1 font-label text-xs tracking-normal text-[#a8ffe1]/75"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {item.techStack.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-[#00ffcc]/35 bg-[#00ffcc]/[0.12] px-3 py-1 font-label text-xs tracking-normal text-[#d2fff0]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
 
-                {/* CTA 按钮组 */}
-                <div className="mt-6 flex flex-wrap gap-3">
                   {canLink && (
-                    <a
-                      href={item.deployUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary inline-flex items-center gap-2 px-7 py-3 text-sm"
-                    >
-                      立即体验
-                      <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
-                    </a>
+                    <div className="mt-8">
+                      <a
+                        href={item.deployUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary inline-flex items-center gap-2 px-7 py-3 text-sm"
+                      >
+                        立即体验
+                        <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
+                      </a>
+                    </div>
                   )}
-                  {canLink && (
-                    <a
-                      href={item.deployUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-7 py-3 font-label text-sm font-medium uppercase tracking-widest text-white/65 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-white/90"
-                    >
-                      访问项目
-                    </a>
-                  )}
-                </div>
-
-                <div className="mt-6">
-                  <ShowcaseVoteBar
-                    projectId={item.id}
-                    user={user}
-                    state={voteState}
-                    onRequireLogin={() => setLoginOpen(true)}
-                    onStateChange={(updater) => setVoteState((prev) => updater(prev))}
-                  />
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── 内容区 ── */}
-        <div className="mx-auto w-full max-w-home px-6 pt-10 md:px-12 md:pt-14">
+        {/* ── 内容区：略上移与 Hero 底渐变叠化衔接 */}
+        <div className="relative z-[1] mx-auto w-full max-w-home scroll-mt-[calc(var(--site-header-height)+0.75rem)] -mt-6 bg-background px-6 pt-6 pb-2 max-sm:px-4 max-sm:pt-5 md:-mt-8 md:px-12 md:pt-10 md:pb-0">
 
           {/* 模式切换 */}
           <motion.div

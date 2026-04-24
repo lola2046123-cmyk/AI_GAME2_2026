@@ -1,5 +1,6 @@
 -- 在 Supabase SQL Editor 中整段执行（项目 → SQL → New query）
 -- 用途：参赛展示「公开只读」+ 匿名投稿写入；管理改删走 Vercel /api + Service Role
+-- 投票表见同目录 supabase-votes.sql；总流程见 SUPABASE.md
 
 create table if not exists public.showcase_submissions (
   id uuid primary key,

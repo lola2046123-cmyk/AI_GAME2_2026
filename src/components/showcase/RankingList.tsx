@@ -1,14 +1,14 @@
 import type { LucideIcon } from "lucide-react";
-import { Flame, Gamepad2, Sparkles, Zap } from "lucide-react";
+import { Coins, Flame, Gamepad2, Sparkles } from "lucide-react";
 import type { RankingEntry } from "../../lib/showcaseVotes";
 
-export type RankingIconKey = "flame" | "zap" | "sparkles" | "gamepad";
+export type RankingIconKey = "flame" | "sparkles" | "gamepad" | "coin";
 
 const ICON_MAP: Record<RankingIconKey, LucideIcon> = {
   flame:    Flame,
-  zap:      Zap,
   sparkles: Sparkles,
-  gamepad:  Gamepad2
+  gamepad:  Gamepad2,
+  coin:     Coins
 };
 
 /* 每个榜单独立的配色方案 */
@@ -17,9 +17,9 @@ const ACCENT: Record<
   { icon: string; badge: string; countText: string }
 > = {
   flame:    { icon: "text-orange-300 border-orange-400/25 bg-orange-400/[0.08]",   badge: "border-orange-400/15 bg-orange-400/[0.06] text-orange-300/70", countText: "text-orange-300/60" },
-  zap:      { icon: "text-yellow-300 border-yellow-400/25 bg-yellow-400/[0.08]",   badge: "border-yellow-400/15 bg-yellow-400/[0.06] text-yellow-300/70",  countText: "text-yellow-300/60" },
   sparkles: { icon: "text-sky-300 border-sky-400/25 bg-sky-400/[0.08]",            badge: "border-sky-400/15 bg-sky-400/[0.06] text-sky-300/70",           countText: "text-sky-300/60"    },
-  gamepad:  { icon: "text-primary border-primary/25 bg-primary/[0.08]",            badge: "border-primary/15 bg-primary/[0.06] text-primary/70",           countText: "text-primary/60"    }
+  gamepad:  { icon: "text-primary border-primary/25 bg-primary/[0.08]",            badge: "border-primary/15 bg-primary/[0.06] text-primary/70",           countText: "text-primary/60"    },
+  coin:     { icon: "text-amber-300 border-amber-400/25 bg-amber-400/[0.08]",      badge: "border-amber-400/15 bg-amber-400/[0.06] text-amber-300/70",      countText: "text-amber-300/60"  }
 };
 
 /* 名次颜色：前三名区分 */
@@ -33,6 +33,8 @@ function rankStyle(index: number): string {
 type Props = {
   title: string;
   iconKey: RankingIconKey;
+  /** 榜单展示条数，默认 5 */
+  topN?: number;
   emptyText?: string;
   voteCount: (entry: RankingEntry) => number;
   items: RankingEntry[];
@@ -41,6 +43,7 @@ type Props = {
 export function RankingList({
   title,
   iconKey,
+  topN = 5,
   items,
   voteCount,
   emptyText = "暂无投票数据"
@@ -65,7 +68,7 @@ export function RankingList({
         <span
           className={`rounded-full border px-2.5 py-1 font-label text-[10px] uppercase tracking-widest ${accent.badge}`}
         >
-          Top 10
+          Top {topN}
         </span>
       </div>
 

@@ -88,7 +88,7 @@
 |------|------|
 | **L1** | `SectionTitleEnDecor` `headingLevel={1}`：参赛作品 / SHOWCASE（二级页首屏高度与部署指南对齐） |
 | **L2** | 副文案（人类 × AI 主题说明 + 英文辅助） |
-| **排行榜** | 四个 `RankingList`：热门（按点赞）、最搞怪、视觉最佳、最有趣；各列表独立 Lucide 图标与配色，名次 1–3 有视觉区分 |
+| **排行榜** | 四个 `RankingList`（各 Top 5）：热门、视觉最佳、最有趣、最想氪金（`fun`）；独立图标与配色，名次 1–3 有视觉区分 |
 | **筛选 / 排序** | 客户端：分类 `全部 | AI | 叙事 | 策略 | 实验`（与 `techStack` / 文案关键词匹配）；排序 `最新 | 热门 | 获奖`（热门按 `voteMap` 中 `like` 计数；获奖按内置 `AWARD_STATUS` 映射） |
 | **卡片** | `ShowcaseCard`：16:9 封面、标题一行、摘要（`summary` 优先，否则从 Markdown 剥离截断）、标签、获奖角标、悬停「查看作品」；底部可选 `ShowcaseVoteBar`（紧凑模式） |
 
@@ -96,7 +96,7 @@
 
 | 层级 | 内容 |
 |------|------|
-| **L1** | 作品名、封面、短摘要、标签、外链 CTA（立即体验 / 访问项目） |
+| **L1** | 作品名、封面叠渐变、简介（行截断）、标签、外链 CTA（仅「立即体验」） |
 | **正文** | Markdown 安全渲染；`预览` / `源码` 切换 |
 | **互动** | `ShowcaseVoteBar` 全功能条；未登录时触发 `LoginModal` |
 
@@ -151,7 +151,7 @@
 
 - **列表数据**：`getShowcaseListAsync()`（合并 mock、本地与 Supabase 可见稿件，逻辑见 `showcaseMerge` / `submissionsStorage`）
 - **投票读数**：`getVoteStateForProjects(projectIds, user?.id)`，经 **`getSupabaseAnon()`** 查询表 `showcase_votes`（未配置 Supabase 时返回全零计数）
-- **排行榜**：`buildRankings(items, voteMap)` 在客户端聚合四类票数，各取 Top 10；仅展示票数大于 0 的条目
+- **排行榜**：`buildRankings(items, voteMap)` 在客户端聚合四类票数，各取 Top 5；仅展示票数大于 0 的条目
 - **排序「热门」**：按投票状态中的 `like` 计数排序（与真实点赞一致）
 - **卡片投票条 `ShowcaseVoteBar`**：
   - 未登录：点击点赞或分类票 → `onRequireLogin` → 打开 `LoginModal`
@@ -172,11 +172,11 @@
 | **会话** | `useCurrentUser()`：`getSession` + `onAuthStateChange`，向 UI 提供 `user` / `loading` |
 | **登录 UI** | `LoginModal`：`signInWithOtp` 发邮件魔法链接；仅在需要投票的页面挂载 |
 | **数据表** | `showcase_votes`：字段含 `project_id`、`user_id`、`type`（见 `VoteType`） |
-| **投票类型** | `like`（点赞）、`fun`、`visual`、`gameplay`（三档分类票，UI 文案对应「最搞怪 / 视觉最佳 / 最有趣」等） |
+| **投票类型** | `like`、`fun`、`visual`、`gameplay`（UI：最想氪金 / 视觉最佳 / 最有趣） |
 | **不可重复规则** | 同一用户对同一作品的**同一 `type` 至多一条记录**；违反唯一约束时前端提示「你已经点过赞了。」（like）或「这个分类你已经投过了。」（分类票） |
 | **并存** | 点赞与三种分类票互不冲突：同一用户可对同一作品分别投 `like` 与至多各一条的 `fun` / `visual` / `gameplay`（依赖表上 `(project_id, user_id, type)` 唯一约束；若线上未建表或未配 RLS，以实际报错为准） |
 
-> **运维提示**：投稿表的 RLS 示例见 `docs/supabase-showcase.sql`。`showcase_votes` 的建表与 RLS 需单独在 Supabase 中配置，并与前端 `insert`/`select` 策略一致，否则列表可读但写票失败。
+> **运维提示**：投稿与投票 SQL 见 `docs/supabase-showcase.sql`、`docs/supabase-votes.sql`；步骤汇总见 `docs/SUPABASE.md`。
 
 ### 4.7 部署指南
 

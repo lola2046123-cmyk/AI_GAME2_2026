@@ -73,6 +73,8 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 锚点 / :target 滚动时与 fixed 顶栏错位，与部署页 scroll-mt 节奏一致 */
+    scroll-padding-top: calc(var(--site-header-height) + 0.5rem);
   }
 
   #root {
