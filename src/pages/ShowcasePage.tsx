@@ -109,15 +109,15 @@ export function ShowcasePage() {
             />
           </div>
 
-          {/* 全局暗化遮罩 */}
+          {/* 全局暗化遮罩：移动端遮罩更浅，桌面端适当加深 */}
           <div
-            className="pointer-events-none absolute inset-0 bg-black/62"
+            className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-black/55 md:bg-black/62"
             aria-hidden
           />
 
-          {/* 底部渐变：从透明过渡到 background #101010，无缝衔接第二屏 */}
+          {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-background via-background/80 to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-background via-background/75 to-transparent sm:h-[36%] md:h-[45%] md:via-background/80"
             aria-hidden
           />
 

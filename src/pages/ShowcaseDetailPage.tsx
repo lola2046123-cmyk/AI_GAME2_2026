@@ -3,7 +3,7 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ExternalLink, Eye, Lightbulb, Coins, Heart } from "lucide-react";
+import { ArrowUpRight, Eye, Lightbulb, Coins, Heart, UserRound } from "lucide-react";
 import { ThinArrow } from "../components/ThinArrow";
 import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
@@ -210,19 +210,22 @@ export function ShowcaseDetailPage() {
               <h1 className="font-headline text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
                 {item.gameName}
               </h1>
-              <p className="font-body text-sm text-white/75 drop-shadow md:text-base">
-                <span className="mr-1.5 font-label text-sm text-white/40">创作者:</span>
-                {author}
+              <p className="flex items-center gap-2 font-body text-sm font-normal tracking-normal drop-shadow md:text-base">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary/80">
+                  <UserRound className="h-3.5 w-3.5" strokeWidth={1.8} />
+                </span>
+                <span className="text-primary/90">创作者</span>
+                <span className="text-primary/75">{author}</span>
               </p>
               {canLink && (
                 <a
                   href={item.deployUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 flex w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-label text-sm font-semibold text-background transition-all duration-200 hover:bg-primary/90 hover:shadow-[0_0_28px_rgba(168,255,225,0.35)] sm:max-w-[240px]"
+                  className="btn-primary mt-1 w-full max-w-[220px] gap-2 px-8 py-3 text-sm sm:max-w-[240px]"
                 >
                   立即体验
-                  <ExternalLink className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
+                  <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
                 </a>
               )}
             </motion.div>
@@ -231,58 +234,62 @@ export function ShowcaseDetailPage() {
                 设计差异：有图标 + 有计数 + 可交互颜色变化
                 vs AI 标签：无图标 + 无计数 + 静态展示 ── */}
             <motion.div
-              className="relative z-[2] flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+              className="relative z-[2] w-full max-w-sm sm:max-w-none"
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* 点赞按钮 */}
-              <button
-                type="button"
-                onClick={() => void handleLike()}
-                disabled={loadingKey !== null || userVotes.includes("like")}
-                className={[
-                  "group flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed",
-                  userVotes.includes("like")
-                    ? "border-rose-400/50 bg-rose-500/18 text-rose-300 shadow-[0_0_16px_rgba(251,113,133,0.18)]"
-                    : "border-white/[0.14] bg-black/40 text-white/60 hover:border-rose-400/40 hover:bg-rose-500/[0.1] hover:text-rose-300"
-                ].join(" ")}
-              >
-                <Heart
-                  className="h-3.5 w-3.5 shrink-0 transition-colors"
-                  fill={userVotes.includes("like") ? "currentColor" : "none"}
-                  strokeWidth={1.8}
-                />
-                <span className="font-label tracking-wide">点赞</span>
-                <span className="font-reward-hud text-[13px] font-bold leading-none">
-                  {counts.like}
-                </span>
-              </button>
+              {/* 移动端 2×2 网格，sm+ 恢复单行 flex */}
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
 
-              {/* 三个分类投票按钮 */}
-              {CATEGORY_CONFIG.map(({ type, label, Icon }) => {
-                const active = userVotes.includes(type);
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => void handleVote(type)}
-                    disabled={loadingKey !== null || active}
-                    className={[
-                      "group flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed",
-                      active
-                        ? "border-primary/45 bg-primary/15 text-primary shadow-[0_0_16px_rgba(168,255,225,0.15)]"
-                        : "border-white/[0.14] bg-black/40 text-white/55 hover:border-primary/35 hover:bg-primary/[0.08] hover:text-primary/80"
-                    ].join(" ")}
-                  >
-                    <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                    <span className="font-label tracking-wide">{label}</span>
-                    <span className="font-reward-hud text-[13px] font-bold leading-none">
-                      {counts[type]}
-                    </span>
-                  </button>
-                );
-              })}
+                {/* 点赞按钮 */}
+                <button
+                  type="button"
+                  onClick={() => void handleLike()}
+                  disabled={loadingKey !== null || userVotes.includes("like")}
+                  className={[
+                    "flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed sm:w-auto",
+                    userVotes.includes("like")
+                      ? "border-rose-400/50 bg-rose-500/18 text-rose-300 shadow-[0_0_16px_rgba(251,113,133,0.18)]"
+                      : "border-white/[0.14] bg-black/40 text-white/60 hover:border-rose-400/40 hover:bg-rose-500/[0.1] hover:text-rose-300"
+                  ].join(" ")}
+                >
+                  <Heart
+                    className="h-3.5 w-3.5 shrink-0 transition-colors"
+                    fill={userVotes.includes("like") ? "currentColor" : "none"}
+                    strokeWidth={1.8}
+                  />
+                  <span className="font-label tracking-wide">点赞</span>
+                  <span className="font-reward-hud text-[13px] font-bold leading-none">
+                    {counts.like}
+                  </span>
+                </button>
+
+                {/* 三个分类投票按钮 */}
+                {CATEGORY_CONFIG.map(({ type, label, Icon }) => {
+                  const active = userVotes.includes(type);
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => void handleVote(type)}
+                      disabled={loadingKey !== null || active}
+                      className={[
+                        "flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed sm:w-auto",
+                        active
+                          ? "border-primary/45 bg-primary/15 text-primary shadow-[0_0_16px_rgba(168,255,225,0.15)]"
+                          : "border-white/[0.14] bg-black/40 text-white/55 hover:border-primary/35 hover:bg-primary/[0.08] hover:text-primary/80"
+                      ].join(" ")}
+                    >
+                      <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+                      <span className="font-label tracking-wide">{label}</span>
+                      <span className="font-reward-hud text-[13px] font-bold leading-none">
+                        {counts[type]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
 
               {/* 反馈提示 */}
               {flash && (

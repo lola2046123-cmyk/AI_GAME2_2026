@@ -729,16 +729,15 @@ export function HomePage() {
           />
         </div>
 
-        {/* ── 统一暗化遮罩，保证文字可读 ── */}
+        {/* ── 统一暗化遮罩：移动端遮罩更浅，桌面端加深保证文字可读 ── */}
         <div
-          className="pointer-events-none absolute inset-0 bg-black/72"
+          className="pointer-events-none absolute inset-0 bg-black/50 sm:bg-black/62 md:bg-black/72"
           aria-hidden
         />
 
-        {/* ── 顶部渐变：background → 透明，覆盖上 ~35%
-              使评审协议标题 / 前 1/3 内容与前一屏背景无缝衔接 ── */}
+        {/* ── 顶部渐变：移动端覆盖比例缩小，避免和遮罩叠加过暗 ── */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-background via-background/75 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[20%] bg-gradient-to-b from-background via-background/65 to-transparent sm:h-[28%] md:h-[35%] md:via-background/75"
           aria-hidden
         />
 
