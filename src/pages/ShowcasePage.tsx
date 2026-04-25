@@ -109,15 +109,15 @@ export function ShowcasePage() {
             />
           </div>
 
-          {/* 黑色渐变遮罩：高度压缩至约 70%，减少覆盖面积 */}
+          {/* 全局暗化遮罩：移动端遮罩更浅，桌面端适当加深 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-black/40 via-black/30 to-transparent sm:from-black/55 sm:via-black/40 md:from-black/62 md:via-black/45"
+            className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-black/55 md:bg-black/62"
             aria-hidden
           />
 
           {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[50px] bg-gradient-to-t from-background via-background/75 to-transparent md:via-background/80"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[20%] bg-gradient-to-t from-background via-background/75 to-transparent sm:h-[25%] md:h-[32%] md:via-background/80"
             aria-hidden
           />
 
