@@ -8,7 +8,7 @@ import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
-import showcaseHeroBg from "../../imge/game_bg6.jpg";
+import showcaseHeroBg from "../../imge/game_bg8.jpg";
 import {
   buildRankings,
   getVoteStateForProjects,
@@ -129,7 +129,7 @@ export function ShowcasePage() {
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center antialiased [transform:translateZ(0)]"
             >
-              <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/60">
+              <span className="font-label mb-2 block text-xs font-medium uppercase tracking-widest text-white/60">
                 AI 游戏设计大赛 2026
                 <span className="ml-2 text-white/45">· Showcase</span>
               </span>
@@ -140,7 +140,7 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,1),0_10px_28px_rgba(0,0,0,0.9),0_0_36px_rgba(0,0,0,0.75)] md:mt-6 md:text-lg md:leading-[1.9]">
+              <p className="mt-3 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.3),0_10px_28px_rgba(0,0,0,0.27),0_0_36px_rgba(0,0,0,0.225)] md:mt-4 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
               {loadError && (
@@ -155,7 +155,7 @@ export function ShowcasePage() {
           </div>
         </header>
 
-        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+80px)] pt-8 sm:-mt-[calc(6rem+80px)] md:-mt-[calc(7rem+80px)] md:px-12 md:pt-10">
+        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+40px)] pt-8 sm:-mt-[calc(6rem+48px)] md:-mt-[calc(7rem+80px)] md:px-12 md:pt-10">
 
           <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-4">
             <RankingList
