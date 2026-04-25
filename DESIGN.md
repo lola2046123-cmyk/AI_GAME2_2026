@@ -112,7 +112,7 @@ All heading-level text using `text-on-background` resolves to **pure white `#fff
 Inside modals and overlays, form field groups are laid out flat with thin `border-b border-white/[0.06]` dividers and `space-y-5` gaps. Never wrap individual fields in `rounded-xl border bg-white/[…]` card containers — nested cards violate the "Nested cards are always wrong" law. Apply visual grouping through spacing and separator lines only.
 
 ### 9.4 Creator / Author Label Sizing
-The "创作者" label uses `font-label font-medium text-[#a8ffe1]/80` **without a fixed pixel size**, inheriting the parent container's font size. This ensures the label is visually flush with the creator nickname beside it. Color differentiation (neon mint vs. near-white) is sufficient to distinguish label from value — a size hierarchy is not needed here.
+The "创作者" label and nickname are unified to `text-primary/90` (effective color `rgba(167, 255, 224, 0.9)`), **without a fixed pixel size**, inheriting the parent container's font size. This keeps the label visually flush with the creator nickname while preserving high contrast on dark hero/card backgrounds.
 
 ### 9.5 Functional Navigation Text — Minimum 15px
 Small-uppercase functional navigation links ("全部作品 →", "查看详情 →", "← 返回展示") must never render below **15px**:

@@ -31,7 +31,7 @@
 | 路径 | 页面组件 | 说明 |
 |------|-----------|------|
 | `/` | `HomePage` | 营销首页：Hero → 精选展示 → 奖项 → 最新投稿 → 提交规范 → 评审协议 → Footer（模块顺序以 `HomePage.tsx` 为准） |
-| `/showcase` | `ShowcasePage` | 参赛作品「展览页」：排行榜、筛选/排序、卡片栅格；集成投票与 Magic Link 登录弹窗 |
+| `/showcase` | `ShowcasePage` | 参赛作品「展览页」：Hero 背景图 + 排行榜 + 卡片栅格；集成投票与 Magic Link 登录弹窗 |
 | `/showcase/:id` | `ShowcaseDetailPage` | 单作品详情：封面与 CTA、Markdown 正文（`react-markdown` + `remark-gfm`）、预览 / 源码切换、投票条与登录弹窗 |
 | `/deploy` | `DeploymentGuidePage` | 部署教程长文 |
 | `/admin` | `AdminPage` | PIN 登录后作品列表与可见性/删除 |
@@ -88,9 +88,8 @@
 |------|------|
 | **L1** | `SectionTitleEnDecor` `headingLevel={1}`：参赛作品 / SHOWCASE（二级页首屏高度与部署指南对齐） |
 | **L2** | 副文案（人类 × AI 主题说明 + 英文辅助） |
-| **排行榜** | 四个 `RankingList`（各 Top 5）：热门、视觉最佳、最有趣、最想氪金（`fun`）；独立图标与配色，名次 1–3 有视觉区分 |
-| **筛选 / 排序** | 客户端：分类 `全部 | AI | 叙事 | 策略 | 实验`（与 `techStack` / 文案关键词匹配）；排序 `最新 | 热门 | 获奖`（热门按 `voteMap` 中 `like` 计数；获奖按内置 `AWARD_STATUS` 映射） |
-| **卡片** | `ShowcaseCard`：16:9 封面、标题一行、摘要（`summary` 优先，否则从 Markdown 剥离截断）、标签、获奖角标、悬停「查看作品」；底部可选 `ShowcaseVoteBar`（紧凑模式） |
+| **排行榜** | 四个 `RankingList`（各 Top 3）：热门、视觉最佳、最有趣、最想氪金（`fun`）；独立图标与配色，名次 1–3 有视觉区分 |
+| **卡片** | `ShowcaseCard`：16:9 封面、标题一行、创作者行、摘要、获奖角标 / 排行角标、悬停「查看作品」；底部可选 `ShowcaseVoteBar`（紧凑模式） |
 
 ### 3.5 参赛详情 `ShowcaseDetailPage`
 
@@ -151,7 +150,7 @@
 
 - **列表数据**：`getShowcaseListAsync()`（无用户稿时全量 mock 兜底；一旦出现可见用户稿则只展示用户稿，不再混入 mock；逻辑见 `showcaseMerge` / `submissionsStorage`）
 - **投票读数**：`getVoteStateForProjects(projectIds, user?.id)`，经 **`getSupabaseAnon()`** 查询表 `showcase_votes`（未配置 Supabase 时返回全零计数）
-- **排行榜**：`buildRankings(items, voteMap)` 在客户端聚合四类票数，各取 Top 5；仅展示票数大于 0 的条目
+- **排行榜**：`buildRankings(items, voteMap)` 在客户端聚合四类票数，各取 Top 3；仅展示票数大于 0 的条目
 - **排序「热门」**：按投票状态中的 `like` 计数排序（与真实点赞一致）
 - **卡片投票条 `ShowcaseVoteBar`**：
   - 未登录：点击点赞或分类票 → `onRequireLogin` → 打开 `LoginModal`

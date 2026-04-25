@@ -14,7 +14,7 @@
 
 视觉与色板说明见仓库根目录 **[DESIGN.md](./DESIGN.md)**（含 **§7 实现备忘**：全站胶片颗粒叠放、`--film-grain-opacity`、首屏与奖项区 `.home-hero-bottom-blend` / `.home-prizes-section` 衔接等；**§8 线上部署摘要**）。设计令牌与全局样式主要在 **`src/index.css`**（`@theme` + 组件层）。
 
-面向参赛者的**网页游戏托管流程**见站内页面 **部署指南**（路由 **`/deploy`**，上线后为 `https://<你的域名>/deploy`；本地为 `http://localhost:3000/deploy`）。该页与 README 互补：README 偏本仓库上线步骤，该页偏通用 GitHub / Supabase / Vercel 操作。
+面向参赛者的**网页游戏托管流程**见站内页面 **部署指南**（路由 **`/deploy`**，上线后为 `https://<你的域名>/deploy`；本地默认 `http://localhost:3000/deploy`，若 3000 被占用请以终端实际端口为准）。该页与 README 互补：README 偏本仓库上线步骤，该页偏通用 GitHub / Supabase / Vercel 操作。
 
 ---
 
@@ -85,7 +85,12 @@ npm install
 npm run dev
 ```
 
-开发地址：<http://localhost:3000>
+开发地址：默认 <http://localhost:3000>（端口占用时 Vite 会自动顺延到 `3001+`）。
+
+### 当前静态资源路径（上线核对）
+
+- Showcase Hero 背景图：`/imge/game_bg4.jpg`（`src/pages/ShowcasePage.tsx`）
+- 浏览器 favicon：`/imge/favicon_logo_16px.png`、`/imge/favicon_logo_64px.png`（`index.html`）
 
 | 命令 | 说明 |
 |------|------|
