@@ -210,12 +210,12 @@ export function ShowcaseDetailPage() {
               <h1 className="font-headline text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
                 {item.gameName}
               </h1>
-              <p className="flex items-center gap-2 font-body text-sm font-normal tracking-normal drop-shadow md:text-base">
+              <p className="flex items-center gap-2 font-body text-sm font-medium tracking-normal [text-shadow:0_2px_12px_rgba(0,0,0,0.78)] md:text-base">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary/80">
                   <UserRound className="h-3.5 w-3.5" strokeWidth={1.8} />
                 </span>
-                <span className="text-primary/90">创作者</span>
-                <span className="text-primary/75">{author}</span>
+                <span className="text-primary/85">创作者</span>
+                <span className="text-primary/85">{author}</span>
               </p>
               {canLink && (
                 <a
