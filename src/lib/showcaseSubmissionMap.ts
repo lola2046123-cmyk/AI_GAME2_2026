@@ -1,4 +1,5 @@
 import type { ShowcaseSubmission } from "../types/submission";
+import { sanitizeTags } from "../types/showcaseTags";
 
 /** PostgREST 行（snake_case）→ 前端实体 */
 export function rowToShowcaseSubmission(row: {
@@ -9,6 +10,7 @@ export function rowToShowcaseSubmission(row: {
   card_summary: string | null;
   gameplay_source: string | null;
   tech_stack: unknown;
+  tags?: unknown;
   evolution: string;
   deploy_url: string;
   thumbnail_url: string;
@@ -19,6 +21,7 @@ export function rowToShowcaseSubmission(row: {
   const stack = Array.isArray(row.tech_stack)
     ? (row.tech_stack as string[])
     : [];
+  const tags = sanitizeTags(Array.isArray(row.tags) ? (row.tags as string[]) : []);
   const gs = row.gameplay_source;
   const gameplaySource =
     gs === "ai" || gs === "local" || gs === "manual" ? gs : undefined;
@@ -30,6 +33,7 @@ export function rowToShowcaseSubmission(row: {
     cardSummary: row.card_summary?.trim() || undefined,
     gameplaySource,
     techStack: stack,
+    tags,
     evolution: row.evolution,
     deployUrl: row.deploy_url,
     thumbnailUrl: row.thumbnail_url,
@@ -48,6 +52,7 @@ export function submissionToInsertRow(entry: ShowcaseSubmission): Record<string,
     card_summary: entry.cardSummary?.trim() || null,
     gameplay_source: entry.gameplaySource ?? null,
     tech_stack: entry.techStack,
+    tags: sanitizeTags(entry.tags ?? []),
     evolution: entry.evolution,
     deploy_url: entry.deployUrl,
     thumbnail_url: entry.thumbnailUrl,

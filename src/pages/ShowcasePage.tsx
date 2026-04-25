@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
 import { RankingList } from "../components/showcase/RankingList";
@@ -7,7 +7,9 @@ import { ShowcaseCard } from "../components/showcase/ShowcaseCard";
 import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
+import { ShowcaseTagFilter } from "../components/showcase/ShowcaseTagFilter";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import { VALID_TAG_VALUES } from "../types/showcaseTags";
 import {
   buildRankings,
   getVoteStateForProjects,
@@ -26,10 +28,24 @@ const AWARD_STATUS: Record<string, "winner" | "finalist"> = {
 /* ─────────────── 页面主体 ─────────────── */
 export function ShowcasePage() {
   const { key } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<ShowcaseSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
+
+  /** 当前激活的标签（来自 URL ?tag=xxx），仅接受合法标签 */
+  const activeTag = useMemo(() => {
+    const raw = searchParams.get("tag");
+    return raw && VALID_TAG_VALUES.has(raw) ? raw : null;
+  }, [searchParams]);
+
+  const handleTagChange = (next: string | null) => {
+    const sp = new URLSearchParams(searchParams);
+    if (next) sp.set("tag", next);
+    else sp.delete("tag");
+    setSearchParams(sp, { replace: true });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -72,11 +88,27 @@ export function ShowcasePage() {
     };
   }, [items]);
 
-  /** 按最新时间排序 */
-  const filtered = useMemo(
+  /** 按最新时间排序 + 按激活标签筛选 */
+  const sorted = useMemo(
     () => [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [items]
   );
+
+  const filtered = useMemo(
+    () => (activeTag ? sorted.filter((it) => (it.tags ?? []).includes(activeTag)) : sorted),
+    [sorted, activeTag]
+  );
+
+  /** 标签命中数（用于筛选条上的计数） */
+  const tagCounts = useMemo<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    for (const it of items) {
+      for (const t of it.tags ?? []) {
+        if (VALID_TAG_VALUES.has(t)) map[t] = (map[t] ?? 0) + 1;
+      }
+    }
+    return map;
+  }, [items]);
 
   const rankings = useMemo(() => buildRankings(items, voteMap), [items, voteMap]);
 
@@ -188,6 +220,16 @@ export function ShowcasePage() {
               emptyText="还没有「最想氪金」投票"
             />
           </div>
+
+          {/* ── 标签筛选条 ── */}
+          {!loading && items.length > 0 && (
+            <ShowcaseTagFilter
+              totalCount={items.length}
+              counts={tagCounts}
+              active={activeTag}
+              onChange={handleTagChange}
+            />
+          )}
 
           {/* ── 卡片栅格（含加载态） ── */}
           <AnimatePresence mode="wait">

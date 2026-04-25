@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useOpenRegistration } from "../../context/RegistrationUiContext";
+import { BrandLogo } from "./BrandLogo";
 
 const navLinkClass =
   "site-nav-link font-label text-sm font-medium tracking-normal text-white/80 transition-colors hover:text-primary-container";
@@ -39,8 +40,12 @@ export function SiteHeader() {
           <div className="flex w-full max-w-home items-center justify-between gap-4 sm:gap-6">
           <Link
             to="/"
-            className="site-brand-logo shrink-0 font-headline text-lg font-semibold tracking-[-0.02em] text-white md:text-xl"
+            className="site-brand-logo group inline-flex shrink-0 items-center gap-2 font-headline text-lg font-semibold tracking-[-0.02em] text-white md:text-xl"
           >
+            <BrandLogo
+              size={28}
+              className="shrink-0 drop-shadow-[0_0_10px_rgba(0,255,204,0.18)] transition-transform duration-300 group-hover:scale-[1.06] md:h-[32px] md:w-[32px]"
+            />
             AI_GAME_2026
           </Link>
 

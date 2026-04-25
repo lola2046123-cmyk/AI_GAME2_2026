@@ -118,6 +118,24 @@ export function ShowcaseCard({
           {item.gameName}
         </h2>
 
+        {item.tags && item.tags.length > 0 ? (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {item.tags.slice(0, 2).map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-white/[0.09] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] font-medium tracking-normal text-white/55"
+              >
+                {t}
+              </span>
+            ))}
+            {item.tags.length > 2 && (
+              <span className="font-label text-[10px] tracking-normal text-white/30 self-center">
+                +{item.tags.length - 2}
+              </span>
+            )}
+          </div>
+        ) : null}
+
         {item.creatorNickname?.trim() ? (
           <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-sm text-white/85 md:text-sm">
             <span className="font-label font-medium text-primary/80">

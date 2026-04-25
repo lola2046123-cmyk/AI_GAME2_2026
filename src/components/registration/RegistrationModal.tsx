@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent } from "
 import { AnimatePresence, motion } from "motion/react";
 import { Loader2, X } from "lucide-react";
 import { MarkdownEditor } from "./MarkdownEditor";
+import { ShowcaseTagPicker } from "../showcase/ShowcaseTagPicker";
+import { sanitizeTags } from "../../types/showcaseTags";
 import { ThinArrow } from "../ThinArrow";
 import {
   appendSubmission,
@@ -85,6 +87,7 @@ export function RegistrationModal({
   const [creatorNickname, setCreatorNickname] = useState("");
   const [gameplay, setGameplay] = useState("");
   const [techStack, setTechStack] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
   const [deployUrl, setDeployUrl] = useState("");
   /** 用户新选的封面（JPEG data URL）；优先于截图服务 */
@@ -110,6 +113,7 @@ export function RegistrationModal({
     setCreatorNickname("");
     setGameplay("");
     setTechStack([]);
+    setTags([]);
     setCustomTool("");
     setDeployUrl("");
     setCoverDataUrl(null);
@@ -128,6 +132,7 @@ export function RegistrationModal({
     );
     setGameplay(clampChars(r.gameplay, MAX_GAMEPLAY_CHARS));
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
+    setTags(sanitizeTags(r.tags));
     setDeployUrl(clampChars(r.deployUrl, MAX_FIELD_CHARS));
     setCoverDataUrl(null);
     if (coverInputRef.current) coverInputRef.current.value = "";
@@ -320,6 +325,7 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
+          tags: sanitizeTags(tags),
           // UI 已移除 AI 进化论输入；编辑态保留原值以免破坏历史数据
           evolution: state.record.evolution ?? "",
           deployUrl: url,
@@ -341,6 +347,7 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
+          tags: sanitizeTags(tags),
           // UI 已移除 AI 进化论输入；新建提交写空字符串
           evolution: "",
           deployUrl: url,
@@ -610,6 +617,11 @@ export function RegistrationModal({
                           <span className="text-primary/70">{techStack.join("  ·  ")}</span>
                         </p>
                       )}
+                    </div>
+
+                    {/* 作品标签选择 */}
+                    <div className="border-t border-white/[0.06] pt-5">
+                      <ShowcaseTagPicker value={tags} onChange={setTags} />
                     </div>
                   </motion.div>
                 )}

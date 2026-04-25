@@ -189,6 +189,17 @@ export function ShowcaseDetailPage() {
                   入围作品
                 </span>
               )}
+              {/* 作品标签（玩法 / 风格） — 可点击跳转到展示页筛选 */}
+              {(item.tags ?? []).map((tag) => (
+                <Link
+                  key={`tag-${tag}`}
+                  to={`/showcase?tag=${encodeURIComponent(tag)}`}
+                  className="rounded-full border border-primary-container/45 bg-primary-container/12 px-3.5 py-1.5 font-label text-[11px] font-medium tracking-normal text-primary-container backdrop-blur-sm transition-colors hover:bg-primary-container/22"
+                  title={`查看更多「${tag}」作品`}
+                >
+                  {tag}
+                </Link>
+              ))}
               {/* AI 工具标签 — 纯文字 + 暗色胶囊，无图标无计数，与投票按钮形成明显差异 */}
               {item.techStack.map((tag) => (
                 <span
