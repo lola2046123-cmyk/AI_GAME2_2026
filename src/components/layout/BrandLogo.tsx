@@ -1,6 +1,6 @@
 /**
- * BrandLogo — 站点品牌图标（极简扁平吃豆人 + 青色豆子）。
- * 与 public/icon.svg 同款，便于 favicon 与顶栏视觉一致。
+ * BrandLogo — 站点品牌图标（像素风）。
+ * 使用用户提供的简化 SVG 造型。
  */
 
 type Props = {
@@ -13,17 +13,16 @@ export function BrandLogo({ size = 28, className }: Props) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 64 64"
+      viewBox="0 0 14 12"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       aria-hidden="true"
       className={className}
     >
-      <rect width="64" height="64" rx="14" fill="#101010" />
-      <path d="M 26 32 L 45.9 22.7 A 22 22 0 1 0 45.9 41.3 Z" fill="#FFC831" />
-      <circle cx="28" cy="22" r="2.8" fill="#101010" />
-      <circle cx="53" cy="32" r="2.6" fill="#00FFCC" />
-      <circle cx="60" cy="32" r="1.6" fill="#00FFCC" opacity="0.5" />
+      <path d="M2 8H3V9H4V10H5V11H9V10H11V11H10V12H4V11H3V10H2V9H1V8H0V5H1V3H2V2H3V1H4V0H10V1H11V2H9V1H5V2H4V3H3V5H2V8Z" fill="#1EFDCD" />
+      <path d="M12 4H11V5H10V6H9V7H11V8H12V10H11V9H9V8H8V7H7V6H8V5H9V4H10V3H11V2H12V4Z" fill="#1EFDCD" />
+      <path d="M14 7H12V5H14V7Z" fill="#1EFDCD" />
+      <path d="M7 5H5V3H7V5Z" fill="#1EFDCD" />
     </svg>
   );
 }

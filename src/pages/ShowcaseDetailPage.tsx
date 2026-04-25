@@ -153,7 +153,7 @@ export function ShowcaseDetailPage() {
 
   return (
     <>
-      <main className="relative -mt-[var(--site-header-height)] bg-background pt-[calc(var(--site-header-height)+0.5rem)] pb-[max(6rem,calc(env(safe-area-inset-bottom,0px)+5rem))]">
+      <main className="relative -mt-[var(--site-header-height)] bg-background pt-[var(--site-header-height)] pb-[max(6rem,calc(env(safe-area-inset-bottom,0px)+5rem))]">
 
         {/* ══════════════════════════════════════
             Hero：封面大图 + 居中信息布局
