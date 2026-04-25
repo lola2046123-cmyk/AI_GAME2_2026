@@ -79,11 +79,22 @@ export function ShowcaseVoteBar({
   const userVotes = state?.userVotes ?? [];
 
   async function handleLike(event?: React.MouseEvent<HTMLButtonElement>) {
-    if (loadingKey || userVotes.includes("like")) return;
-    let rect: DOMRect | null = null;
+    if (loadingKey === "like") return;
+
+    // 提前抓按钮中心坐标，并立刻触发 9 颗心炸开动效
+    // 即便用户已经赞过，再点也给一次愉悦反馈，方便确认按钮工作正常
     if (event) {
-      rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      setPop({
+        id: Date.now(),
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      });
+      setPopKey((n) => n + 1);
     }
+
+    if (userVotes.includes("like")) return;
+
     try {
       setLoadingKey("like");
       setMessage("");
@@ -93,14 +104,6 @@ export function ShowcaseVoteBar({
         userVotes: [...prev.userVotes, "like"]
       }));
       setFlash("like");
-      setPopKey((n) => n + 1);
-      if (rect) {
-        setPop({
-          id: Date.now(),
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-        });
-      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "点赞失败。");
     } finally {
@@ -135,7 +138,7 @@ export function ShowcaseVoteBar({
         <button
           type="button"
           onClick={(e) => void handleLike(e)}
-          disabled={loadingKey !== null || likeActive}
+          disabled={loadingKey === "like"}
           className={`group relative flex w-full items-center justify-between rounded-xl border px-4 py-3 transition-all duration-200 disabled:cursor-not-allowed ${
             popKey > 0 ? "like-btn-bump" : ""
           } ${
@@ -229,8 +232,8 @@ export function ShowcaseVoteBar({
             e.stopPropagation();
             void handleLike(e);
           }}
-          disabled={loadingKey !== null || userVotes.includes("like")}
-          className={`${chipBase} ${sizeClass} relative ${
+          disabled={loadingKey === "like"}
+          className={`${chipBase} ${sizeClass} relative cursor-pointer ${
             popKey > 0 ? "like-btn-bump" : ""
           } ${
             userVotes.includes("like")
