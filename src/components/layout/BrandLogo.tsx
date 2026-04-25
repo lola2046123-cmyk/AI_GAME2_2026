@@ -16,6 +16,7 @@ export function BrandLogo({ size = 28, className }: Props) {
       viewBox="0 0 14 12"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
+      shapeRendering="crispEdges"
       aria-hidden="true"
       className={className}
     >

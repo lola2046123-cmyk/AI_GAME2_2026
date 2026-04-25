@@ -44,7 +44,7 @@ export function SiteHeader() {
           >
             <BrandLogo
               size={28}
-              className="shrink-0 drop-shadow-[0_0_10px_rgba(0,255,204,0.18)] transition-transform duration-300 group-hover:scale-[1.06] md:h-[32px] md:w-[32px]"
+              className="h-[24px] w-[28px] shrink-0 [image-rendering:pixelated] drop-shadow-[0_0_8px_rgba(30,253,205,0.22)] transition-transform duration-300 group-hover:scale-[1.06] md:h-[24px] md:w-[28px]"
             />
             AI_GAME_2026
           </Link>
