@@ -22,9 +22,9 @@ export function ShowcaseStatBar({ count, total, isLoading }: Props) {
   const isFiltered = total !== undefined && total > 0 && count !== total;
 
   return (
-    <div className="mt-5 flex min-h-[2.125rem] items-center justify-center md:mt-6">
-      <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 font-label text-[11px] font-medium uppercase tracking-technical text-white/55">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary-container/90" aria-hidden />
+    <div className="mt-5 flex min-h-[2.75rem] items-center justify-center md:mt-6">
+      <span className="inline-flex items-center gap-3 rounded-full border border-primary/30 bg-primary/[0.08] px-6 py-2.5 font-label text-[14px] font-semibold uppercase tracking-technical text-primary">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden />
         {isFiltered ? `${count} / ${total}` : `${count}`} 件作品
       </span>
     </div>

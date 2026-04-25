@@ -139,7 +139,7 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/85 [text-shadow:0_3px_12px_rgba(0,0,0,1),0_10px_28px_rgba(0,0,0,0.9),0_0_36px_rgba(0,0,0,0.75)] md:mt-6 md:text-lg md:leading-[1.9]">
+              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,1),0_10px_28px_rgba(0,0,0,0.9),0_0_36px_rgba(0,0,0,0.75)] md:mt-6 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
               {loadError && (
@@ -154,7 +154,7 @@ export function ShowcasePage() {
           </div>
         </header>
 
-        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-20 pt-8 sm:-mt-24 md:-mt-28 md:px-12 md:pt-10">
+        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+150px)] pt-8 sm:-mt-[calc(6rem+150px)] md:-mt-[calc(7rem+150px)] md:px-12 md:pt-10">
 
           <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-4">
             <RankingList
