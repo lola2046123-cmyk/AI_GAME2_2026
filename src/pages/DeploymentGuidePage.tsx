@@ -160,16 +160,18 @@ export function DeploymentGuidePage() {
             <div className="absolute top-[-18%] left-1/2 h-[min(52vh,520px)] w-[min(100vw,1100px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_72%_58%_at_50%_32%,rgba(168,255,225,0.072)_0%,rgba(0,255,204,0.034)_42%,transparent_74%)]" />
             <div className="absolute bottom-[-22%] left-1/2 h-[min(44vh,420px)] w-[min(100vw,960px)] max-w-full -translate-x-1/2 bg-[radial-gradient(ellipse_68%_52%_at_50%_78%,rgba(168,255,225,0.048)_0%,rgba(0,255,204,0.022)_44%,transparent_78%)]" />
           </div>
-          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-10 md:px-12 md:py-12 lg:py-14">
+          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-16 md:px-12 md:py-20 lg:py-24">
             <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center text-center">
               <span className="font-label mb-3 block text-xs font-medium uppercase tracking-widest text-white/40">
                 AI 游戏设计大赛 2026
                 <span className="ml-2 text-white/20">· Deploy</span>
               </span>
-              <h1 className="font-headline text-balance text-4xl font-bold leading-[1.12] tracking-tight text-white sm:text-5xl md:text-6xl">
+              <h1 className="font-headline text-balance text-4xl font-bold leading-[1.32] tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.4]">
                 <span className="block">把你的网页游戏</span>
-                <span className="block text-primary drop-shadow-[0_0_28px_rgba(0,255,204,0.55)]">
-                  部署上线
+                <span className="mt-2 block py-2 md:mt-3 md:py-3">
+                  <span className="deploy-lamp-text text-primary drop-shadow-[0_0_28px_rgba(0,255,204,0.55)]">
+                    部署上线
+                  </span>
                 </span>
               </h1>
               <p className="mt-4 max-w-xl font-body text-sm leading-relaxed text-white/60 md:mt-5 md:text-base">
