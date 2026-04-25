@@ -222,7 +222,7 @@ export function ShowcaseDetailPage() {
                   href={item.deployUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary mt-1 w-full max-w-[220px] gap-2 px-8 py-3 text-sm sm:max-w-[240px]"
+                  className="btn-experience mt-1 w-full max-w-[220px] gap-2 px-8 py-3 text-sm sm:max-w-[240px]"
                 >
                   立即体验
                   <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
