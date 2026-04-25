@@ -109,15 +109,15 @@ export function ShowcasePage() {
             />
           </div>
 
-          {/* 全局暗化遮罩：移动端遮罩更浅，桌面端适当加深 */}
+          {/* 黑色渐变遮罩：高度压缩至约 70%，减少覆盖面积 */}
           <div
-            className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-black/55 md:bg-black/62"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-black/40 via-black/30 to-transparent sm:from-black/55 sm:via-black/40 md:from-black/62 md:via-black/45"
             aria-hidden
           />
 
           {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-background via-background/75 to-transparent sm:h-[36%] md:h-[45%] md:via-background/80"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[50px] bg-gradient-to-t from-background via-background/75 to-transparent md:via-background/80"
             aria-hidden
           />
 
@@ -139,7 +139,7 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/70 md:mt-6 md:text-lg md:leading-[1.9]">
+              <p className="mt-5 max-w-xl font-body text-base leading-[1.9] text-white/85 [text-shadow:0_3px_12px_rgba(0,0,0,1),0_10px_28px_rgba(0,0,0,0.9),0_0_36px_rgba(0,0,0,0.75)] md:mt-6 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
               {loadError && (

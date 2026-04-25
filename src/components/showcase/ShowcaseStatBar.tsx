@@ -23,9 +23,11 @@ export function ShowcaseStatBar({ count, total, isLoading }: Props) {
 
   return (
     <div className="mt-5 flex min-h-[2.125rem] items-center justify-center md:mt-6">
-      <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 font-label text-[11px] font-medium uppercase tracking-technical text-white/50">
+      <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 font-label text-[11px] font-medium uppercase tracking-technical text-white/70">
         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary-container/90" aria-hidden />
-        {isFiltered ? `${count} / ${total}` : `${count}`} 件作品
+        <span className="rounded-full bg-primary/14 px-2 py-0.5 font-semibold text-primary">
+          {isFiltered ? `${count} / ${total}` : `${count}`} 件作品
+        </span>
       </span>
     </div>
   );
