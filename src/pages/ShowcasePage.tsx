@@ -97,7 +97,7 @@ export function ShowcasePage() {
       <main className="relative min-w-0 overflow-hidden bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
 
         {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
-        <header className="relative isolate w-full min-w-0 overflow-hidden">
+        <header className="relative isolate w-full min-w-0 overflow-hidden pb-20 sm:pb-24 md:pb-28">
           {/* 背景图 */}
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <img
@@ -117,7 +117,7 @@ export function ShowcasePage() {
 
           {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[20%] bg-gradient-to-t from-background via-background/75 to-transparent sm:h-[25%] md:h-[32%] md:via-background/80"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-background via-background/80 to-transparent sm:h-[40%] md:h-[48%] md:via-background/82"
             aria-hidden
           />
 
@@ -154,7 +154,7 @@ export function ShowcasePage() {
           </div>
         </header>
 
-        <div className="relative z-[1] mx-auto w-full max-w-home px-6 pt-8 md:px-12 md:pt-10">
+        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-20 pt-8 sm:-mt-24 md:-mt-28 md:px-12 md:pt-10">
 
           <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-4">
             <RankingList
