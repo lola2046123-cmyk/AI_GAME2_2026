@@ -27,11 +27,6 @@ export type ShowcaseSubmission = {
    */
   gameplaySource?: "manual" | "ai" | "local";
   techStack: string[];
-  /**
-   * 作品标签（玩法 / 风格），最多 3 个，用于展示页筛选。
-   * 兼容旧数据：缺省视为空数组。
-   */
-  tags?: string[];
   /** AI 如何辅助突破边界 */
   evolution: string;
   deployUrl: string;
