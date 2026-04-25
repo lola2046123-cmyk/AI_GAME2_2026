@@ -86,14 +86,11 @@ function FeaturedCard({
         </h3>
         {creator && (
           <p
-            className={`mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-white/85 ${
+            className={`mt-1.5 font-body text-primary-container/80 ${
               large ? "text-sm md:text-base" : "text-xs md:text-sm"
             }`}
           >
-            <span className="font-label font-medium text-primary/80">
-              创作者
-            </span>
-            <span className="line-clamp-1 text-white/90">{creator}</span>
+            <span className="line-clamp-1">创作者 {creator}</span>
           </p>
         )}
         <p className={`mt-2 font-body leading-relaxed text-white/55 line-clamp-2 ${large ? "text-sm md:text-base" : "text-sm"}`}>
@@ -125,11 +122,8 @@ function LatestCard({ item }: { item: ShowcaseSubmission }) {
           {item.gameName}
         </h3>
         {creator && (
-          <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 font-body text-xs text-white/85">
-            <span className="font-label font-medium text-primary/80">
-              创作者
-            </span>
-            <span className="line-clamp-1 text-white/90">{creator}</span>
+          <p className="mt-1 font-body text-xs text-primary-container/80">
+            <span className="line-clamp-1">创作者 {creator}</span>
           </p>
         )}
         <p className="mt-2 flex-1 font-body text-xs leading-relaxed text-white/55 line-clamp-2">

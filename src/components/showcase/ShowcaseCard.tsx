@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Flame, Sparkles, Lightbulb, Coins } from "lucide-react";
 import { ThinArrow } from "../ThinArrow";
 import type { ShowcaseSubmission } from "../../types/submission";
 import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
@@ -32,6 +33,14 @@ export function buildShowcaseCardSummary(item: ShowcaseSubmission): string {
   return truncatePlainText(plain, 160);
 }
 
+/* 排行标签 → 图标映射 */
+const RANK_ICON: Record<string, React.ElementType> = {
+  "热门作品": Flame,
+  "视觉最佳": Sparkles,
+  "最有趣":   Lightbulb,
+  "最想氪金": Coins,
+};
+
 type CardStatus = "winner" | "finalist" | undefined;
 
 export function ShowcaseCard({
@@ -53,6 +62,7 @@ export function ShowcaseCard({
 }) {
   const isUser = item.source === "user";
   const blurb = buildShowcaseCardSummary(item);
+  const RankIcon = rankLabel ? (RANK_ICON[rankLabel] ?? Flame) : null;
 
   const inner = (
     <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] hover:-translate-y-0.5">
@@ -70,18 +80,14 @@ export function ShowcaseCard({
           aria-hidden
         />
 
-        {/* 左上：rankLabel 强化标签（替代原右上 Live） */}
-        {rankLabel && (
-          <div className="absolute top-0 left-0">
-            <span className="flex items-center gap-1.5 rounded-br-xl bg-primary-container/90 px-3 py-1.5 font-label text-[10px] font-bold uppercase tracking-widest text-black/80 shadow-[0_2px_12px_rgba(0,255,204,0.35)] backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-black/50" aria-hidden />
+        {/* 右上：排行角标 + 奖项徽章（纵向堆叠） */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          {rankLabel && RankIcon && (
+            <span className="flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 font-label text-[10px] font-bold tracking-wide text-primary-container shadow-[0_0_14px_rgba(0,255,204,0.28)] backdrop-blur-md ring-1 ring-primary-container/30">
+              <RankIcon className="h-3 w-3 shrink-0" strokeWidth={2.5} />
               {rankLabel}
             </span>
-          </div>
-        )}
-
-        {/* 右上：奖项徽章（获奖/入围） */}
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          )}
           {status === "winner" && (
             <span className="rounded-full border border-yellow-400/40 bg-yellow-400/15 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-yellow-300 backdrop-blur-md">
               Winner
@@ -90,6 +96,11 @@ export function ShowcaseCard({
           {status === "finalist" && (
             <span className="rounded-full border border-primary/35 bg-primary/10 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary backdrop-blur-md">
               Finalist
+            </span>
+          )}
+          {isUser && !status && !rankLabel && (
+            <span className="rounded-full border border-primary-container/20 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary-container/60 backdrop-blur-md">
+              Live
             </span>
           )}
         </div>
@@ -103,28 +114,24 @@ export function ShowcaseCard({
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 md:px-6 md:pb-6">
-        {/* 卡片内标签占位（无 rankLabel 时保持高度对齐） */}
-        {!rankLabel ? (
-          <div className="mb-3 h-[1.375rem]">
-            {!isUser && (
-              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
-                示例
-              </span>
-            )}
-          </div>
-        ) : (
-          <div className="mb-3 h-[1.375rem]" />
-        )}
+        {/* 示例标签占位（保持高度对齐） */}
+        <div className="mb-3 h-[1.375rem]">
+          {!isUser && !rankLabel && (
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
+              示例
+            </span>
+          )}
+        </div>
 
         <h2 className="font-headline text-base font-semibold leading-snug tracking-tight text-white line-clamp-1 md:text-lg">
           {item.gameName}
         </h2>
 
-        {/* 创作者行：始终占位，保证后续内容对齐 */}
-        <p className="mt-1.5 min-h-[1.5rem] font-body text-sm text-white/80 md:text-sm">
+        {/* 创作者行：占位保持对齐；创作者与昵称统一绿色 */}
+        <p className="mt-1.5 min-h-[1.5rem] font-body text-sm md:text-sm">
           {item.creatorNickname?.trim() ? (
-            <span className="line-clamp-1">
-              <span className="text-white/80">创作者 </span>
+            <span className="line-clamp-1 text-primary-container/80">
+              <span>创作者 </span>
               {item.creatorNickname.trim()}
             </span>
           ) : null}
