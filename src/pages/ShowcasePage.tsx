@@ -8,7 +8,7 @@ import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
-import showcaseHeroBg from "../../imge/game_bg4.jpg";
+import showcaseHeroBg from "../../imge/game_bg6.jpg";
 import {
   buildRankings,
   getVoteStateForProjects,
