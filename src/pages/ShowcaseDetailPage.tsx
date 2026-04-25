@@ -214,8 +214,8 @@ export function ShowcaseDetailPage() {
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary/80">
                   <UserRound className="h-3.5 w-3.5" strokeWidth={1.8} />
                 </span>
-                <span className="text-primary/85">创作者</span>
-                <span className="text-primary/85">{author}</span>
+                <span className="text-primary/90">创作者</span>
+                <span className="text-primary/90">{author}</span>
               </p>
               {canLink && (
                 <a

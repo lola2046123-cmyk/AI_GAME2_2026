@@ -86,7 +86,7 @@ function FeaturedCard({
         </h3>
         {creator && (
           <p
-            className={`mt-1.5 font-body text-primary-container/80 ${
+            className={`mt-1.5 font-body text-primary/90 ${
               large ? "text-sm md:text-base" : "text-xs md:text-sm"
             }`}
           >
@@ -122,7 +122,7 @@ function LatestCard({ item }: { item: ShowcaseSubmission }) {
           {item.gameName}
         </h3>
         {creator && (
-          <p className="mt-1 font-body text-xs text-primary-container/80">
+          <p className="mt-1 font-body text-xs text-primary/90">
             <span className="line-clamp-1">创作者 {creator}</span>
           </p>
         )}

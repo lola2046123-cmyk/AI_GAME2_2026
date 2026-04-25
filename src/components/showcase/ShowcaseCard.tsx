@@ -114,30 +114,17 @@ export function ShowcaseCard({
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 md:px-6 md:pb-6">
-        {/* 示例标签占位（保持高度对齐） */}
-        <div className="mb-3 h-[1.375rem]">
-          {!isUser && !rankLabel && (
-            <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
-              示例
-            </span>
-          )}
-        </div>
-
         <h2 className="font-headline text-base font-semibold leading-snug tracking-tight text-white line-clamp-1 md:text-lg">
           {item.gameName}
         </h2>
 
-        {/* 创作者行：占位保持对齐；创作者与昵称统一绿色 */}
-        <p className="mt-1.5 min-h-[1.5rem] font-body text-sm md:text-sm">
+        <p className="mt-1.5 font-body text-sm text-primary/90 md:text-sm">
           {item.creatorNickname?.trim() ? (
-            <span className="line-clamp-1 text-primary-container/80">
-              <span>创作者 </span>
-              {item.creatorNickname.trim()}
-            </span>
-          ) : null}
+            <span className="line-clamp-1">创作者 {item.creatorNickname.trim()}</span>
+          ) : <span className="invisible">—</span>}
         </p>
 
-        <p className="mt-2.5 flex-1 font-body text-sm leading-relaxed text-white/70 line-clamp-2">
+        <p className="mt-2 flex-1 font-body text-sm leading-relaxed text-white/65 line-clamp-2">
           {blurb}
         </p>
 
