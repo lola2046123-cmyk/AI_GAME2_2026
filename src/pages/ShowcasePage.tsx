@@ -8,6 +8,7 @@ import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import showcaseHeroBg from "../../imge/game_bg4.jpg";
 import {
   buildRankings,
   getVoteStateForProjects,
@@ -101,7 +102,7 @@ export function ShowcasePage() {
           {/* 背景图 */}
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <img
-              src="/imge/game_bg4.jpg"
+              src={showcaseHeroBg}
               alt=""
               className="h-full w-full object-cover object-[center_30%] sm:object-center"
               fetchPriority="high"
