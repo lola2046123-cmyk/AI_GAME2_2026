@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
 import { ThinArrow } from "../ThinArrow";
 import type { ShowcaseSubmission } from "../../types/submission";
 import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
@@ -71,7 +70,17 @@ export function ShowcaseCard({
           aria-hidden
         />
 
-        {/* 右上：状态 + Live */}
+        {/* 左上：rankLabel 强化标签（替代原右上 Live） */}
+        {rankLabel && (
+          <div className="absolute top-0 left-0">
+            <span className="flex items-center gap-1.5 rounded-br-xl bg-primary-container/90 px-3 py-1.5 font-label text-[10px] font-bold uppercase tracking-widest text-black/80 shadow-[0_2px_12px_rgba(0,255,204,0.35)] backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-black/50" aria-hidden />
+              {rankLabel}
+            </span>
+          </div>
+        )}
+
+        {/* 右上：奖项徽章（获奖/入围） */}
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
           {status === "winner" && (
             <span className="rounded-full border border-yellow-400/40 bg-yellow-400/15 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-yellow-300 backdrop-blur-md">
@@ -83,51 +92,43 @@ export function ShowcaseCard({
               Finalist
             </span>
           )}
-          {isUser && !status && (
-            <span className="rounded-full border border-[#a8ffe1]/25 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary/80 backdrop-blur-md">
-              Live
-            </span>
-          )}
         </div>
 
-        {/* hover：View Project */}
+        {/* hover：查看作品 */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover/card:opacity-100">
-          <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/75 px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-md">
-            View Project
-            <ExternalLink className="h-3.5 w-3.5" />
+          <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/75 px-5 py-2 font-label text-xs font-semibold tracking-wider text-white backdrop-blur-md">
+            查看作品 <ThinArrow />
           </span>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-5 pt-4 md:px-6 md:pb-6">
-        {rankLabel ? (
-          <div className="mb-3">
-            <span className="rounded-full border border-primary/30 bg-primary/[0.08] px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary/80">
-              {rankLabel}
-            </span>
+        {/* 卡片内标签占位（无 rankLabel 时保持高度对齐） */}
+        {!rankLabel ? (
+          <div className="mb-3 h-[1.375rem]">
+            {!isUser && (
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
+                示例
+              </span>
+            )}
           </div>
-        ) : !isUser ? (
-          <div className="mb-3">
-            <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 font-label text-[10px] uppercase tracking-widest text-white/30">
-              示例
-            </span>
-          </div>
-        ) : null}
+        ) : (
+          <div className="mb-3 h-[1.375rem]" />
+        )}
 
         <h2 className="font-headline text-base font-semibold leading-snug tracking-tight text-white line-clamp-1 md:text-lg">
           {item.gameName}
         </h2>
 
-        {item.creatorNickname?.trim() ? (
-          <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-body text-sm text-white/85 md:text-sm">
-            <span className="font-label font-medium text-primary/80">
-              创作者
-            </span>
-            <span className="line-clamp-1 text-white/90">
+        {/* 创作者行：始终占位，保证后续内容对齐 */}
+        <p className="mt-1.5 min-h-[1.5rem] font-body text-sm text-white/80 md:text-sm">
+          {item.creatorNickname?.trim() ? (
+            <span className="line-clamp-1">
+              <span className="text-white/80">创作者 </span>
               {item.creatorNickname.trim()}
             </span>
-          </p>
-        ) : null}
+          ) : null}
+        </p>
 
         <p className="mt-2.5 flex-1 font-body text-sm leading-relaxed text-white/70 line-clamp-2">
           {blurb}
