@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Loader2, X } from "lucide-react";
+import { MarkdownEditor } from "./MarkdownEditor";
 import { ThinArrow } from "../ThinArrow";
 import {
   appendSubmission,
@@ -519,7 +520,7 @@ export function RegistrationModal({
                     </label>
 
                     {/* 核心玩法说明 */}
-                    <label className="block">
+                    <div>
                       <div className="mb-2.5 flex items-baseline justify-between gap-2">
                         <span className={fieldLabel}>
                           核心玩法说明
@@ -531,22 +532,21 @@ export function RegistrationModal({
                         </span>
                         <span className={charCount}>{countChars(gameplay)}/{MAX_GAMEPLAY_CHARS}</span>
                       </div>
-                      <textarea
-                        className={`${inputSurface} min-h-[110px] resize-y`}
+                      <MarkdownEditor
                         value={gameplay}
-                        onChange={(e) => {
-                          const v = clampChars(e.target.value, MAX_GAMEPLAY_CHARS);
-                          setGameplay(v);
+                        onChange={(v) => {
+                          const clamped = clampChars(v, MAX_GAMEPLAY_CHARS);
+                          setGameplay(clamped);
                           if (gameplaySource === "ai" || gameplaySource === "local") {
-                            setCardSummary(clampChars(v.trim(), MAX_CARD_SUMMARY));
+                            setCardSummary(clampChars(clamped.trim(), MAX_CARD_SUMMARY));
                           }
                         }}
-                        placeholder="描述核心玩法机制与节奏，以及 AI 在开发过程中扮演的角色…"
+                        placeholder="描述核心玩法机制与节奏，以及 AI 在开发过程中扮演的角色…支持 Markdown 图文混排"
                         rows={4}
                         maxLength={MAX_GAMEPLAY_CHARS * 2}
-                        enterKeyHint="next"
+                        textareaClassName={`${inputSurface} min-h-[110px] resize-y`}
                       />
-                    </label>
+                    </div>
                   </motion.div>
                 )}
 
