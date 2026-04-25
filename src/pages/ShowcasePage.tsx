@@ -154,7 +154,7 @@ export function ShowcasePage() {
           </div>
         </header>
 
-        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+150px)] pt-8 sm:-mt-[calc(6rem+150px)] md:-mt-[calc(7rem+150px)] md:px-12 md:pt-10">
+        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+160px)] pt-8 sm:-mt-[calc(6rem+160px)] md:-mt-[calc(7rem+160px)] md:px-12 md:pt-10">
 
           <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-4">
             <RankingList
