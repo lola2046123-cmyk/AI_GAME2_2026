@@ -241,23 +241,6 @@ export function HomePage() {
                 <SubmissionCountdown variant="footer" />
               </motion.div>
 
-              {/* 奖金展示 */}
-              <motion.div
-                variants={fadeInUp}
-                className="flex flex-col items-center gap-0.5 md:gap-1"
-                aria-label="总奖金池 32,500 美元"
-              >
-                <p className="max-w-xl font-body text-xs font-normal tracking-normal text-primary/90 md:text-sm">
-                  总奖金池{" "}
-                  <span className="text-primary/75">(Total Prize Pool)</span>
-                </p>
-                <div className="flex justify-center">
-                  <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[clamp(2.4rem,6.76vw,4.1rem)] font-bold leading-none tracking-tight md:text-[clamp(2.6rem,5vw,4.55rem)]">
-                    $32,500
-                  </span>
-                </div>
-              </motion.div>
-
               {/* CTA 按钮组 */}
               <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
                 <motion.button
@@ -448,7 +431,7 @@ export function HomePage() {
                 <span className="prize-tier-name">一等奖：领航者</span>
                 <div className="flex justify-center">
                   <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[3.375rem] font-bold leading-none tracking-tight md:text-[5.5rem] lg:text-[6rem]">
-                    $20,000
+                    20,000
                   </span>
                 </div>
                 <div className="mx-auto mt-1 h-[2.7px] w-[5.4rem] max-w-full bg-primary/30 transition-all duration-700 group-hover:w-[68%] md:h-1 md:w-32 md:group-hover:w-[62%]" />
@@ -468,7 +451,7 @@ export function HomePage() {
                 <span className="prize-tier-name">二等奖：进化者</span>
                 <div className="flex justify-center">
                   <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">
-                    $5,000
+                    5,000
                   </span>
                 </div>
               </motion.div>
@@ -487,7 +470,7 @@ export function HomePage() {
                 <span className="prize-tier-name">三等奖：破局者</span>
                 <div className="flex justify-center">
                   <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">
-                    $3,000
+                    3,000
                   </span>
                 </div>
               </motion.div>
@@ -513,7 +496,7 @@ export function HomePage() {
                     <span className="prize-tier-name px-0.5">{prize.title}</span>
                     <div className="flex justify-center pt-0.5">
                       <span className="type-amount font-headline text-3xl font-bold text-primary md:text-4xl">
-                        $1,500
+                        1,500
                       </span>
                     </div>
                   </motion.div>
@@ -649,26 +632,6 @@ export function HomePage() {
                 <div className="flex items-start gap-4">
                   <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/36 md:text-4xl">
                     02
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-headline mb-3 text-xl font-semibold leading-snug tracking-tight text-white md:text-2xl">发布路径</h3>
-                    <p className="font-body text-base leading-relaxed text-white/70 line-clamp-2 md:text-lg">
-                      报名完成后，将可访问链接同步至公司群。
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="group surface-card w-full p-9 md:p-12"
-              >
-                <div className="flex items-start gap-4">
-                  <span className="font-label text-3xl font-bold text-primary/50 transition-colors duration-500 group-hover:text-[#00ffcc]/36 md:text-4xl">
-                    03
                   </span>
                   <div className="min-w-0 flex-1 space-y-3 md:space-y-4">
                     <h3 className="font-headline text-xl font-semibold leading-snug tracking-tight text-white md:text-2xl">

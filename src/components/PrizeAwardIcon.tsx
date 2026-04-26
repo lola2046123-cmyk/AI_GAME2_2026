@@ -20,7 +20,7 @@ export function PrizeAwardIcon({
   iconClassName
 }: Props) {
   const reduce = useReducedMotion();
-  /** 扁平：无阴影发光；仅主奖（$20,000）青绿，其余中性灰 */
+  /** 扁平：无阴影发光；仅主奖（20,000 档）青绿，其余中性灰 */
   const ring =
     emphasis === "primary"
       ? "border border-primary-container/50 bg-primary-container/[0.07] text-primary-container shadow-none"
