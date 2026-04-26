@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
@@ -7,6 +7,7 @@ import { ShowcaseCard } from "../components/showcase/ShowcaseCard";
 import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
+import { useFluidVfx } from "../components/showcase/useFluidVfx";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import showcaseHeroBg from "../../imge/game_bg8.jpg";
 import {
@@ -31,6 +32,10 @@ export function ShowcasePage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
+
+  /** 在 hero 图上叠加稳定流体模拟（鼠标即可触发；不影响布局/点击/滚动） */
+  const heroImgRef = useRef<HTMLImageElement | null>(null);
+  useFluidVfx(heroImgRef);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,18 +100,24 @@ export function ShowcasePage() {
 
   return (
     <>
-      <main className="relative min-w-0 overflow-hidden bg-background pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
+      {/* 注意：这里刻意不加 bg-background。
+          AppChrome 的 root 已经有全站 bg-background 兜底；
+          流体模拟的 canvas 走 z-index:5（介于 root bg 与 z-10 页面内容之间），
+          只有去掉 main 的实色背景，canvas 才能透出来给 hero 用。 */}
+      <main className="relative min-w-0 overflow-hidden pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
 
         {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
         <header className="relative isolate w-full min-w-0 overflow-hidden pb-20 sm:pb-24 md:pb-28">
-          {/* 背景图 */}
+          {/* 背景图（流体模拟基底） */}
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <img
+              ref={heroImgRef}
               src={showcaseHeroBg}
               alt=""
               className="h-full w-full object-cover object-[center_30%] sm:object-center"
               fetchPriority="high"
               decoding="async"
+              crossOrigin="anonymous"
             />
           </div>
 

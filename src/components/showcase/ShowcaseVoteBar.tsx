@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import { Heart } from "lucide-react";
 import type { VoteType, ShowcaseVoteState } from "../../lib/showcaseVotes";
 import { likeProject, voteProject } from "../../lib/showcaseVotes";
+import { useLikeBurst } from "./useLikeBurst";
 
 type Props = {
   projectId: string;
@@ -21,35 +21,6 @@ const CATEGORY_LABEL: Record<Exclude<VoteType, "like">, string> = {
 
 const CATEGORY_ORDER: readonly Exclude<VoteType, "like">[] = ["visual", "gameplay", "fun"];
 
-/* 点赞「心动」爆裂层：portal 到 body，避免被卡片 overflow-hidden 裁切 */
-const HEART_PATH =
-  "M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z";
-
-function HeartBurstPortal({ x, y }: { x: number; y: number }) {
-  if (typeof document === "undefined") return null;
-  return createPortal(
-    <div
-      aria-hidden
-      style={{
-        position: "fixed",
-        left: x,
-        top: y,
-        width: 0,
-        height: 0,
-        pointerEvents: "none",
-        zIndex: 9999,
-      }}
-    >
-      {Array.from({ length: 9 }).map((_, i) => (
-        <svg key={i} className={`heart-pop heart-pop-${i + 1}`} viewBox="0 0 32 29.6">
-          <path d={HEART_PATH} />
-        </svg>
-      ))}
-    </div>,
-    document.body,
-  );
-}
-
 export function ShowcaseVoteBar({
   projectId,
   state,
@@ -60,8 +31,7 @@ export function ShowcaseVoteBar({
   const [loadingKey, setLoadingKey] = useState<VoteType | null>(null);
   const [flash, setFlash] = useState<null | VoteType>(null);
   const [message, setMessage] = useState("");
-  const [popKey, setPopKey] = useState(0);
-  const [pop, setPop] = useState<{ id: number; x: number; y: number } | null>(null);
+  const burst = useLikeBurst();
 
   useEffect(() => {
     if (!flash) return;
@@ -69,29 +39,15 @@ export function ShowcaseVoteBar({
     return () => window.clearTimeout(timer);
   }, [flash]);
 
-  useEffect(() => {
-    if (!pop) return;
-    const timer = window.setTimeout(() => setPop(null), 1400);
-    return () => window.clearTimeout(timer);
-  }, [pop]);
-
   const counts = state?.counts ?? { like: 0, fun: 0, visual: 0, gameplay: 0 };
   const userVotes = state?.userVotes ?? [];
 
   async function handleLike(event?: React.MouseEvent<HTMLButtonElement>) {
     if (loadingKey === "like") return;
 
-    // 提前抓按钮中心坐标，并立刻触发 9 颗心炸开动效
-    // 即便用户已经赞过，再点也给一次愉悦反馈，方便确认按钮工作正常
-    if (event) {
-      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-      setPop({
-        id: Date.now(),
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      });
-      setPopKey((n) => n + 1);
-    }
+    // 即便已经赞过，再点也给一次愉悦反馈（9 颗心 + 缩放 + 心图标震动），
+    // 让按钮始终"会动"，方便用户确认按钮工作正常
+    burst.trigger(event);
 
     if (userVotes.includes("like")) return;
 
@@ -136,12 +92,11 @@ export function ShowcaseVoteBar({
       <div className="relative space-y-1.5">
         {/* 点赞 */}
         <button
+          ref={burst.btnRef}
           type="button"
           onClick={(e) => void handleLike(e)}
           disabled={loadingKey === "like"}
           className={`group relative flex w-full items-center justify-between rounded-xl border px-4 py-3 transition-all duration-200 disabled:cursor-not-allowed ${
-            popKey > 0 ? "like-btn-bump" : ""
-          } ${
             likeActive
               ? "border-rose-400/50 bg-rose-500/15 shadow-[0_0_20px_rgba(251,113,133,0.15)]"
               : "border-white/[0.09] bg-white/[0.03] hover:border-rose-400/35 hover:bg-rose-500/[0.07]"
@@ -149,7 +104,8 @@ export function ShowcaseVoteBar({
         >
           <span className="flex items-center gap-2.5">
             <Heart
-              className={`h-4 w-4 shrink-0 transition-colors ${likeActive ? "text-rose-300" : "text-white/40 group-hover:text-rose-300/70"} ${popKey > 0 ? "like-icon-throb" : ""}`}
+              ref={burst.iconRef}
+              className={`h-4 w-4 shrink-0 transition-colors ${likeActive ? "text-rose-300" : "text-white/40 group-hover:text-rose-300/70"}`}
               fill={likeActive ? "currentColor" : "none"}
               strokeWidth={2}
             />
@@ -211,7 +167,7 @@ export function ShowcaseVoteBar({
         {message && (
           <p className="pt-1 font-body text-xs leading-relaxed text-white/40">{message}</p>
         )}
-        {pop && <HeartBurstPortal key={pop.id} x={pop.x} y={pop.y} />}
+        {burst.portal}
       </div>
     );
   }
@@ -226,6 +182,7 @@ export function ShowcaseVoteBar({
     <div className="relative">
       <div className={`flex flex-wrap items-center ${gapClass}`}>
         <button
+          ref={burst.btnRef}
           type="button"
           onClick={(e) => {
             e.preventDefault();
@@ -234,15 +191,14 @@ export function ShowcaseVoteBar({
           }}
           disabled={loadingKey === "like"}
           className={`${chipBase} ${sizeClass} relative cursor-pointer ${
-            popKey > 0 ? "like-btn-bump" : ""
-          } ${
             userVotes.includes("like")
               ? "border-red-400/25 bg-red-400/12 text-red-300"
               : "border-white/10 bg-white/10 text-white/65 hover:border-white/20 hover:text-white/85"
           } disabled:cursor-not-allowed disabled:opacity-70`}
         >
           <Heart
-            className={`${heartClass} ${popKey > 0 ? "like-icon-throb" : ""}`}
+            ref={burst.iconRef}
+            className={heartClass}
             fill={userVotes.includes("like") ? "currentColor" : "none"}
             strokeWidth={1.5}
           />
@@ -282,7 +238,7 @@ export function ShowcaseVoteBar({
       {message && (
         <p className="mt-2 font-body text-xs leading-relaxed text-white/40">{message}</p>
       )}
-      {pop && <HeartBurstPortal key={pop.id} x={pop.x} y={pop.y} />}
+      {burst.portal}
     </div>
   );
 }

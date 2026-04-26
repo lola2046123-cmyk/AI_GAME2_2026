@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowUpRight, Eye, Lightbulb, Coins, Heart, UserRound } from "lucide-react";
 import { ThinArrow } from "../components/ThinArrow";
-import { ShowcaseVoteBar } from "../components/showcase/ShowcaseVoteBar";
+import { useLikeBurst } from "../components/showcase/useLikeBurst";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
@@ -58,6 +58,7 @@ export function ShowcaseDetailPage() {
   const [loadingKey, setLoadingKey] = useState<VoteType | null>(null);
   const [flash, setFlash] = useState<VoteType | null>(null);
   const [voteMsg, setVoteMsg] = useState("");
+  const burst = useLikeBurst();
 
   useEffect(() => {
     let cancelled = false;
@@ -96,8 +97,15 @@ export function ShowcaseDetailPage() {
     return () => window.clearTimeout(t);
   }, [flash]);
 
-  async function handleLike() {
-    if (!id || loadingKey || voteState.userVotes.includes("like")) return;
+  async function handleLike(event?: React.MouseEvent<HTMLButtonElement>) {
+    if (!id || loadingKey === "like") return;
+
+    // 即便已经赞过，再点也给一次愉悦反馈（9 颗心 + 缩放 + 心图标震动），
+    // 与列表 / 卡片侧的点赞按钮交互保持一致
+    burst.trigger(event);
+
+    if (voteState.userVotes.includes("like")) return;
+
     try {
       setLoadingKey("like");
       setVoteMsg("");
@@ -222,7 +230,7 @@ export function ShowcaseDetailPage() {
                   href={item.deployUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-experience mt-1 w-full max-w-[220px] gap-2 px-8 py-3 text-sm sm:max-w-[240px]"
+                  className="btn-experience mt-1 w-[160px] gap-2 whitespace-nowrap px-5 py-3 text-sm"
                 >
                   立即体验
                   <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
@@ -242,11 +250,12 @@ export function ShowcaseDetailPage() {
               {/* 移动端 2×2 网格，sm+ 恢复单行 flex */}
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
 
-                {/* 点赞按钮 */}
+                {/* 点赞按钮：9 颗心爆炸 + 按钮缩放 + 心图标震动（与列表点赞动效统一） */}
                 <button
+                  ref={burst.btnRef}
                   type="button"
-                  onClick={() => void handleLike()}
-                  disabled={loadingKey !== null || userVotes.includes("like")}
+                  onClick={(e) => void handleLike(e)}
+                  disabled={loadingKey === "like"}
                   className={[
                     "flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed sm:w-auto",
                     userVotes.includes("like")
@@ -255,6 +264,7 @@ export function ShowcaseDetailPage() {
                   ].join(" ")}
                 >
                   <Heart
+                    ref={burst.iconRef}
                     className="h-3.5 w-3.5 shrink-0 transition-colors"
                     fill={userVotes.includes("like") ? "currentColor" : "none"}
                     strokeWidth={1.8}
@@ -495,6 +505,9 @@ export function ShowcaseDetailPage() {
           </Link>
         </div>
       </footer>
+
+      {/* 9 颗心爆炸 portal —— useLikeBurst 内部已 portal 到 body，这里渲染挂载点即可 */}
+      {burst.portal}
     </>
   );
 }
