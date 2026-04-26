@@ -40,7 +40,6 @@ function rowToSubmission(row: DbRow): ShowcaseSubmission {
   return {
     id: row.id,
     gameName: row.game_name,
-    creatorNickname: row.creator_nickname?.trim() || undefined,
     gameplay: row.gameplay,
     cardSummary: row.card_summary?.trim() || undefined,
     gameplaySource,
@@ -59,8 +58,6 @@ function patchToSnake(
 ): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (patch.gameName !== undefined) out.game_name = patch.gameName;
-  if (patch.creatorNickname !== undefined)
-    out.creator_nickname = patch.creatorNickname || null;
   if (patch.gameplay !== undefined) out.gameplay = patch.gameplay;
   if (patch.cardSummary !== undefined) out.card_summary = patch.cardSummary ?? null;
   if (patch.gameplaySource !== undefined)

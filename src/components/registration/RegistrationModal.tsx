@@ -24,11 +24,6 @@ const PRESET_TOOLS = [
 
 /** 游戏名称上限（码位） */
 const MAX_GAME_NAME_CHARS = 20;
-/**
- * 创作者昵称上限（码位）
- * 放宽到 80：组队提交时可以填多位成员的昵称（逗号/顿号分隔）
- */
-const MAX_CREATOR_NICKNAME_CHARS = 80;
 /** 玩法 / 进化论 / 链接等文本上限（码位） */
 const MAX_FIELD_CHARS = 2000;
 /** 核心玩法说明上限（码位）—单独放宽到 4000，便于承载更完整的设计描述 */
@@ -44,19 +39,6 @@ function clampChars(s: string, max: number): string {
   const arr = [...s];
   if (arr.length <= max) return s;
   return arr.slice(0, max).join("");
-}
-
-/**
- * 创作者昵称归一化：支持组队提交，用户可用 `,` / `，` / `、` / 多空格 等任意分隔。
- * 输出统一为 `昵称A, 昵称B, 昵称C` 的逗号空格串，便于各处展示。
- */
-function normalizeCreatorNickname(raw: string): string {
-  if (!raw) return "";
-  return raw
-    .split(/[,，、]+/)
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .join(", ");
 }
 
 const inputSurface =
@@ -82,7 +64,6 @@ export function RegistrationModal({
 
   const [step, setStep] = useState(1);
   const [gameName, setGameName] = useState("");
-  const [creatorNickname, setCreatorNickname] = useState("");
   const [gameplay, setGameplay] = useState("");
   const [techStack, setTechStack] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
@@ -107,7 +88,6 @@ export function RegistrationModal({
   const reset = () => {
     setStep(1);
     setGameName("");
-    setCreatorNickname("");
     setGameplay("");
     setTechStack([]);
     setCustomTool("");
@@ -123,9 +103,6 @@ export function RegistrationModal({
   const hydrate = (r: ShowcaseSubmission) => {
     setStep(1);
     setGameName(clampChars(r.gameName, MAX_GAME_NAME_CHARS));
-    setCreatorNickname(
-      clampChars((r.creatorNickname ?? "").trim(), MAX_CREATOR_NICKNAME_CHARS)
-    );
     setGameplay(clampChars(r.gameplay, MAX_GAMEPLAY_CHARS));
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
     setDeployUrl(clampChars(r.deployUrl, MAX_FIELD_CHARS));
@@ -231,11 +208,6 @@ export function RegistrationModal({
     if (countChars(gn) > MAX_GAME_NAME_CHARS) {
       return `游戏名称不超过 ${MAX_GAME_NAME_CHARS} 个字符`;
     }
-    const nick = creatorNickname.trim();
-    if (!nick) return "请填写创作者昵称";
-    if (countChars(nick) > MAX_CREATOR_NICKNAME_CHARS) {
-      return `创作者昵称不超过 ${MAX_CREATOR_NICKNAME_CHARS} 个字符`;
-    }
     const gp = gameplay.trim();
     if (!gp) return "请填写核心玩法说明";
     if (countChars(gp) > MAX_GAMEPLAY_CHARS) {
@@ -299,7 +271,6 @@ export function RegistrationModal({
     setError(null);
     try {
       const url = deployUrl.trim();
-      const normalizedNickname = normalizeCreatorNickname(creatorNickname);
       if (isEdit && state.kind === "edit") {
         const prevUrl = state.record.deployUrl.trim();
         let thumbnailUrl: string;
@@ -312,7 +283,6 @@ export function RegistrationModal({
         }
         await updateSubmission(state.record.id, {
           gameName: gameName.trim(),
-          creatorNickname: normalizedNickname,
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -333,7 +303,6 @@ export function RegistrationModal({
         const entry: ShowcaseSubmission = {
           id: crypto.randomUUID(),
           gameName: gameName.trim(),
-          creatorNickname: normalizedNickname,
           gameplay: gameplay.trim(),
           cardSummary:
             gameplaySource === "ai" || gameplaySource === "local"
@@ -490,33 +459,6 @@ export function RegistrationModal({
                         maxLength={MAX_GAME_NAME_CHARS * 2}
                         enterKeyHint="next"
                       />
-                    </label>
-
-                    {/* 创作者昵称 */}
-                    <label className={`block ${fieldDivider}`}>
-                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
-                        <span className={fieldLabel}>创作者昵称</span>
-                        <span className={charCount}>{countChars(creatorNickname)}/{MAX_CREATOR_NICKNAME_CHARS}</span>
-                      </div>
-                      <input
-                        className={inputSurface}
-                        value={creatorNickname}
-                        onChange={(e) =>
-                          setCreatorNickname(clampChars(e.target.value, MAX_CREATOR_NICKNAME_CHARS))
-                        }
-                        placeholder="独立开发者昵称，或团队全员昵称（逗号分隔）"
-                        maxLength={MAX_CREATOR_NICKNAME_CHARS * 2}
-                        enterKeyHint="next"
-                      />
-                      <p className={fieldHint}>
-                        组队则输入全员昵称，用&nbsp;
-                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">,</code>
-                        &nbsp;/&nbsp;
-                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">，</code>
-                        &nbsp;/&nbsp;
-                        <code className="rounded bg-white/[0.06] px-1 text-primary/60">、</code>
-                        &nbsp;分隔，提交时自动规范化
-                      </p>
                     </label>
 
                     {/* 核心玩法说明 */}

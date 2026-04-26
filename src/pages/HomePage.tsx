@@ -51,7 +51,6 @@ function FeaturedCard({
   large?: boolean;
 }) {
   const description = (item.cardSummary?.trim() || item.gameplay).trim();
-  const creator = item.creatorNickname?.trim();
 
   return (
     <Link
@@ -84,15 +83,6 @@ function FeaturedCard({
         <h3 className={`font-headline font-semibold tracking-tight text-white ${large ? "text-xl md:text-2xl" : "text-base md:text-lg"}`}>
           {item.gameName}
         </h3>
-        {creator && (
-          <p
-            className={`mt-1.5 font-body text-primary/90 ${
-              large ? "text-sm md:text-base" : "text-xs md:text-sm"
-            }`}
-          >
-            <span className="line-clamp-1">创作者 {creator}</span>
-          </p>
-        )}
         <p className={`mt-2 font-body leading-relaxed text-white/55 line-clamp-2 ${large ? "text-sm md:text-base" : "text-sm"}`}>
           {description}
         </p>
@@ -104,7 +94,6 @@ function FeaturedCard({
 /* ─────────── Latest Submission 卡片（轻量版） ─────────── */
 function LatestCard({ item }: { item: ShowcaseSubmission }) {
   const cardBlurb = (item.cardSummary?.trim() || item.gameplay).trim();
-  const creator = item.creatorNickname?.trim();
 
   const inner = (
     <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
@@ -121,11 +110,6 @@ function LatestCard({ item }: { item: ShowcaseSubmission }) {
         <h3 className="font-headline text-sm font-semibold leading-snug tracking-tight text-white md:text-base">
           {item.gameName}
         </h3>
-        {creator && (
-          <p className="mt-1 font-body text-xs text-primary/90">
-            <span className="line-clamp-1">创作者 {creator}</span>
-          </p>
-        )}
         <p className="mt-2 flex-1 font-body text-xs leading-relaxed text-white/55 line-clamp-2">
           {cardBlurb}
         </p>
@@ -261,7 +245,7 @@ export function HomePage() {
               <motion.div
                 variants={fadeInUp}
                 className="flex flex-col items-center gap-0.5 md:gap-1"
-                aria-label="总奖金池 32,500 U"
+                aria-label="总奖金池 32,500 美元"
               >
                 <p className="max-w-xl font-body text-xs font-normal tracking-normal text-primary/90 md:text-sm">
                   总奖金池{" "}
@@ -269,7 +253,7 @@ export function HomePage() {
                 </p>
                 <div className="flex justify-center">
                   <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[clamp(2.4rem,6.76vw,4.1rem)] font-bold leading-none tracking-tight md:text-[clamp(2.6rem,5vw,4.55rem)]">
-                    32,500&nbsp;U
+                    $32,500
                   </span>
                 </div>
               </motion.div>
@@ -464,7 +448,7 @@ export function HomePage() {
                 <span className="prize-tier-name">一等奖：领航者</span>
                 <div className="flex justify-center">
                   <span className="prize-hero-gradient prize-hero-sweep-text prize-hero-sweep-text--diagonal type-amount font-headline text-[3.375rem] font-bold leading-none tracking-tight md:text-[5.5rem] lg:text-[6rem]">
-                    20,000&nbsp;U
+                    $20,000
                   </span>
                 </div>
                 <div className="mx-auto mt-1 h-[2.7px] w-[5.4rem] max-w-full bg-primary/30 transition-all duration-700 group-hover:w-[68%] md:h-1 md:w-32 md:group-hover:w-[62%]" />
@@ -482,10 +466,9 @@ export function HomePage() {
                 <RewardCardHud slotIndex={1} designation="DESIGNATION: R2" />
                 <PrizeAwardIcon icon={Lightbulb} phase={1} />
                 <span className="prize-tier-name">二等奖：进化者</span>
-                <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">5,000</span>
-                  <span className="translate-y-[-0.05em] self-end font-label text-[2.2rem] font-bold leading-none tracking-normal text-on-background md:text-[2.6rem]">
-                    U
+                <div className="flex justify-center">
+                  <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">
+                    $5,000
                   </span>
                 </div>
               </motion.div>
@@ -502,10 +485,9 @@ export function HomePage() {
                 <RewardCardHud slotIndex={2} designation="DESIGNATION: R3" />
                 <PrizeAwardIcon icon={Rocket} phase={2} />
                 <span className="prize-tier-name">三等奖：破局者</span>
-                <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">3,000</span>
-                  <span className="translate-y-[-0.05em] self-end font-label text-[2.2rem] font-bold leading-none tracking-normal text-on-background md:text-[2.6rem]">
-                    U
+                <div className="flex justify-center">
+                  <span className="type-amount font-headline text-[3.25rem] font-bold leading-none text-on-background md:text-[4rem]">
+                    $3,000
                   </span>
                 </div>
               </motion.div>
@@ -529,12 +511,9 @@ export function HomePage() {
                     <RewardCardHud slotIndex={3 + idx} designation="TYPE: REWARD_NODE" />
                     <PrizeAwardIcon icon={prize.icon} phase={3 + idx} />
                     <span className="prize-tier-name px-0.5">{prize.title}</span>
-                    <div className="flex items-baseline justify-center gap-1 pt-0.5">
+                    <div className="flex justify-center pt-0.5">
                       <span className="type-amount font-headline text-3xl font-bold text-primary md:text-4xl">
-                        1,500
-                      </span>
-                      <span className="translate-y-[-0.05em] self-end font-label text-2xl font-bold leading-none tracking-normal text-primary md:text-3xl">
-                        U
+                        $1,500
                       </span>
                     </div>
                   </motion.div>
@@ -654,7 +633,7 @@ export function HomePage() {
                     <p className="font-body text-base leading-relaxed text-white/70 line-clamp-2 md:text-lg">
                       参赛作品须为公网可访问的
                       <span className="font-semibold text-white">HTML5 网页游戏</span>
-                      ，进入公司展示列表。
+                      ，提交进入展示页面。
                     </p>
                   </div>
                 </div>

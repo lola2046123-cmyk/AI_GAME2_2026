@@ -19,7 +19,6 @@
     "properties": {
       "id": { "type": "string", "format": "uuid" },
       "gameName": { "type": "string", "minLength": 1 },
-      "creatorNickname": { "type": "string", "maxLength": 64 },
       "gameplay": { "type": "string", "minLength": 1 },
       "cardSummary": { "type": "string" },
       "gameplaySource": { "type": "string", "enum": ["manual", "ai", "local"] },

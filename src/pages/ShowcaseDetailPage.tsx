@@ -3,7 +3,7 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowUpRight, Eye, Lightbulb, Coins, Heart, UserRound } from "lucide-react";
+import { ArrowUpRight, Eye, Lightbulb, Coins, Heart } from "lucide-react";
 import { ThinArrow } from "../components/ThinArrow";
 import { useLikeBurst } from "../components/showcase/useLikeBurst";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
@@ -149,7 +149,6 @@ export function ShowcaseDetailPage() {
 
   const status = id ? AWARD_STATUS[id] : undefined;
   const markdown = detail?.markdown ?? `# ${item.gameName}\n\n${item.gameplay}`;
-  const author = detail?.author ?? item.creatorNickname ?? "—";
 
   function isValidUrl(url: string) {
     try { const u = new URL(url); return u.protocol === "http:" || u.protocol === "https:"; }
@@ -208,7 +207,7 @@ export function ShowcaseDetailPage() {
               ))}
             </motion.div>
 
-            {/* ── 中部：标题 + 创作者 + 体验按钮 ── */}
+            {/* ── 中部：标题 + 体验按钮 ── */}
             <motion.div
               className="relative z-[2] flex flex-col items-center gap-3"
               initial={{ opacity: 0, y: 20 }}
@@ -218,13 +217,6 @@ export function ShowcaseDetailPage() {
               <h1 className="font-headline text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
                 {item.gameName}
               </h1>
-              <p className="flex items-center gap-2 font-body text-sm font-medium tracking-normal [text-shadow:0_2px_12px_rgba(0,0,0,0.78)] md:text-base">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary/80">
-                  <UserRound className="h-3.5 w-3.5" strokeWidth={1.8} />
-                </span>
-                <span className="text-primary/90">创作者</span>
-                <span className="text-primary/90">{author}</span>
-              </p>
               {canLink && (
                 <a
                   href={item.deployUrl}

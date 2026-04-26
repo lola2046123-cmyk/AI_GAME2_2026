@@ -25,7 +25,6 @@ export function rowToShowcaseSubmission(row: {
   return {
     id: row.id,
     gameName: row.game_name,
-    creatorNickname: row.creator_nickname?.trim() || undefined,
     gameplay: row.gameplay,
     cardSummary: row.card_summary?.trim() || undefined,
     gameplaySource,
@@ -43,7 +42,7 @@ export function submissionToInsertRow(entry: ShowcaseSubmission): Record<string,
   return {
     id: entry.id,
     game_name: entry.gameName,
-    creator_nickname: entry.creatorNickname?.trim() || null,
+    creator_nickname: null,
     gameplay: entry.gameplay,
     card_summary: entry.cardSummary?.trim() || null,
     gameplay_source: entry.gameplaySource ?? null,

@@ -188,11 +188,6 @@ export function AdminPage() {
                         <h2 className="font-headline text-base font-bold text-on-background md:text-lg">
                           {row.gameName}
                         </h2>
-                        {row.creatorNickname?.trim() ? (
-                          <span className="font-label text-xs text-primary/45">
-                            @{row.creatorNickname.trim()}
-                          </span>
-                        ) : null}
                         {row.is_visible === false && (
                           <span className="rounded-md bg-amber-500/15 px-2 py-0.5 font-label text-[10px] uppercase tracking-technical text-amber-400">
                             已隐藏

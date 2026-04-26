@@ -118,12 +118,6 @@ export function ShowcaseCard({
           {item.gameName}
         </h2>
 
-        <p className="mt-1.5 font-body text-sm text-primary/90 md:text-sm">
-          {item.creatorNickname?.trim() ? (
-            <span className="line-clamp-1">创作者 {item.creatorNickname.trim()}</span>
-          ) : <span className="invisible">—</span>}
-        </p>
-
         <p className="mt-2 flex-1 font-body text-sm leading-relaxed text-white/65 line-clamp-2">
           {blurb}
         </p>
