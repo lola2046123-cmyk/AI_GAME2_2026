@@ -6,6 +6,10 @@ import {
   stripMarkdownToPlain,
   truncatePlainText
 } from "../../lib/showcaseCardSummary";
+import {
+  SHOWCASE_THUMB_SIZES,
+  unsplashSrcSet
+} from "../../lib/responsiveThumbnail";
 /**
  * 卡片摘要：有 summary 则优先使用（转纯文本后按需截断）；
  * 否则从 cardSummary / gameplay / 详情 Markdown 回退并截断 120–160 字 + "..."
@@ -41,16 +45,21 @@ export function ShowcaseCard({
   const isUser = item.source === "user";
   const blurb = buildShowcaseCardSummary(item);
 
-  const inner = (
-    <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] hover:-translate-y-0.5">
+  const thumbSrcSet = unsplashSrcSet(item.thumbnailUrl);
 
-      {/* 封面 16:9 */}
-      <div className="relative aspect-video overflow-hidden bg-white/[0.04]">
+  const inner = (
+    <article className="group/card surface-card flex min-h-0 h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] hover:-translate-y-0.5">
+
+      {/* 封面 16:9：img 绝对定位，避免 flex/grid 下 intrinsic 高度撑破 aspect-ratio（尤其移动端 Safari） */}
+      <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-white/[0.04]">
         <img
           src={item.thumbnailUrl}
+          srcSet={thumbSrcSet}
+          sizes={SHOWCASE_THUMB_SIZES}
           alt={item.gameName}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.05]"
+          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover/card:scale-[1.05]"
           loading="lazy"
+          decoding="async"
         />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent"
@@ -105,7 +114,7 @@ export function ShowcaseCard({
   return (
     <Link
       to={`/showcase/${item.id}`}
-      className="block h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="block h-full min-h-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       {inner}
     </Link>

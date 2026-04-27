@@ -12,6 +12,11 @@ import { RewardCardHud } from "../components/rewards/RewardCardHud";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import {
+  FEATURED_THUMB_SIZES,
+  SHOWCASE_THUMB_SIZES,
+  unsplashSrcSet
+} from "../lib/responsiveThumbnail";
+import {
   getVoteStateForProjects,
   type ShowcaseVoteStateMap
 } from "../lib/showcaseVotes";
@@ -51,19 +56,25 @@ function FeaturedCard({
   large?: boolean;
 }) {
   const description = (item.cardSummary?.trim() || item.gameplay).trim();
+  const thumbSrcSet = unsplashSrcSet(item.thumbnailUrl);
 
   return (
     <Link
       to={`/showcase/${item.id}`}
-      className="group relative block h-full overflow-hidden rounded-2xl border border-white/10 bg-[#161616] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      className="group relative block h-full min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-[#161616] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
     >
-      {/* 封面图 */}
-      <div className={`relative overflow-hidden ${large ? "aspect-[4/3]" : "aspect-video"} bg-white/[0.03]`}>
+      {/* 封面图：绝对定位避免比例容器被 intrinsic 图高撑破 */}
+      <div
+        className={`relative w-full shrink-0 overflow-hidden ${large ? "aspect-[4/3]" : "aspect-video"} bg-white/[0.03]`}
+      >
         <img
           src={item.thumbnailUrl}
+          srcSet={thumbSrcSet}
+          sizes={FEATURED_THUMB_SIZES}
           alt={item.gameName}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.05]"
           loading="lazy"
+          decoding="async"
         />
         {/* 渐变遮罩 */}
         <div
@@ -94,15 +105,19 @@ function FeaturedCard({
 /* ─────────── Latest Submission 卡片（轻量版） ─────────── */
 function LatestCard({ item }: { item: ShowcaseSubmission }) {
   const cardBlurb = (item.cardSummary?.trim() || item.gameplay).trim();
+  const thumbSrcSet = unsplashSrcSet(item.thumbnailUrl);
 
   const inner = (
-    <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-      <div className="relative aspect-video overflow-hidden bg-white/[0.04]">
+    <article className="group/card surface-card flex min-h-0 h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+      <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-white/[0.04]">
         <img
           src={item.thumbnailUrl}
+          srcSet={thumbSrcSet}
+          sizes={SHOWCASE_THUMB_SIZES}
           alt={item.gameName}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
+          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
           loading="lazy"
+          decoding="async"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/65 via-background/10 to-transparent" aria-hidden />
       </div>
@@ -120,7 +135,7 @@ function LatestCard({ item }: { item: ShowcaseSubmission }) {
   return (
     <Link
       to={`/showcase/${item.id}`}
-      className="block h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      className="block h-full min-h-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
     >
       {inner}
     </Link>

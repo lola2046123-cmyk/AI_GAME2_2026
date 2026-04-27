@@ -8,6 +8,7 @@ import { ThinArrow } from "../components/ThinArrow";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import { gameNameSecondaryLine } from "../lib/gameNameBilingual";
+import { unsplashSrcSet } from "../lib/responsiveThumbnail";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import type { ShowcaseSubmission } from "../types/submission";
 
@@ -71,6 +72,7 @@ export function ShowcaseDetailPage() {
   }
   const canLink = isValidUrl(item.deployUrl);
   const gameNameSubtitle = gameNameSecondaryLine(item.gameName);
+  const detailThumbSrcSet = unsplashSrcSet(item.thumbnailUrl);
 
   return (
     <>
@@ -80,13 +82,16 @@ export function ShowcaseDetailPage() {
             Hero：封面大图 + 居中信息布局
         ══════════════════════════════════════ */}
         <div className="relative isolate w-full overflow-x-clip">
-          <div className="relative min-h-[min(58svh,26rem)] w-full sm:min-h-[min(62vh,30rem)] md:min-h-[min(68vh,36rem)]">
+          <div className="relative min-h-[min(58svh,26rem)] w-full overflow-hidden sm:min-h-[min(62vh,30rem)] md:min-h-[min(68vh,36rem)]">
 
-            {/* 封面图 */}
+            {/* 封面图：铺满 Hero 高度，裁切不变形 */}
             <img
               src={item.thumbnailUrl}
+              srcSet={detailThumbSrcSet}
+              sizes="100vw"
               alt={item.gameName}
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_35%] sm:object-[center_40%] md:object-center"
+              decoding="async"
             />
             {/* 均匀暗化遮罩 */}
             <div className="pointer-events-none absolute inset-0 bg-black/58" aria-hidden />

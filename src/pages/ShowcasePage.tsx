@@ -67,12 +67,13 @@ export function ShowcasePage() {
         {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
         <header className="relative isolate flex w-full min-w-0 flex-col overflow-hidden" style={{ minHeight: "max(82vh, 38rem)" }}>
           {/* 背景图（流体模拟基底） */}
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="pointer-events-none absolute inset-0 min-h-0 overflow-hidden" aria-hidden>
             <img
               ref={heroImgRef}
               src={showcaseHeroBg}
               alt=""
-              className="h-full w-full object-cover object-[center_30%] sm:object-center"
+              className="absolute inset-0 h-full w-full object-cover object-[center_28%] sm:object-[center_32%] md:object-center"
+              sizes="100vw"
               fetchPriority="high"
               decoding="async"
               crossOrigin="anonymous"
@@ -172,7 +173,7 @@ export function ShowcasePage() {
                       delay: Math.min(idx * 0.055, 0.33),
                       ease: [0.22, 1, 0.36, 1]
                     }}
-                    className="min-w-0"
+                    className="min-h-0 min-w-0 h-full"
                   >
                     <ShowcaseCard
                       item={item}

@@ -79,16 +79,18 @@ export function ShowcaseLoading({
             key={i}
             className="overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.025]"
           >
-            <motion.div
-              className="aspect-video bg-white/[0.03]"
-              animate={{ opacity: [0.4, 0.75, 0.4] }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 0.08
-              }}
-            />
+            <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-white/[0.02]">
+              <motion.div
+                className="absolute inset-0 bg-white/[0.03]"
+                animate={{ opacity: [0.4, 0.75, 0.4] }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.08
+                }}
+              />
+            </div>
             <div className="space-y-2.5 p-4 md:p-5">
               <motion.div
                 className="h-4 w-3/4 rounded bg-white/[0.06]"
