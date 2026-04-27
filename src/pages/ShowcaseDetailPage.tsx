@@ -19,6 +19,39 @@ const AWARD_STATUS: Record<string, "winner" | "finalist"> = {
   "mock-bonsai": "finalist"
 };
 
+/** 已知中文游戏名的英文直译（其余中文名作兜底英文短句） */
+const CN_GAME_NAME_EN: Record<string, string> = {
+  "星际观测者": "Stellar Observer",
+  "赛博盆栽": "Cyber Bonsai",
+  "黑盒解密": "Black Box Puzzle",
+  "色彩回响": "Chromatic Echoes",
+  "废土霓虹": "Wasteland Neon",
+  "虚拟共生": "Virtual Symbiosis"
+};
+
+const SUBTITLE_HEX = "#A8FFE1";
+
+function countCjk(s: string): number {
+  return (s.match(/[\u4e00-\u9fff]/g) ?? []).length;
+}
+
+function countLatinLetters(s: string): number {
+  return (s.match(/[A-Za-z]/g) ?? []).length;
+}
+
+/** 主标题下方小字：以中文为主时给英文；否则给中文说明 */
+function gameNameSecondaryLine(gameName: string): string | null {
+  const t = gameName.trim();
+  if (!t) return null;
+  const cjk = countCjk(t);
+  const latin = countLatinLetters(t);
+  const primaryChinese = cjk > 0 && cjk >= latin;
+  if (primaryChinese) {
+    return CN_GAME_NAME_EN[t] ?? "Showcase Game Title";
+  }
+  return "参赛游戏作品";
+}
+
 /* ────────────────────────────────────────
    Prose 样式
 ──────────────────────────────────────── */
@@ -67,6 +100,7 @@ export function ShowcaseDetailPage() {
     catch { return false; }
   }
   const canLink = isValidUrl(item.deployUrl);
+  const gameNameSubtitle = gameNameSecondaryLine(item.gameName);
 
   return (
     <>
@@ -76,22 +110,22 @@ export function ShowcaseDetailPage() {
             Hero：封面大图 + 居中信息布局
         ══════════════════════════════════════ */}
         <div className="relative isolate w-full overflow-x-clip">
-          <div className="relative flex min-h-[min(58svh,26rem)] w-full flex-col items-center justify-between px-4 py-10 text-center sm:min-h-[min(62vh,30rem)] sm:px-6 md:min-h-[min(68vh,36rem)] md:px-12">
+          <div className="relative min-h-[min(58svh,26rem)] w-full sm:min-h-[min(62vh,30rem)] md:min-h-[min(68vh,36rem)]">
 
             {/* 封面图 */}
             <img
               src={item.thumbnailUrl}
               alt={item.gameName}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
             />
             {/* 均匀暗化遮罩 */}
             <div className="pointer-events-none absolute inset-0 bg-black/58" aria-hidden />
             {/* 底部渐变 → background */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-b from-transparent via-background/60 to-background" aria-hidden />
 
-            {/* ── 顶部：AI 工具标签 + 奖项徽章 ── */}
+            {/* ── 顶部：奖项 + 技术栈（叠在画面上方） ── */}
             <motion.div
-              className="relative z-[2] flex flex-wrap items-center justify-center gap-2"
+              className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex flex-wrap items-center justify-center gap-2 px-4 pt-8 sm:px-6 sm:pt-10 md:px-12 md:pt-12"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -106,7 +140,6 @@ export function ShowcaseDetailPage() {
                   入围作品
                 </span>
               )}
-              {/* AI 工具标签 — 纯文字 + 暗色胶囊，无图标无计数，与投票按钮形成明显差异 */}
               {item.techStack.map((tag) => (
                 <span
                   key={tag}
@@ -117,29 +150,38 @@ export function ShowcaseDetailPage() {
               ))}
             </motion.div>
 
-            {/* ── 中部：标题 + 体验按钮 ── */}
-            <motion.div
-              className="relative z-[2] flex flex-col items-center gap-3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <h1 className="font-headline text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
-                {item.gameName}
-              </h1>
-              {canLink && (
-                <a
-                  href={item.deployUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-experience mt-1 w-[160px] gap-2 whitespace-nowrap px-5 py-3 text-sm"
-                >
-                  立即体验
-                  <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
-                </a>
-              )}
-            </motion.div>
-
+            {/* ── 标题 + 双语小字 + 体验按钮：在 Hero 区域内垂直居中 ── */}
+            <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center px-4 pb-8 pt-14 text-center sm:px-6 sm:pb-10 sm:pt-16 md:px-12 md:pb-12 md:pt-20">
+              <motion.div
+                className="flex max-w-4xl flex-col items-center gap-3 sm:gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h1 className="font-headline text-balance text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
+                  {item.gameName}
+                </h1>
+                {gameNameSubtitle ? (
+                  <p
+                    className="font-label text-[11px] tracking-[0.12em] sm:text-xs md:tracking-[0.14em]"
+                    style={{ color: SUBTITLE_HEX }}
+                  >
+                    {gameNameSubtitle}
+                  </p>
+                ) : null}
+                {canLink && (
+                  <a
+                    href={item.deployUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-experience mt-1 w-[160px] gap-2 whitespace-nowrap px-5 py-3 text-sm"
+                  >
+                    立即体验
+                    <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
+                  </a>
+                )}
+              </motion.div>
+            </div>
           </div>
         </div>
 

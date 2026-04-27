@@ -65,7 +65,7 @@ export function ShowcasePage() {
       <main className="relative min-w-0 overflow-hidden pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
 
         {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
-        <header className="relative isolate w-full min-w-0 overflow-hidden pb-20 sm:pb-24 md:pb-28">
+        <header className="relative isolate flex w-full min-w-0 flex-col overflow-hidden" style={{ minHeight: "max(82vh, 38rem)" }}>
           {/* 背景图（流体模拟基底） */}
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <img
@@ -87,11 +87,12 @@ export function ShowcasePage() {
 
           {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-background via-background/80 to-transparent sm:h-[40%] md:h-[48%] md:via-background/82"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-background via-background/80 to-transparent sm:h-[42%] md:h-[50%] md:via-background/82"
             aria-hidden
           />
 
-          <div className="relative z-10 mx-auto w-full min-w-0 max-w-home px-6 py-12 sm:py-14 md:px-12 md:py-16 lg:py-20">
+          {/* 内容：flex-1 撑满 → justify-center 垂直居中 */}
+          <div className="relative z-10 mx-auto flex w-full flex-1 flex-col items-center justify-center min-w-0 max-w-home px-6 pb-28 pt-16 sm:pb-32 sm:pt-20 md:px-12 md:pb-36 md:pt-24">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -102,6 +103,7 @@ export function ShowcasePage() {
                 AI 游戏设计大赛 2026
                 <span className="ml-2 text-white/45">· Showcase</span>
               </span>
+
               <SectionTitleEnDecor
                 titleZh="参赛作品"
                 titleEn="SHOWCASE"
@@ -109,12 +111,15 @@ export function ShowcasePage() {
                 headingLevel={1}
                 headlineClassName="text-white"
               />
-              <p className="mt-3 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.3),0_10px_28px_rgba(0,0,0,0.27),0_0_36px_rgba(0,0,0,0.225)] md:mt-4 md:text-lg md:leading-[1.9]">
+
+              <p className="mt-4 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.3),0_10px_28px_rgba(0,0,0,0.27),0_0_36px_rgba(0,0,0,0.225)] md:mt-5 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
+
               {loadError && (
                 <p className="mx-auto mt-4 font-body text-sm text-red-400/90">{loadError}</p>
               )}
+
               <ShowcaseStatBar
                 count={filtered.length}
                 total={items.length}
