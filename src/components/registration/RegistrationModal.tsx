@@ -26,8 +26,8 @@ const PRESET_TOOLS = [
 const MAX_GAME_NAME_CHARS = 20;
 /** 玩法 / 进化论 / 链接等文本上限（码位） */
 const MAX_FIELD_CHARS = 2000;
-/** 核心玩法说明上限（码位）—单独放宽到 10000，便于承载更完整的设计描述 */
-const MAX_GAMEPLAY_CHARS = 10000;
+/** 核心玩法说明上限（码位）—单独放宽到 30000，便于承载更完整的设计描述 */
+const MAX_GAMEPLAY_CHARS = 30000;
 /** 首页卡片摘要上限（码位） */
 const MAX_CARD_SUMMARY = 220;
 
