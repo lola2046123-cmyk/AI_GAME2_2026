@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { ThinArrow } from "../components/ThinArrow";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import { gameNameSecondaryLine } from "../lib/gameNameBilingual";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import type { ShowcaseSubmission } from "../types/submission";
 
@@ -19,38 +20,7 @@ const AWARD_STATUS: Record<string, "winner" | "finalist"> = {
   "mock-bonsai": "finalist"
 };
 
-/** 已知中文游戏名的英文直译（其余中文名作兜底英文短句） */
-const CN_GAME_NAME_EN: Record<string, string> = {
-  "星际观测者": "Stellar Observer",
-  "赛博盆栽": "Cyber Bonsai",
-  "黑盒解密": "Black Box Puzzle",
-  "色彩回响": "Chromatic Echoes",
-  "废土霓虹": "Wasteland Neon",
-  "虚拟共生": "Virtual Symbiosis"
-};
-
 const SUBTITLE_HEX = "#A8FFE1";
-
-function countCjk(s: string): number {
-  return (s.match(/[\u4e00-\u9fff]/g) ?? []).length;
-}
-
-function countLatinLetters(s: string): number {
-  return (s.match(/[A-Za-z]/g) ?? []).length;
-}
-
-/** 主标题下方小字：以中文为主时给英文；否则给中文说明 */
-function gameNameSecondaryLine(gameName: string): string | null {
-  const t = gameName.trim();
-  if (!t) return null;
-  const cjk = countCjk(t);
-  const latin = countLatinLetters(t);
-  const primaryChinese = cjk > 0 && cjk >= latin;
-  if (primaryChinese) {
-    return CN_GAME_NAME_EN[t] ?? "Showcase Game Title";
-  }
-  return "参赛游戏作品";
-}
 
 /* ────────────────────────────────────────
    Prose 样式
