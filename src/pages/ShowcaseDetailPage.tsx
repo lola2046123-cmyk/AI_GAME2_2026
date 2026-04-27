@@ -3,19 +3,11 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowUpRight, Eye, Lightbulb, Coins, Heart } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { ThinArrow } from "../components/ThinArrow";
-import { useLikeBurst } from "../components/showcase/useLikeBurst";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
-import {
-  getVoteStateForProjects,
-  likeProject,
-  voteProject,
-  type ShowcaseVoteState,
-  type VoteType
-} from "../lib/showcaseVotes";
 import type { ShowcaseSubmission } from "../types/submission";
 
 /* ────────────────────────────────────────
@@ -28,21 +20,6 @@ const AWARD_STATUS: Record<string, "winner" | "finalist"> = {
 };
 
 /* ────────────────────────────────────────
-   分类投票配置
-──────────────────────────────────────── */
-type CategoryType = Exclude<VoteType, "like">;
-
-const CATEGORY_CONFIG: {
-  type: CategoryType;
-  label: string;
-  Icon: React.ElementType;
-}[] = [
-  { type: "visual",    label: "视觉最佳",  Icon: Eye },
-  { type: "gameplay",  label: "最有意思",  Icon: Lightbulb },
-  { type: "fun",       label: "最想氪金",  Icon: Coins }
-];
-
-/* ────────────────────────────────────────
    Prose 样式
 ──────────────────────────────────────── */
 const proseClass = ["prose-article", "max-w-none", "text-white/70", "leading-relaxed"].join(" ");
@@ -51,14 +28,6 @@ export function ShowcaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [mode, setMode] = useState<"preview" | "source">("preview");
   const [item, setItem] = useState<ShowcaseSubmission | null | undefined>(undefined);
-  const [voteState, setVoteState] = useState<ShowcaseVoteState>({
-    counts: { like: 0, fun: 0, visual: 0, gameplay: 0 },
-    userVotes: []
-  });
-  const [loadingKey, setLoadingKey] = useState<VoteType | null>(null);
-  const [flash, setFlash] = useState<VoteType | null>(null);
-  const [voteMsg, setVoteMsg] = useState("");
-  const burst = useLikeBurst();
 
   useEffect(() => {
     let cancelled = false;
@@ -79,63 +48,6 @@ export function ShowcaseDetailPage() {
     return () => { cancelled = true; };
   }, [id]);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!id || !item) return;
-    void getVoteStateForProjects([id])
-      .then((map) => { if (!cancelled && map[id]) setVoteState(map[id]); })
-      .catch(() => {
-        if (!cancelled)
-          setVoteState({ counts: { like: 0, fun: 0, visual: 0, gameplay: 0 }, userVotes: [] });
-      });
-    return () => { cancelled = true; };
-  }, [id, item]);
-
-  useEffect(() => {
-    if (!flash) return;
-    const t = window.setTimeout(() => setFlash(null), 900);
-    return () => window.clearTimeout(t);
-  }, [flash]);
-
-  async function handleLike(event?: React.MouseEvent<HTMLButtonElement>) {
-    if (!id || loadingKey === "like") return;
-
-    // 即便已经赞过，再点也给一次愉悦反馈（9 颗心 + 缩放 + 心图标震动），
-    // 与列表 / 卡片侧的点赞按钮交互保持一致
-    burst.trigger(event);
-
-    if (voteState.userVotes.includes("like")) return;
-
-    try {
-      setLoadingKey("like");
-      setVoteMsg("");
-      await likeProject(id);
-      setVoteState((prev) => ({
-        counts: { ...prev.counts, like: prev.counts.like + 1 },
-        userVotes: [...prev.userVotes, "like"]
-      }));
-      setFlash("like");
-    } catch (e) {
-      setVoteMsg(e instanceof Error ? e.message : "点赞失败。");
-    } finally { setLoadingKey(null); }
-  }
-
-  async function handleVote(type: CategoryType) {
-    if (!id || loadingKey || voteState.userVotes.includes(type)) return;
-    try {
-      setLoadingKey(type);
-      setVoteMsg("");
-      await voteProject(id, type);
-      setVoteState((prev) => ({
-        counts: { ...prev.counts, [type]: prev.counts[type] + 1 },
-        userVotes: [...prev.userVotes, type]
-      }));
-      setFlash(type);
-    } catch (e) {
-      setVoteMsg(e instanceof Error ? e.message : "投票失败。");
-    } finally { setLoadingKey(null); }
-  }
-
   const detail = id ? SHOWCASE_DETAILS[id] : undefined;
 
   if (item === undefined) {
@@ -155,8 +67,6 @@ export function ShowcaseDetailPage() {
     catch { return false; }
   }
   const canLink = isValidUrl(item.deployUrl);
-  const counts = voteState.counts;
-  const userVotes = voteState.userVotes;
 
   return (
     <>
@@ -230,80 +140,6 @@ export function ShowcaseDetailPage() {
               )}
             </motion.div>
 
-            {/* ── 底部：投票按钮行 ──
-                设计差异：有图标 + 有计数 + 可交互颜色变化
-                vs AI 标签：无图标 + 无计数 + 静态展示 ── */}
-            <motion.div
-              className="relative z-[2] w-full max-w-sm sm:max-w-none"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* 移动端 2×2 网格，sm+ 恢复单行 flex */}
-              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
-
-                {/* 点赞按钮：9 颗心爆炸 + 按钮缩放 + 心图标震动（与列表点赞动效统一） */}
-                <button
-                  ref={burst.btnRef}
-                  type="button"
-                  onClick={(e) => void handleLike(e)}
-                  disabled={loadingKey === "like"}
-                  className={[
-                    "flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed sm:w-auto",
-                    userVotes.includes("like")
-                      ? "border-rose-400/50 bg-rose-500/18 text-rose-300 shadow-[0_0_16px_rgba(251,113,133,0.18)]"
-                      : "border-white/[0.14] bg-black/40 text-white/60 hover:border-rose-400/40 hover:bg-rose-500/[0.1] hover:text-rose-300"
-                  ].join(" ")}
-                >
-                  <Heart
-                    ref={burst.iconRef}
-                    className="h-3.5 w-3.5 shrink-0 transition-colors"
-                    fill={userVotes.includes("like") ? "currentColor" : "none"}
-                    strokeWidth={1.8}
-                  />
-                  <span className="font-label tracking-wide">点赞</span>
-                  <span className="font-reward-hud text-[13px] font-bold leading-none">
-                    {counts.like}
-                  </span>
-                </button>
-
-                {/* 三个分类投票按钮 */}
-                {CATEGORY_CONFIG.map(({ type, label, Icon }) => {
-                  const active = userVotes.includes(type);
-                  return (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => void handleVote(type)}
-                      disabled={loadingKey !== null || active}
-                      className={[
-                        "flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 disabled:cursor-not-allowed sm:w-auto",
-                        active
-                          ? "border-primary/45 bg-primary/15 text-primary shadow-[0_0_16px_rgba(168,255,225,0.15)]"
-                          : "border-white/[0.14] bg-black/40 text-white/55 hover:border-primary/35 hover:bg-primary/[0.08] hover:text-primary/80"
-                      ].join(" ")}
-                    >
-                      <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                      <span className="font-label tracking-wide">{label}</span>
-                      <span className="font-reward-hud text-[13px] font-bold leading-none">
-                        {counts[type]}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* 反馈提示 */}
-              {flash && (
-                <span className="pointer-events-none absolute -top-5 left-1/2 -translate-x-1/2 font-label text-[10px] uppercase tracking-widest text-primary/90">
-                  +1
-                </span>
-              )}
-            </motion.div>
-
-            {voteMsg && (
-              <p className="relative z-[2] mt-2 font-body text-xs text-red-400/80">{voteMsg}</p>
-            )}
           </div>
         </div>
 
@@ -498,8 +334,6 @@ export function ShowcaseDetailPage() {
         </div>
       </footer>
 
-      {/* 9 颗心爆炸 portal —— useLikeBurst 内部已 portal 到 body，这里渲染挂载点即可 */}
-      {burst.portal}
     </>
   );
 }

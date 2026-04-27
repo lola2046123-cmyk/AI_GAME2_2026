@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Flame, Sparkles, Lightbulb, Coins } from "lucide-react";
 import { ThinArrow } from "../ThinArrow";
 import type { ShowcaseSubmission } from "../../types/submission";
 import { SHOWCASE_DETAILS } from "../../data/showcaseDetails";
@@ -7,9 +6,6 @@ import {
   stripMarkdownToPlain,
   truncatePlainText
 } from "../../lib/showcaseCardSummary";
-import type { ShowcaseVoteState } from "../../lib/showcaseVotes";
-import { ShowcaseVoteBar } from "./ShowcaseVoteBar";
-
 /**
  * 卡片摘要：有 summary 则优先使用（转纯文本后按需截断）；
  * 否则从 cardSummary / gameplay / 详情 Markdown 回退并截断 120–160 字 + "..."
@@ -33,36 +29,17 @@ export function buildShowcaseCardSummary(item: ShowcaseSubmission): string {
   return truncatePlainText(plain, 160);
 }
 
-/* 排行标签 → 图标映射 */
-const RANK_ICON: Record<string, React.ElementType> = {
-  "热门作品": Flame,
-  "视觉最佳": Sparkles,
-  "最有趣":   Lightbulb,
-  "最想氪金": Coins,
-};
-
 type CardStatus = "winner" | "finalist" | undefined;
 
 export function ShowcaseCard({
   item,
-  status,
-  rankLabel,
-  showVote = false,
-  voteState,
-  onVoteStateChange
+  status
 }: {
   item: ShowcaseSubmission;
   status?: CardStatus;
-  /** 根据投票排行展示的荣誉标签，无数据时留空 */
-  rankLabel?: string;
-  /** 是否在卡片底部展示点赞/投票条（默认 false，首页等场景不显示） */
-  showVote?: boolean;
-  voteState?: ShowcaseVoteState;
-  onVoteStateChange?: (updater: (prev: ShowcaseVoteState) => ShowcaseVoteState) => void;
 }) {
   const isUser = item.source === "user";
   const blurb = buildShowcaseCardSummary(item);
-  const RankIcon = rankLabel ? (RANK_ICON[rankLabel] ?? Flame) : null;
 
   const inner = (
     <article className="group/card surface-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] hover:-translate-y-0.5">
@@ -80,14 +57,8 @@ export function ShowcaseCard({
           aria-hidden
         />
 
-        {/* 右上：排行角标 + 奖项徽章（纵向堆叠） */}
+        {/* 右上：奖项徽章 */}
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
-          {rankLabel && RankIcon && (
-            <span className="flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 font-label text-[10px] font-bold tracking-wide text-primary-container shadow-[0_0_14px_rgba(0,255,204,0.28)] backdrop-blur-md ring-1 ring-primary-container/30">
-              <RankIcon className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-              {rankLabel}
-            </span>
-          )}
           {status === "winner" && (
             <span className="rounded-full border border-yellow-400/40 bg-yellow-400/15 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-yellow-300 backdrop-blur-md">
               Winner
@@ -98,7 +69,7 @@ export function ShowcaseCard({
               Finalist
             </span>
           )}
-          {isUser && !status && !rankLabel && (
+          {isUser && !status && (
             <span className="rounded-full border border-primary-container/20 bg-black/55 px-2.5 py-0.5 font-label text-[10px] font-semibold uppercase tracking-widest text-primary-container/60 backdrop-blur-md">
               Live
             </span>
@@ -121,17 +92,6 @@ export function ShowcaseCard({
         <p className="mt-2 flex-1 font-body text-sm leading-relaxed text-white/65 line-clamp-2">
           {blurb}
         </p>
-
-        {showVote ? (
-          <div className="mt-4">
-            <ShowcaseVoteBar
-              projectId={item.id}
-              state={voteState}
-              compact
-              onStateChange={onVoteStateChange}
-            />
-          </div>
-        ) : null}
 
         <p className="mt-3.5 border-t border-white/[0.07] pt-3 font-label text-[15px] uppercase tracking-widest text-white/40 transition-colors duration-300 group-hover/card:text-primary/60">
           <span className="inline-flex items-center gap-1 transition-transform duration-300 group-hover/card:translate-x-0.5">

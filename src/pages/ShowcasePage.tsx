@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SectionTitleEnDecor } from "../components/SectionTitleEnDecor";
-import { RankingList } from "../components/showcase/RankingList";
 import { ShowcaseCard } from "../components/showcase/ShowcaseCard";
 import { ShowcaseEmpty } from "../components/showcase/ShowcaseEmpty";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
@@ -10,12 +9,6 @@ import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { useFluidVfx } from "../components/showcase/useFluidVfx";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import showcaseHeroBg from "../../imge/game_bg8.jpg";
-import {
-  buildRankings,
-  getVoteStateForProjects,
-  type ShowcaseVoteState,
-  type ShowcaseVoteStateMap
-} from "../lib/showcaseVotes";
 import type { ShowcaseSubmission } from "../types/submission";
 
 /* ─────────────── 获奖状态（生产环境可从 DB 读取） ─────────────── */
@@ -31,7 +24,6 @@ export function ShowcasePage() {
   const [items, setItems] = useState<ShowcaseSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [voteMap, setVoteMap] = useState<ShowcaseVoteStateMap>({});
 
   /** 在 hero 图上叠加稳定流体模拟（鼠标即可触发；不影响布局/点击/滚动） */
   const heroImgRef = useRef<HTMLImageElement | null>(null);
@@ -58,45 +50,11 @@ export function ShowcasePage() {
     return () => { cancelled = true; };
   }, [key]);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (items.length === 0) {
-      setVoteMap({});
-      return;
-    }
-
-    void getVoteStateForProjects(items.map((item) => item.id))
-      .then((map) => {
-        if (!cancelled) setVoteMap(map);
-      })
-      .catch(() => {
-        if (!cancelled) setVoteMap({});
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [items]);
-
   /** 按最新时间排序 */
   const filtered = useMemo(
     () => [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [items]
   );
-
-  const rankings = useMemo(() => buildRankings(items, voteMap), [items, voteMap]);
-
-  /** 每个项目对应的排行标签（优先级：热门 > 视觉最佳 > 最有趣 > 最想氪金） */
-  const rankLabelMap = useMemo<Record<string, string>>(() => {
-    const map: Record<string, string> = {};
-    rankings.fun.slice(0, 3).forEach((e) => { map[e.project.id] = "最想氪金"; });
-    rankings.gameplay.slice(0, 3).forEach((e) => { map[e.project.id] = "最有趣"; });
-    rankings.visual.slice(0, 3).forEach((e) => { map[e.project.id] = "视觉最佳"; });
-    rankings.like.slice(0, 3).forEach((e) => { map[e.project.id] = "热门作品"; });
-    return map;
-  }, [rankings]);
-
-  const hasItems = items.length > 0;
 
   return (
     <>
@@ -168,39 +126,6 @@ export function ShowcasePage() {
 
         <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+40px)] pt-8 sm:-mt-[calc(6rem+48px)] md:-mt-[calc(7rem+80px)] md:px-12 md:pt-10">
 
-          <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-4">
-            <RankingList
-              title="热门作品"
-              iconKey="flame"
-              topN={3}
-              items={rankings.like}
-              voteCount={(e) => e.votes}
-              emptyText="还没有点赞记录"
-            />
-            <RankingList
-              title="视觉最佳"
-              iconKey="sparkles"
-              topN={3}
-              items={rankings.visual}
-              voteCount={(e) => e.votes}
-            />
-            <RankingList
-              title="最有趣"
-              iconKey="gamepad"
-              topN={3}
-              items={rankings.gameplay}
-              voteCount={(e) => e.votes}
-            />
-            <RankingList
-              title="最想氪金"
-              iconKey="coin"
-              topN={3}
-              items={rankings.fun}
-              voteCount={(e) => e.votes}
-              emptyText="还没有「最想氪金」投票"
-            />
-          </div>
-
           {/* ── 卡片栅格（含加载态） ── */}
           <AnimatePresence mode="wait">
             {loading ? (
@@ -247,22 +172,6 @@ export function ShowcasePage() {
                     <ShowcaseCard
                       item={item}
                       status={AWARD_STATUS[item.id]}
-                      rankLabel={rankLabelMap[item.id]}
-                      showVote
-                      voteState={voteMap[item.id]}
-                      onVoteStateChange={(updater) =>
-                        setVoteMap((prev) => {
-                          const current: ShowcaseVoteState =
-                            prev[item.id] ?? {
-                              counts: { like: 0, fun: 0, visual: 0, gameplay: 0 },
-                              userVotes: []
-                            };
-                          return {
-                            ...prev,
-                            [item.id]: updater(current)
-                          };
-                        })
-                      }
                     />
                   </motion.div>
                 ))}
