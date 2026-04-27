@@ -64,36 +64,38 @@ export function ShowcasePage() {
           只有去掉 main 的实色背景，canvas 才能透出来给 hero 用。 */}
       <main className="relative min-w-0 overflow-hidden pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] md:pb-28">
 
-        {/* 首屏 Hero：背景图 + 黑色遮罩 + 底部渐变与 background 色衔接 */}
-        <header className="relative isolate flex w-full min-w-0 flex-col overflow-hidden" style={{ minHeight: "max(82vh, 38rem)" }}>
-          {/* 背景图（流体模拟基底） */}
-          <div className="pointer-events-none absolute inset-0 min-h-0 overflow-hidden" aria-hidden>
-            <img
-              ref={heroImgRef}
-              src={showcaseHeroBg}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-[center_28%] sm:object-[center_32%] md:object-center"
-              sizes="100vw"
-              fetchPriority="high"
-              decoding="async"
-              crossOrigin="anonymous"
-            />
-          </div>
+        {/* 首屏 Hero ─ 背景图 + 遮罩 + 底部渐变 + 垂直居中内容
+            高度策略：移动端固定 min-h，避免 82vh 在低分辨率手机上撑太高；
+            背景图直接放在 header 内（不再嵌套额外 div），
+            VFX canvas（position:fixed）测量 img 的 getBoundingClientRect 更准确。 */}
+        <header className="relative isolate flex min-h-[22rem] w-full min-w-0 flex-col overflow-hidden sm:min-h-[27rem] md:min-h-[34rem] lg:min-h-[40rem]">
 
-          {/* 全局暗化遮罩：移动端遮罩更浅，桌面端适当加深 */}
+          {/* 背景图（流体模拟基底）：直接作为 header 子元素，absolute inset-0 只用一层 */}
+          <img
+            ref={heroImgRef}
+            src={showcaseHeroBg}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_30%] sm:object-[center_35%] md:object-center"
+            fetchPriority="high"
+            decoding="async"
+            crossOrigin="anonymous"
+          />
+
+          {/* 全局暗化遮罩 */}
           <div
-            className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-black/55 md:bg-black/62"
+            className="pointer-events-none absolute inset-0 bg-black/45 sm:bg-black/52 md:bg-black/60"
             aria-hidden
           />
 
-          {/* 底部渐变：移动端缩短覆盖比例，避免与实色遮罩叠加过暗 */}
+          {/* 底部渐变与卡片区衔接 */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-background via-background/80 to-transparent sm:h-[42%] md:h-[50%] md:via-background/82"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-background via-background/75 to-transparent sm:h-[44%] md:h-[52%]"
             aria-hidden
           />
 
-          {/* 内容：flex-1 撑满 → justify-center 垂直居中 */}
-          <div className="relative z-10 mx-auto flex w-full flex-1 flex-col items-center justify-center min-w-0 max-w-home px-6 pb-28 pt-16 sm:pb-32 sm:pt-20 md:px-12 md:pb-36 md:pt-24">
+          {/* 内容区：flex-1 撑满 header，justify-center 垂直居中 */}
+          <div className="relative z-10 mx-auto flex w-full flex-1 flex-col items-center justify-center min-w-0 max-w-home px-6 pb-16 pt-12 sm:pb-20 sm:pt-14 md:px-12 md:pb-24 md:pt-16">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -113,7 +115,7 @@ export function ShowcasePage() {
                 headlineClassName="text-white"
               />
 
-              <p className="mt-4 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.3),0_10px_28px_rgba(0,0,0,0.27),0_0_36px_rgba(0,0,0,0.225)] md:mt-5 md:text-lg md:leading-[1.9]">
+              <p className="mt-3 max-w-xl font-body text-base leading-[1.9] text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.3),0_10px_28px_rgba(0,0,0,0.27),0_0_36px_rgba(0,0,0,0.225)] sm:mt-4 md:text-lg md:leading-[1.9]">
                 人类 × AI 的奇怪游戏合集
               </p>
 
@@ -130,7 +132,7 @@ export function ShowcasePage() {
           </div>
         </header>
 
-        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[calc(5rem+40px)] pt-8 sm:-mt-[calc(6rem+48px)] md:-mt-[calc(7rem+80px)] md:px-12 md:pt-10">
+        <div className="relative z-[1] mx-auto w-full max-w-home px-6 -mt-[4.5rem] pt-6 sm:-mt-[5rem] sm:pt-8 md:-mt-[6rem] md:px-12 md:pt-10">
 
           {/* ── 卡片栅格（含加载态） ── */}
           <AnimatePresence mode="wait">
