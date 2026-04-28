@@ -1,5 +1,5 @@
 import type { ShowcaseSubmission } from "../types/submission";
-import { getAdminToken } from "./adminSession";
+import { getAdminPin } from "./adminSession";
 import { rowToShowcaseSubmission, submissionToInsertRow } from "./showcaseSubmissionMap";
 import { sortShowcaseDesc } from "./showcaseSort";
 import { getSupabaseAnon, isRemoteSubmissionMode } from "./supabaseClient";
@@ -44,7 +44,7 @@ export async function loadUserSubmissionsAsync(): Promise<ShowcaseSubmission[]> 
   const res = await fetch("/api/showcase-admin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: "list", token: requireAdminToken() })
+    body: JSON.stringify({ op: "list", pin: getAdminRequestPin() })
   });
   const json = (await res.json()) as { ok?: boolean; items?: ShowcaseSubmission[]; error?: string };
   if (!res.ok || !json.ok) {
@@ -74,13 +74,8 @@ export async function loadVisibleSubmissionsForShowcaseAsync(): Promise<
   );
 }
 
-/** 取出请求所需的会话 token；未登录或会话过期时主动抛错并提示重新登录 */
-function requireAdminToken(): string {
-  const t = getAdminToken();
-  if (!t) {
-    throw new Error("会话已过期，请刷新页面后重新登录");
-  }
-  return t;
+function getAdminRequestPin(): string {
+  return getAdminPin();
 }
 
 export async function appendSubmission(entry: ShowcaseSubmission): Promise<void> {
@@ -131,7 +126,7 @@ export async function updateSubmission(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       op: "update",
-      token: requireAdminToken(),
+      pin: getAdminRequestPin(),
       id,
       patch
     })
@@ -155,7 +150,7 @@ export async function deleteSubmission(id: string): Promise<void> {
   const res = await fetch("/api/showcase-admin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: "delete", token: requireAdminToken(), id })
+    body: JSON.stringify({ op: "delete", pin: getAdminRequestPin(), id })
   });
   const json = (await res.json()) as { ok?: boolean; error?: string };
   if (!res.ok || !json.ok) {
