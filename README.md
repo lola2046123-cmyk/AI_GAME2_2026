@@ -37,7 +37,8 @@
 
 | 变量 | 上线建议 |
 |------|----------|
-| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。与 **`/api/showcase-admin`** 共用；管理 list/update/delete 经该 API + **Service Role** 执行。 |
+| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN（前端 `/admin` 登录页比对用，build 时打入产物）。**必须与 `ADMIN_PIN` 同值**，否则前端通过、后端拦截。 |
+| `ADMIN_PIN` | **仅 Vercel 服务端变量**（勿 `VITE_` 前缀）。`api/showcase-admin.ts` 用它做最终拦截；与 `VITE_ADMIN_PIN` 同值。**未配置时函数会返回 500，请务必添加。** |
 | `VITE_SUPABASE_URL` | 可选。与 `VITE_SUPABASE_ANON_KEY` **同时设置**时启用远端投稿、展示与 **Auth 投票**（SQL 见 `docs/supabase-showcase.sql` + `docs/supabase-votes.sql`）。 |
 | `VITE_SUPABASE_ANON_KEY` | 可选。Supabase anon key；受 RLS 约束，**不要**当作私密密钥。 |
 | `SUPABASE_SERVICE_ROLE_KEY` | **仅 Vercel 服务端变量**（勿 `VITE_`）。供 `api/showcase-admin.ts` 管理数据；勿提交进 Git。 |
@@ -59,7 +60,7 @@
 
 - **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）无用户稿时展示 `mockShowcase` 6 条兜底；**一旦存在可见用户稿**，列表即切换为纯用户稿展示，不再混入 mock（避免"首位 mock 被挤掉"造成修改错觉）。换设备或清缓存后看不到他人本机数据。
 
-- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` 稿件权限。
+- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（前端 `VITE_ADMIN_PIN` 登录后透传 PIN，服务端用 **`ADMIN_PIN`** 拦截 + **`SUPABASE_SERVICE_ROLE_KEY`** 绕过 RLS），anon 无 `UPDATE`/`DELETE` 稿件权限。
 
 **本地 `npm run dev`**：Vite 不托管 `api/*`，管理接口与远端列表需在 **Vercel 预览 / 生产** 验证，或本地运行 **`vercel dev`**（需安装 [Vercel CLI](https://vercel.com/docs/cli)）以同时提供前端与 Serverless。
 
@@ -110,7 +111,8 @@ npm run dev
 | 变量 | 说明 |
 |------|------|
 | `VITE_API_BASE` | 可选。后端根 URL；用于 `POST /api/screenshot` 生成作品缩略图。留空则无远程截图，依赖用户上传封面或占位图。 |
-| `VITE_ADMIN_PIN` | 可选。`/admin` 登录 PIN；未设置时开发环境默认 `2026`（**仅前端校验**，生产须配合服务端权限）。 |
+| `VITE_ADMIN_PIN` | 可选。`/admin` 登录 PIN（前端比对）；未设置时开发环境默认 `2026`。**生产须同步配置同值的 `ADMIN_PIN`**（仅服务端，不带 `VITE_` 前缀）—— 前端仅作障眼，最终拦截在 `api/showcase-admin.ts`。 |
+| `ADMIN_PIN` | **生产必填**（仅服务端）。`api/showcase-admin.ts` 用它做最终鉴权，与 `VITE_ADMIN_PIN` 同值；未配置时管理 API 会返回 500。 |
 | `VITE_GEMINI_API_KEY` | 可选。当前报名表单**文档上传**仅使用**本地启发式**生成概要，不调用 Gemini；变量保留供后续扩展或其它功能使用。 |
 | `VITE_GEMINI_MODEL` | 可选。默认 `gemini-2.0-flash`（同上，与文档上传路径无联动时可不配置）。 |
 

@@ -1,6 +1,13 @@
 /**
  * Vercel Serverless：用 Service Role 绕过 RLS，供管理页 list / update / delete。
- * 环境变量：VITE_SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY、VITE_ADMIN_PIN
+ *
+ * 环境变量（必填）：
+ *   - VITE_SUPABASE_URL          Supabase 项目 URL（前端共用，沿用 VITE_ 前缀）
+ *   - SUPABASE_SERVICE_ROLE_KEY  service_role 密钥，绕过 RLS
+ *   - ADMIN_PIN                  管理员 PIN（仅服务端，**不带** VITE_ 前缀）
+ *
+ * 鉴权：前端在 /admin 登录时已用 VITE_ADMIN_PIN 比对，再把 PIN 透传到这里；
+ *      此处用 ADMIN_PIN（服务端独立变量）做最终拦截。两个值务必保持一致。
  */
 import { createClient } from "@supabase/supabase-js";
 
@@ -88,12 +95,20 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   const url = process.env.VITE_SUPABASE_URL?.trim();
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  const expectedPin = process.env.VITE_ADMIN_PIN ?? "2026";
+  const expectedPin = process.env.ADMIN_PIN?.trim();
 
   if (!url || !serviceKey) {
     res.status(500).json({
       ok: false,
       error: "缺少 VITE_SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY"
+    });
+    return;
+  }
+  if (!expectedPin) {
+    res.status(500).json({
+      ok: false,
+      error:
+        "服务端未配置 ADMIN_PIN（请在 Vercel → Settings → Environment Variables 添加 ADMIN_PIN，不带 VITE_ 前缀）"
     });
     return;
   }

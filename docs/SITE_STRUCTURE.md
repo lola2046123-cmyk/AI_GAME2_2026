@@ -186,7 +186,7 @@
 
 ### 4.8 管理页
 
-- **PIN 登录**：本地 `adminSession` 与 `getAdminPin()`（环境变量）
+- **PIN 登录**：本地 `adminSession` 与 `getAdminPin()`（前端读 `VITE_ADMIN_PIN`，服务端 `api/showcase-admin.ts` 再用 `ADMIN_PIN` 兜底拦截，需双方同值）
 - **列表**：加载 `loadUserSubmissionsAsync`；删除 / 可见性写回存储或远端（见 `submissionsStorage`）
 - **编辑**：`openEdit` 打开同一套 `RegistrationModal`
 
