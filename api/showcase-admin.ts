@@ -11,11 +11,12 @@
  */
 import { createClient } from "@supabase/supabase-js";
 
-import {
-  parseCompositionCode,
-  type CompositionCode
-} from "../src/lib/composition";
-import type { ShowcaseSubmission } from "../src/types/submission";
+/* ────────────────────────────────────────
+   类型与工具：本文件保持自包含
+   ——历史上从 ../src/lib/composition 与 ../src/types/submission 引入会让
+   Vercel @vercel/nft 在跨目录追踪 + tsconfig moduleResolution:"bundler" 组合下
+   漏打包源文件，导致 cold start 时 Cannot find module → FUNCTION_INVOCATION_FAILED。
+──────────────────────────────────────── */
 
 /** Vercel Node 运行时请求/响应的最小形状（避免依赖 @vercel/node） */
 type ApiRequest = { method?: string; body?: string | Record<string, unknown> };
@@ -23,6 +24,53 @@ type ApiResponse = {
   status: (code: number) => ApiResponse;
   setHeader: (name: string, value: string) => void;
   json: (body: Record<string, unknown>) => void;
+};
+
+/** 与 src/lib/composition.ts 保持一致：前端的"个人 / N 人团队" */
+type CompositionCode =
+  | "solo"
+  | "team-2"
+  | "team-3"
+  | "team-4"
+  | "team-5"
+  | "team-6"
+  | "team-7"
+  | "team-8";
+
+const VALID_COMPOSITION_CODES: ReadonlySet<string> = new Set([
+  "solo",
+  "team-2",
+  "team-3",
+  "team-4",
+  "team-5",
+  "team-6",
+  "team-7",
+  "team-8"
+]);
+
+function parseCompositionCode(
+  input: string | null | undefined
+): CompositionCode | undefined {
+  if (!input) return undefined;
+  const v = input.trim();
+  return VALID_COMPOSITION_CODES.has(v) ? (v as CompositionCode) : undefined;
+}
+
+/** 与 src/types/submission.ts 字段一致；本文件只用一部分字段 */
+type ShowcaseSubmission = {
+  id: string;
+  gameName: string;
+  gameplay: string;
+  cardSummary?: string;
+  gameplaySource?: "manual" | "ai" | "local";
+  techStack: string[];
+  evolution: string;
+  composition?: CompositionCode;
+  deployUrl: string;
+  thumbnailUrl: string;
+  createdAt: string;
+  source: "mock" | "user";
+  is_visible?: boolean;
 };
 
 type DbRow = {
