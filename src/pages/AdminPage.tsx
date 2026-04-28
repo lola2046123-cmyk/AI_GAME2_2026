@@ -14,10 +14,11 @@ import {
   loadUserSubmissionsAsync,
   setSubmissionVisibility
 } from "../lib/submissionsStorage";
+import { compareShowcaseDesc } from "../lib/showcaseSort";
 import {
-  getAdminPin,
   isAdminAuthenticated,
-  setAdminAuthenticated
+  loginAdmin,
+  logoutAdmin
 } from "../lib/adminSession";
 import type { AppOutletContext } from "../types/outlet";
 import type { ShowcaseSubmission } from "../types/submission";
@@ -27,6 +28,7 @@ export function AdminPage() {
   const [authed, setAuthed] = useState(isAdminAuthenticated);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState<string | null>(null);
+  const [pinSubmitting, setPinSubmitting] = useState(false);
   const [list, setList] = useState<ShowcaseSubmission[]>([]);
   const [listError, setListError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -50,20 +52,23 @@ export function AdminPage() {
     void refresh();
   }, [authed, refresh, adminSaveSignal]);
 
-  const attemptLogin = (e: FormEvent) => {
+  const attemptLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (pinInput === getAdminPin()) {
-      setAdminAuthenticated(true);
+    if (pinSubmitting) return;
+    setPinSubmitting(true);
+    setPinError(null);
+    const r = await loginAdmin(pinInput);
+    setPinSubmitting(false);
+    if (r.ok) {
       setAuthed(true);
-      setPinError(null);
       setPinInput("");
     } else {
-      setPinError("PIN 错误");
+      setPinError(r.error ?? "PIN 错误");
     }
   };
 
   const logout = () => {
-    setAdminAuthenticated(false);
+    logoutAdmin();
     setAuthed(false);
   };
 
@@ -90,7 +95,7 @@ export function AdminPage() {
   };
 
   const sorted = useMemo(
-    () => [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    () => [...list].sort(compareShowcaseDesc),
     [list]
   );
 
@@ -107,8 +112,7 @@ export function AdminPage() {
               管理中心
             </h1>
             <p className="font-body mt-2 text-sm text-primary/50">
-              请输入 PIN（开发默认见环境变量说明；未设置时为{" "}
-              <code className="text-[#00ffcc]">2026</code>）
+              请输入管理员 PIN
             </p>
             <form onSubmit={attemptLogin} className="mt-6 space-y-4">
               <input
@@ -118,13 +122,18 @@ export function AdminPage() {
                 onChange={(e) => setPinInput(e.target.value)}
                 placeholder="PIN"
                 aria-label="管理员 PIN"
-                className="w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background outline-none focus:border-[#00ffcc]/50"
+                disabled={pinSubmitting}
+                className="w-full rounded-xl border border-white/[0.12] bg-black/35 px-4 py-3 font-body text-sm text-on-background outline-none focus:border-[#00ffcc]/50 disabled:opacity-60"
               />
               {pinError && (
                 <p className="text-sm text-red-400/95">{pinError}</p>
               )}
-              <button type="submit" className="btn-primary w-full py-3 text-sm">
-                进入
+              <button
+                type="submit"
+                disabled={pinSubmitting}
+                className="btn-primary w-full py-3 text-sm disabled:opacity-60"
+              >
+                {pinSubmitting ? "校验中…" : "进入"}
               </button>
             </form>
           </motion.div>

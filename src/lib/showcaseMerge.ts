@@ -1,5 +1,6 @@
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import type { ShowcaseSubmission } from "../types/submission";
+import { sortShowcaseDesc } from "./showcaseSort";
 import { loadUserSubmissions, loadVisibleSubmissionsForShowcaseAsync } from "./submissionsStorage";
 import { isRemoteSubmissionMode } from "./supabaseClient";
 
@@ -19,6 +20,6 @@ export async function getShowcaseListAsync(): Promise<ShowcaseSubmission[]> {
     ? await loadVisibleSubmissionsForShowcaseAsync()
     : getVisibleUserSubmissions();
 
-  if (user.length === 0) return MOCK_SHOWCASE;
-  return user;
+  if (user.length === 0) return sortShowcaseDesc(MOCK_SHOWCASE);
+  return sortShowcaseDesc(user);
 }

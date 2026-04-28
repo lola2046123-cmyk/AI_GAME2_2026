@@ -1,6 +1,7 @@
 import type { ShowcaseSubmission } from "../types/submission";
-import { getAdminPin } from "./adminSession";
+import { getAdminToken } from "./adminSession";
 import { rowToShowcaseSubmission, submissionToInsertRow } from "./showcaseSubmissionMap";
+import { sortShowcaseDesc } from "./showcaseSort";
 import { getSupabaseAnon, isRemoteSubmissionMode } from "./supabaseClient";
 
 const STORAGE_KEY = "ai_game_2026_showcase_submissions";
@@ -43,13 +44,13 @@ export async function loadUserSubmissionsAsync(): Promise<ShowcaseSubmission[]> 
   const res = await fetch("/api/showcase-admin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: "list", pin: getAdminRequestPin() })
+    body: JSON.stringify({ op: "list", token: requireAdminToken() })
   });
   const json = (await res.json()) as { ok?: boolean; items?: ShowcaseSubmission[]; error?: string };
   if (!res.ok || !json.ok) {
     throw new Error(json.error ?? "无法加载投稿列表");
   }
-  return (json.items ?? []).map(normalizeUserSubmission);
+  return sortShowcaseDesc((json.items ?? []).map(normalizeUserSubmission));
 }
 
 /** 展示页：仅「可见」用户稿（远端 RLS 已过滤，此处再保险） */
@@ -66,13 +67,20 @@ export async function loadVisibleSubmissionsForShowcaseAsync(): Promise<
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) =>
-    normalizeUserSubmission(rowToShowcaseSubmission(row as never))
+  return sortShowcaseDesc(
+    (data ?? []).map((row) =>
+      normalizeUserSubmission(rowToShowcaseSubmission(row as never))
+    )
   );
 }
 
-function getAdminRequestPin(): string {
-  return getAdminPin();
+/** 取出请求所需的会话 token；未登录或会话过期时主动抛错并提示重新登录 */
+function requireAdminToken(): string {
+  const t = getAdminToken();
+  if (!t) {
+    throw new Error("会话已过期，请刷新页面后重新登录");
+  }
+  return t;
 }
 
 export async function appendSubmission(entry: ShowcaseSubmission): Promise<void> {
@@ -123,7 +131,7 @@ export async function updateSubmission(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       op: "update",
-      pin: getAdminRequestPin(),
+      token: requireAdminToken(),
       id,
       patch
     })
@@ -147,7 +155,7 @@ export async function deleteSubmission(id: string): Promise<void> {
   const res = await fetch("/api/showcase-admin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: "delete", pin: getAdminRequestPin(), id })
+    body: JSON.stringify({ op: "delete", token: requireAdminToken(), id })
   });
   const json = (await res.json()) as { ok?: boolean; error?: string };
   if (!res.ok || !json.ok) {

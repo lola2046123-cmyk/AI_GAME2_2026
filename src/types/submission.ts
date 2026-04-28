@@ -24,6 +24,11 @@ export type ShowcaseSubmission = {
   techStack: string[];
   /** AI 如何辅助突破边界 */
   evolution: string;
+  /**
+   * 创作团队构成（个人 / 团队 2-8 人），见 src/lib/composition.ts
+   * 持久化层复用 Supabase 的 creator_nickname 列，避免改后端表结构。
+   */
+  composition?: import("../lib/composition").CompositionCode;
   deployUrl: string;
   /** 用户上传压缩图（data URL）、截图 API 返回的 URL，或站内 SVG 占位 */
   thumbnailUrl: string;

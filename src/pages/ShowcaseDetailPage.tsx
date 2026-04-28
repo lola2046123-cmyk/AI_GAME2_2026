@@ -8,6 +8,7 @@ import { ThinArrow } from "../components/ThinArrow";
 import { SHOWCASE_DETAILS } from "../data/showcaseDetails";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
 import { gameNameSecondaryLine } from "../lib/gameNameBilingual";
+import { formatComposition } from "../lib/composition";
 import { unsplashSrcSet } from "../lib/responsiveThumbnail";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
 import type { ShowcaseSubmission } from "../types/submission";
@@ -72,6 +73,7 @@ export function ShowcaseDetailPage() {
   }
   const canLink = isValidUrl(item.deployUrl);
   const gameNameSubtitle = gameNameSecondaryLine(item.gameName);
+  const compositionLabel = formatComposition(item.composition);
   const detailThumbSrcSet = unsplashSrcSet(item.thumbnailUrl);
 
   return (
@@ -144,6 +146,14 @@ export function ShowcaseDetailPage() {
                     {gameNameSubtitle}
                   </p>
                 ) : null}
+                {compositionLabel ? (
+                  <span
+                    className="inline-flex items-center rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 font-label text-[10px] uppercase tracking-[0.16em] text-white/65 backdrop-blur-sm sm:px-3 sm:py-1 sm:text-[11px]"
+                    aria-label={`创作团队：${compositionLabel}`}
+                  >
+                    {compositionLabel}
+                  </span>
+                ) : null}
                 {canLink && (
                   <a
                     href={item.deployUrl}
@@ -159,6 +169,103 @@ export function ShowcaseDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ══════════════════════════════════════
+            创作心语：评审重点参考；仅当作者填写后才渲染
+            数据来源：item.evolution（前端语义即「创作心语」）
+        ══════════════════════════════════════ */}
+        {item.evolution?.trim() && (
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-[1] mx-auto w-full max-w-home px-4 pt-8 sm:px-6 md:px-12 md:pt-10"
+          >
+            {/*
+              章节式样式：长文（接近 5000 字）下保持正文阅读节奏，
+              移除卡片化高亮容器，仅以顶部 hairline + 章节标题作锚点。
+            */}
+            <div className="border-t border-white/[0.06] pt-6 md:pt-7">
+              <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 md:mb-5">
+                <span className="font-headline text-base font-semibold text-white/90 md:text-lg">
+                  创作心语
+                </span>
+                <span className="font-label text-[10px] uppercase tracking-[0.22em] text-white/35">
+                  Creator&apos;s Note
+                </span>
+              </div>
+              <div className="prose-article max-w-none text-white/80 leading-relaxed">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  disallowedElements={["html", "script"]}
+                  components={{
+                    p: ({ children }) => (
+                      <p className="mb-4 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85] last:mb-0">
+                        {children}
+                      </p>
+                    ),
+                    h1: ({ children }) => (
+                      <h3 className="mb-2 mt-4 font-headline text-base font-semibold tracking-tight text-white md:text-lg first:mt-0">
+                        {children}
+                      </h3>
+                    ),
+                    h2: ({ children }) => (
+                      <h4 className="mb-2 mt-3 font-headline text-sm font-semibold tracking-tight text-white md:text-base first:mt-0">
+                        {children}
+                      </h4>
+                    ),
+                    h3: ({ children }) => (
+                      <h5 className="mb-1.5 mt-2.5 font-headline text-sm font-semibold tracking-tight text-white first:mt-0">
+                        {children}
+                      </h5>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="mb-4 list-disc space-y-1.5 pl-5 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85]">
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="mb-4 list-decimal space-y-1.5 pl-5 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85]">
+                        {children}
+                      </ol>
+                    ),
+                    li: ({ children }) => (
+                      <li className="marker:text-primary/60">{children}</li>
+                    ),
+                    blockquote: ({ children }) => (
+                      <blockquote className="my-3 border-l-2 border-primary/45 pl-4 font-body text-sm italic text-white/60 md:text-base">
+                        {children}
+                      </blockquote>
+                    ),
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary/85 underline underline-offset-2 transition-colors hover:text-primary"
+                      >
+                        {children}
+                      </a>
+                    ),
+                    strong: ({ children }) => (
+                      <strong className="font-semibold text-white/95">{children}</strong>
+                    ),
+                    em: ({ children }) => (
+                      <em className="italic text-white/65">{children}</em>
+                    ),
+                    code: ({ children }) => (
+                      <code className="rounded border border-white/[0.08] bg-white/[0.06] px-1.5 py-0.5 font-reward-hud text-xs text-primary/90">
+                        {children}
+                      </code>
+                    )
+                  }}
+                >
+                  {item.evolution}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </motion.section>
+        )}
 
         {/* ══════════════════════════════════════
             内容区：单栏（Tab + Markdown）

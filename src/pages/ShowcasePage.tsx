@@ -8,6 +8,7 @@ import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { ShowcaseStatBar } from "../components/showcase/ShowcaseStatBar";
 import { useFluidVfx } from "../components/showcase/useFluidVfx";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import { compareShowcaseDesc } from "../lib/showcaseSort";
 import showcaseHeroBg from "../../imge/game_bg8.jpg";
 import type { ShowcaseSubmission } from "../types/submission";
 
@@ -50,9 +51,9 @@ export function ShowcasePage() {
     return () => { cancelled = true; };
   }, [key]);
 
-  /** 按最新时间排序 */
+  /** 按最新时间排序；createdAt 相同时按 id 字典序兜底，保证多人浏览顺序一致 */
   const filtered = useMemo(
-    () => [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    () => [...items].sort(compareShowcaseDesc),
     [items]
   );
 

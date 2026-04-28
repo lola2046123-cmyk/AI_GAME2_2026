@@ -11,6 +11,7 @@ import { SubmissionCountdown } from "../components/SubmissionCountdown";
 import { RewardCardHud } from "../components/rewards/RewardCardHud";
 import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import { getShowcaseListAsync } from "../lib/showcaseMerge";
+import { compareShowcaseDesc } from "../lib/showcaseSort";
 import {
   FEATURED_THUMB_SIZES,
   SHOWCASE_THUMB_SIZES,
@@ -205,21 +206,14 @@ export function HomePage() {
         const diff =
           (voteMap[b.id]?.counts.like ?? 0) - (voteMap[a.id]?.counts.like ?? 0);
         if (diff !== 0) return diff;
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+        return compareShowcaseDesc(a, b);
       })
       .slice(0, 3);
   }, [showcaseItems, voteMap]);
 
   const latestItems = useMemo(() => {
     if (showcaseItems.length === 0) return [];
-    return [...showcaseItems]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      .slice(0, 6);
+    return [...showcaseItems].sort(compareShowcaseDesc).slice(0, 6);
   }, [showcaseItems]);
 
   return (

@@ -1,4 +1,5 @@
 import type { ShowcaseSubmission } from "../types/submission";
+import { parseCompositionCode } from "./composition";
 
 /** PostgREST 行（snake_case）→ 前端实体 */
 export function rowToShowcaseSubmission(row: {
@@ -30,6 +31,7 @@ export function rowToShowcaseSubmission(row: {
     gameplaySource,
     techStack: stack,
     evolution: row.evolution,
+    composition: parseCompositionCode(row.creator_nickname),
     deployUrl: row.deploy_url,
     thumbnailUrl: row.thumbnail_url,
     createdAt: row.created_at,
@@ -42,7 +44,7 @@ export function submissionToInsertRow(entry: ShowcaseSubmission): Record<string,
   return {
     id: entry.id,
     game_name: entry.gameName,
-    creator_nickname: null,
+    creator_nickname: entry.composition ?? null,
     gameplay: entry.gameplay,
     card_summary: entry.cardSummary?.trim() || null,
     gameplay_source: entry.gameplaySource ?? null,

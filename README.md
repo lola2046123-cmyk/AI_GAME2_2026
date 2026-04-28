@@ -37,10 +37,12 @@
 
 | 变量 | 上线建议 |
 |------|----------|
-| `VITE_ADMIN_PIN` | **生产务必设置**为强 PIN。与 **`/api/showcase-admin`** 共用；管理 list/update/delete 经该 API + **Service Role** 执行。 |
+| `ADMIN_PIN` | **仅服务端变量**（勿 `VITE_`），生产必填，建议 12+ 位高熵字符串。`/api/showcase-admin` 用它做登录校验；前端**不再持有 PIN**，登录通过 `op:"login"` 由服务端时序安全比对后下发短期 HMAC token。 |
+| `ADMIN_SESSION_SECRET` | **仅服务端变量**，签发管理员会话 token 用，建议 32+ 位随机串（`openssl rand -hex 32`）。未配置时降级派生（不推荐生产使用）。 |
 | `VITE_SUPABASE_URL` | 可选。与 `VITE_SUPABASE_ANON_KEY` **同时设置**时启用远端投稿、展示与 **Auth 投票**（SQL 见 `docs/supabase-showcase.sql` + `docs/supabase-votes.sql`）。 |
 | `VITE_SUPABASE_ANON_KEY` | 可选。Supabase anon key；受 RLS 约束，**不要**当作私密密钥。 |
 | `SUPABASE_SERVICE_ROLE_KEY` | **仅 Vercel 服务端变量**（勿 `VITE_`）。供 `api/showcase-admin.ts` 管理数据；勿提交进 Git。 |
+| ~~`VITE_ADMIN_PIN`~~ | **已废弃**。`VITE_` 前缀变量会被 Vite 在构建期内联到前端 dist，等于把 PIN 公开。服务端为兼容旧部署仍会读，但**生产请立即改用 `ADMIN_PIN`** 并在 Vercel 删除旧变量。 |
 | `VITE_GEMINI_API_KEY` | 可选。写入后任何人可从构建产物中尝试提取，**演示 / 内网可接受**；公开站建议改为后端或 Edge 代理调用模型。 |
 | `VITE_API_BASE` | 可选。若需「远程截图」等能力，需自行部署可公网访问的 API，再填根 URL。 |
 | `VITE_GEMINI_MODEL` | 可选；与当前报名表单文档路径无必填关联。 |
@@ -59,7 +61,7 @@
 
 - **未配置 `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`**：投稿写入 **`localStorage`**（键 `ai_game_2026_showcase_submissions`），**`getShowcaseListAsync()`**（`src/lib/showcaseMerge.ts`）无用户稿时展示 `mockShowcase` 6 条兜底；**一旦存在可见用户稿**，列表即切换为纯用户稿展示，不再混入 mock（避免"首位 mock 被挤掉"造成修改错觉）。换设备或清缓存后看不到他人本机数据。
 
-- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（校验 `VITE_ADMIN_PIN`，服务端 **`SUPABASE_SERVICE_ROLE_KEY`**），anon 无 `UPDATE`/`DELETE` 稿件权限。
+- **已配置 Supabase**（并在控制台执行 **`docs/supabase-showcase.sql`** 与 **`docs/supabase-votes.sql`**，详见 **`docs/SUPABASE.md`**）：展示页用 anon 客户端读可见稿与票数；匿名 **`INSERT`** 投稿；登录用户 **`INSERT`** 本人投票；**改 / 删 / 全量列表** 走 **`POST /api/showcase-admin`**（先用 `ADMIN_PIN` 走 `op:"login"` 换取短期 HMAC token，后续请求只携带 token；服务端用 **`SUPABASE_SERVICE_ROLE_KEY`** 执行），anon 无 `UPDATE`/`DELETE` 稿件权限。
 
 **本地 `npm run dev`**：Vite 不托管 `api/*`，管理接口与远端列表需在 **Vercel 预览 / 生产** 验证，或本地运行 **`vercel dev`**（需安装 [Vercel CLI](https://vercel.com/docs/cli)）以同时提供前端与 Serverless。
 
@@ -110,7 +112,8 @@ npm run dev
 | 变量 | 说明 |
 |------|------|
 | `VITE_API_BASE` | 可选。后端根 URL；用于 `POST /api/screenshot` 生成作品缩略图。留空则无远程截图，依赖用户上传封面或占位图。 |
-| `VITE_ADMIN_PIN` | 可选。`/admin` 登录 PIN；未设置时开发环境默认 `2026`（**仅前端校验**，生产须配合服务端权限）。 |
+| `ADMIN_PIN` | **生产必填，仅服务端变量**。`/admin` 登录密钥；前端永远不持有，登录由 `/api/showcase-admin` 服务端时序安全比对，成功后下发 12h 有效期 HMAC 会话 token。 |
+| `ADMIN_SESSION_SECRET` | 仅服务端；签发会话 token 用的随机串（建议 `openssl rand -hex 32`）。未配置时降级派生，**不推荐生产使用**。 |
 | `VITE_GEMINI_API_KEY` | 可选。当前报名表单**文档上传**仅使用**本地启发式**生成概要，不调用 Gemini；变量保留供后续扩展或其它功能使用。 |
 | `VITE_GEMINI_MODEL` | 可选。默认 `gemini-2.0-flash`（同上，与文档上传路径无联动时可不配置）。 |
 

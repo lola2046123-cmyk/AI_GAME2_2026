@@ -9,6 +9,10 @@ import {
 } from "../../lib/submissionsStorage";
 import { compressImageFileToJpegDataUrl } from "../../lib/imageCompress";
 import { requestScreenshot } from "../../lib/screenshotApi";
+import {
+  COMPOSITION_OPTIONS,
+  type CompositionCode
+} from "../../lib/composition";
 import type { RegistrationModalState } from "../../types/registrationModal";
 import type { ShowcaseSubmission } from "../../types/submission";
 
@@ -30,6 +34,12 @@ const MAX_FIELD_CHARS = 2000;
 const MAX_GAMEPLAY_CHARS = 30000;
 /** 首页卡片摘要上限（码位） */
 const MAX_CARD_SUMMARY = 220;
+/**
+ * 创作心语上限（码位）
+ * 评审组重点参考字段：创意来源 / 创作动机 / AI 心得。
+ * 在表单 state 内独立承载，提交时映射到现有 `evolution` 字段，避免改动后端。
+ */
+const MAX_CREATOR_NOTE_CHARS = 5000;
 
 function countChars(s: string): number {
   return [...s].length;
@@ -65,6 +75,12 @@ export function RegistrationModal({
   const [step, setStep] = useState(1);
   const [gameName, setGameName] = useState("");
   const [gameplay, setGameplay] = useState("");
+  /** 创作心语：复用 evolution 字段持久化（前端语义改名，无后端改动） */
+  const [creatorNote, setCreatorNote] = useState("");
+  /** 创作团队构成：复用 creator_nickname 列存编码（solo / team-N） */
+  const [composition, setComposition] = useState<CompositionCode | undefined>(
+    undefined
+  );
   const [techStack, setTechStack] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
   const [deployUrl, setDeployUrl] = useState("");
@@ -89,6 +105,8 @@ export function RegistrationModal({
     setStep(1);
     setGameName("");
     setGameplay("");
+    setCreatorNote("");
+    setComposition(undefined);
     setTechStack([]);
     setCustomTool("");
     setDeployUrl("");
@@ -104,6 +122,8 @@ export function RegistrationModal({
     setStep(1);
     setGameName(clampChars(r.gameName, MAX_GAME_NAME_CHARS));
     setGameplay(clampChars(r.gameplay, MAX_GAMEPLAY_CHARS));
+    setCreatorNote(clampChars(r.evolution ?? "", MAX_CREATOR_NOTE_CHARS));
+    setComposition(r.composition);
     setTechStack(r.techStack.map((t) => clampChars(t, MAX_FIELD_CHARS)));
     setDeployUrl(clampChars(r.deployUrl, MAX_FIELD_CHARS));
     setCoverDataUrl(null);
@@ -290,8 +310,12 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
-          // UI 已移除 AI 进化论输入；编辑态保留原值以免破坏历史数据
-          evolution: state.record.evolution ?? "",
+          // 创作心语复用 evolution 字段持久化；编辑时若用户未填写则保留原值
+          evolution: clampChars(
+            (creatorNote.trim() || state.record.evolution || "").trim(),
+            MAX_CREATOR_NOTE_CHARS
+          ),
+          composition,
           deployUrl: url,
           thumbnailUrl,
           is_visible: state.record.is_visible !== false
@@ -310,8 +334,9 @@ export function RegistrationModal({
               : undefined,
           gameplaySource,
           techStack: [...techStack],
-          // UI 已移除 AI 进化论输入；新建提交写空字符串
-          evolution: "",
+          // 创作心语复用 evolution 字段持久化；选填，不填即写空字符串（与历史行为一致）
+          evolution: clampChars(creatorNote.trim(), MAX_CREATOR_NOTE_CHARS),
+          composition,
           deployUrl: url,
           thumbnailUrl,
           createdAt: new Date().toISOString(),
@@ -488,6 +513,81 @@ export function RegistrationModal({
                         maxLength={MAX_GAMEPLAY_CHARS * 2}
                         textareaClassName={`${inputSurface} min-h-[110px] resize-y`}
                       />
+                    </div>
+
+                    {/* 创作心语 ── 评审重点参考字段，选填 */}
+                    <div>
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>
+                          创作心语
+                          <span className="ml-2 font-label text-[10px] font-normal normal-case text-primary-container/70">
+                            · 选填，评审组重点参考
+                          </span>
+                        </span>
+                        <span className={charCount}>
+                          {countChars(creatorNote)}/{MAX_CREATOR_NOTE_CHARS}
+                        </span>
+                      </div>
+                      <MarkdownEditor
+                        value={creatorNote}
+                        onChange={(v) =>
+                          setCreatorNote(clampChars(v, MAX_CREATOR_NOTE_CHARS))
+                        }
+                        placeholder={[
+                          "聊聊创作过程中的思路或有趣的故事，建议涵盖：",
+                          "① 创意从何而来",
+                          "② 为什么制作这个游戏",
+                          "③ 利用 AI 创造有何心得"
+                        ].join("\n")}
+                        rows={4}
+                        maxLength={MAX_CREATOR_NOTE_CHARS * 2}
+                        textareaClassName={`${inputSurface} min-h-[110px] resize-y`}
+                      />
+                      <p className={fieldHint}>
+                        将在作品详情页单独展示，是打动评审的关键内容。
+                      </p>
+                    </div>
+
+                    {/* 创作团队 ── 个人 / 2-8 人，单选短促胶囊 */}
+                    <div>
+                      <div className="mb-2.5 flex items-baseline justify-between gap-2">
+                        <span className={fieldLabel}>
+                          创作团队
+                          <span className="ml-2 font-label text-[10px] font-normal normal-case text-white/35">
+                            · 选填
+                          </span>
+                        </span>
+                      </div>
+                      <div
+                        role="radiogroup"
+                        aria-label="创作团队构成"
+                        className="flex flex-wrap gap-1.5"
+                      >
+                        {COMPOSITION_OPTIONS.map((opt) => {
+                          const on = composition === opt.code;
+                          return (
+                            <button
+                              key={opt.code}
+                              type="button"
+                              role="radio"
+                              aria-checked={on}
+                              onClick={() =>
+                                setComposition(on ? undefined : opt.code)
+                              }
+                              className={`rounded-full border px-3 py-1.5 font-label text-xs font-medium tracking-normal transition-all duration-200 ${
+                                on
+                                  ? "border-primary-container/55 bg-primary-container/15 text-primary-container shadow-[0_0_18px_-4px_rgba(0,255,204,0.45)]"
+                                  : "border-white/[0.12] bg-white/[0.04] text-white/45 hover:border-white/25 hover:text-white/70"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className={fieldHint}>
+                        个人开发或 2–8 人团队；将在作品详情页副标题下展示。
+                      </p>
                     </div>
                   </motion.div>
                 )}
