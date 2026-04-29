@@ -25,10 +25,23 @@ export type ShowcaseSubmission = {
   /** AI 如何辅助突破边界 */
   evolution: string;
   /**
-   * 创作团队构成（个人 / 团队 2-8 人），见 src/lib/composition.ts
+   * 创作团队构成（个人 / 团队 2-8 人），见 src/lib/composition.ts。
    * 持久化层复用 Supabase 的 creator_nickname 列，避免改后端表结构。
+   *
+   * 这里**故意**内联 string literal union，而不是 `import("../lib/composition").CompositionCode`，
+   * 以避免 api/showcase-admin.ts 通过 type import 链路触发 esbuild 跨目录解析（在 Vercel 上
+   * 曾导致函数初始化崩溃 → 返回 HTML 错误页）。前端 src/lib/composition.ts 中的
+   * CompositionCode 与此 union 结构相同，可以互相赋值，无需同步重复声明的导出。
    */
-  composition?: import("../lib/composition").CompositionCode;
+  composition?:
+    | "solo"
+    | "team-2"
+    | "team-3"
+    | "team-4"
+    | "team-5"
+    | "team-6"
+    | "team-7"
+    | "team-8";
   deployUrl: string;
   /** 用户上传压缩图（data URL）、截图 API 返回的 URL，或站内 SVG 占位 */
   thumbnailUrl: string;

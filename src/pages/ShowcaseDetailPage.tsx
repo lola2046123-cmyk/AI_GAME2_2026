@@ -84,7 +84,7 @@ export function ShowcaseDetailPage() {
             Hero：封面大图 + 居中信息布局
         ══════════════════════════════════════ */}
         <div className="relative isolate w-full overflow-x-clip">
-          <div className="relative min-h-[min(58svh,26rem)] w-full overflow-hidden sm:min-h-[min(62vh,30rem)] md:min-h-[min(68vh,36rem)]">
+          <div className="relative min-h-[clamp(15.5rem,48dvh,26rem)] w-full overflow-hidden sm:min-h-[min(66vh,32rem)] md:min-h-[min(72vh,38rem)]">
 
             {/* 封面图：铺满 Hero 高度，裁切不变形 */}
             <img
@@ -102,7 +102,7 @@ export function ShowcaseDetailPage() {
 
             {/* ── 顶部：奖项 + 技术栈（叠在画面上方） ── */}
             <motion.div
-              className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex flex-wrap items-center justify-center gap-2 px-4 pt-8 sm:px-6 sm:pt-10 md:px-12 md:pt-12"
+              className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex flex-wrap items-center justify-center gap-1.5 px-3 pt-5 sm:gap-2 sm:px-6 sm:pt-10 md:px-12 md:pt-12"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -128,27 +128,31 @@ export function ShowcaseDetailPage() {
             </motion.div>
 
             {/* ── 标题 + 双语小字 + 体验按钮：在 Hero 区域内垂直居中 ── */}
-            <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center px-4 pb-8 pt-14 text-center sm:px-6 sm:pb-10 sm:pt-16 md:px-12 md:pb-12 md:pt-20">
-              <motion.div
-                className="flex max-w-4xl flex-col items-center gap-3 sm:gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <h1 className="font-headline text-balance text-[2rem] font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl md:text-5xl lg:text-[3.5rem]">
-                  {item.gameName}
-                </h1>
-                {gameNameSubtitle ? (
-                  <p
-                    className="font-label text-[11px] tracking-[0.12em] sm:text-xs md:tracking-[0.14em]"
-                    style={{ color: SUBTITLE_HEX }}
-                  >
-                    {gameNameSubtitle}
-                  </p>
-                ) : null}
+            <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center px-[max(0.75rem,min(1rem,4vw))] pb-6 pt-7 text-center sm:px-6 sm:pb-12 sm:pt-14 md:px-12 md:pb-14 md:pt-16">
+              <div className="translate-y-0 sm:-translate-y-5 md:-translate-y-8">
+                <motion.div
+                  className="flex max-w-4xl flex-col items-center gap-4 sm:gap-9 md:gap-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
+                >
+                <div className="flex max-w-[min(100%,calc(100vw-1.5rem))] flex-col items-center gap-0.5 text-center sm:max-w-none sm:gap-1">
+                  <h1 className="font-headline text-balance text-[clamp(1.2rem,4.2vw+0.65rem,2rem)] font-bold leading-[1.12] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)] sm:text-4xl sm:leading-tight md:text-5xl lg:text-[3.5rem]">
+                    {item.gameName}
+                  </h1>
+                  {gameNameSubtitle ? (
+                    <p
+                      className="font-label text-[11px] leading-none tracking-[0.12em] sm:text-xs sm:leading-none md:tracking-[0.14em]"
+                      style={{ color: SUBTITLE_HEX }}
+                    >
+                      {gameNameSubtitle}
+                    </p>
+                  ) : null}
+                </div>
                 {compositionLabel ? (
                   <span
-                    className="inline-flex items-center rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 font-label text-[10px] uppercase tracking-[0.16em] text-white/65 backdrop-blur-sm sm:px-3 sm:py-1 sm:text-[11px]"
+                    className="inline-flex max-w-[min(100%,calc(100vw-1.5rem))] items-center justify-center rounded-full border border-white/15 bg-black/45 px-2.5 py-0.5 font-label text-[11px] font-semibold uppercase tracking-[0.1em] backdrop-blur-sm sm:max-w-none sm:px-4 sm:py-1.5 sm:text-[17px] sm:tracking-[0.15em]"
+                    style={{ color: SUBTITLE_HEX }}
                     aria-label={`创作团队：${compositionLabel}`}
                   >
                     {compositionLabel}
@@ -159,13 +163,14 @@ export function ShowcaseDetailPage() {
                     href={item.deployUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-experience mt-1 w-[160px] gap-2 whitespace-nowrap px-5 py-3 text-sm"
+                    className="btn-experience w-[min(100%,10.5rem)] max-w-[calc(100vw-2rem)] gap-2 whitespace-nowrap px-4 py-2.5 text-xs sm:w-[160px] sm:px-5 sm:py-3 sm:text-sm"
                   >
                     立即体验
                     <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2} />
                   </a>
                 )}
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
