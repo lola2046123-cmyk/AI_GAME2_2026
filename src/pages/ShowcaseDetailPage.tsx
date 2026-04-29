@@ -11,6 +11,7 @@ import { gameNameSecondaryLine } from "../lib/gameNameBilingual";
 import { formatComposition } from "../lib/composition";
 import { unsplashSrcSet } from "../lib/responsiveThumbnail";
 import { MOCK_SHOWCASE } from "../data/mockShowcase";
+import { ShowcaseLoading } from "../components/showcase/ShowcaseLoading";
 import type { ShowcaseSubmission } from "../types/submission";
 
 /* ────────────────────────────────────────
@@ -57,8 +58,13 @@ export function ShowcaseDetailPage() {
 
   if (item === undefined) {
     return (
-      <main className="min-h-[50vh] -mt-[var(--site-header-height)] bg-background px-6 pt-[calc(var(--site-header-height)+3rem)] pb-20 text-center text-white/55 md:px-12">
-        加载中…
+      <main className="min-h-[50vh] -mt-[var(--site-header-height)] bg-background px-6 pt-[calc(var(--site-header-height)+4rem)] pb-20 md:px-12">
+        <ShowcaseLoading
+          count={0}
+          showHeader
+          label="Loading…"
+          ariaLabel="正在加载作品详情"
+        />
       </main>
     );
   }

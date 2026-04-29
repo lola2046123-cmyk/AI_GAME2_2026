@@ -7,7 +7,7 @@ import { Gamepad2 } from "lucide-react";
  *       而不是先闪一下"暂无参赛作品"的空态。
  */
 type Props = {
-  /** 骨架卡片数量，默认 6（与首页"最新参赛"栅格一致） */
+  /** 骨架卡片数量，默认 6（与首页"最新参赛"栅格一致）；传 0 只渲染动画头 */
   count?: number;
   /** 是否渲染顶部的游戏手柄 + 像素方块动画 */
   showHeader?: boolean;
@@ -15,6 +15,8 @@ type Props = {
   label?: string;
   /** 控制栅格列数（默认 sm:2 / lg:3） */
   columnsClass?: string;
+  /** role="status" 的 aria-label，默认"正在加载参赛作品" */
+  ariaLabel?: string;
 };
 
 const PIXEL_DELAYS = [0, 0.12, 0.24, 0.36, 0.48];
@@ -23,14 +25,15 @@ export function ShowcaseLoading({
   count = 6,
   showHeader = true,
   label = "Loading showcase…",
-  columnsClass = "grid-cols-1 gap-6 sm:grid-cols-2 md:gap-7 lg:grid-cols-3 lg:gap-8"
+  columnsClass = "grid-cols-1 gap-6 sm:grid-cols-2 md:gap-7 lg:grid-cols-3 lg:gap-8",
+  ariaLabel = "正在加载参赛作品"
 }: Props) {
   return (
     <div
       className="w-full"
       role="status"
       aria-live="polite"
-      aria-label="正在加载参赛作品"
+      aria-label={ariaLabel}
     >
       {showHeader && (
         <div className="mb-10 flex flex-col items-center justify-center gap-4 md:mb-12">
@@ -73,7 +76,7 @@ export function ShowcaseLoading({
         </div>
       )}
 
-      <div className={`grid ${columnsClass}`} aria-hidden>
+      {count > 0 && <div className={`grid ${columnsClass}`} aria-hidden>
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
@@ -125,9 +128,9 @@ export function ShowcaseLoading({
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
-      <span className="sr-only">正在加载参赛作品</span>
+      <span className="sr-only">{ariaLabel}</span>
     </div>
   );
 }
