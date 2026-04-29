@@ -84,7 +84,7 @@ export function ShowcaseDetailPage() {
             Hero：封面大图 + 居中信息布局
         ══════════════════════════════════════ */}
         <div className="relative isolate w-full overflow-x-clip">
-          <div className="relative min-h-[clamp(15.5rem,48dvh,26rem)] w-full overflow-hidden sm:min-h-[min(66vh,32rem)] md:min-h-[min(72vh,38rem)]">
+          <div className="relative min-h-[clamp(12.5rem,39dvh,20.5rem)] w-full overflow-hidden sm:min-h-[min(53vh,26rem)] md:min-h-[min(58vh,30.5rem)]">
 
             {/* 封面图：铺满 Hero 高度，裁切不变形 */}
             <img
@@ -102,7 +102,7 @@ export function ShowcaseDetailPage() {
 
             {/* ── 顶部：奖项 + 技术栈（叠在画面上方） ── */}
             <motion.div
-              className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex flex-wrap items-center justify-center gap-1.5 px-3 pt-5 sm:gap-2 sm:px-6 sm:pt-10 md:px-12 md:pt-12"
+              className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex flex-wrap items-center justify-center gap-1.5 px-3 pt-3.5 sm:gap-2 sm:px-6 sm:pt-7 md:px-12 md:pt-8"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -128,10 +128,10 @@ export function ShowcaseDetailPage() {
             </motion.div>
 
             {/* ── 标题 + 双语小字 + 体验按钮：在 Hero 区域内垂直居中 ── */}
-            <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center px-[max(0.75rem,min(1rem,4vw))] pb-6 pt-7 text-center sm:px-6 sm:pb-12 sm:pt-14 md:px-12 md:pb-14 md:pt-16">
-              <div className="translate-y-0 sm:-translate-y-5 md:-translate-y-8">
+            <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center px-[max(0.75rem,min(1rem,4vw))] pb-5 pt-6 text-center sm:px-6 sm:pb-10 sm:pt-12 md:px-12 md:pb-12 md:pt-[3.25rem]">
+              <div className="translate-y-0 sm:-translate-y-3 md:-translate-y-5">
                 <motion.div
-                  className="flex max-w-4xl flex-col items-center gap-4 sm:gap-9 md:gap-10"
+                  className="flex max-w-4xl flex-col items-center gap-3 sm:gap-6 md:gap-7"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
@@ -190,22 +190,22 @@ export function ShowcaseDetailPage() {
               章节式样式：长文（接近 5000 字）下保持正文阅读节奏，
               移除卡片化高亮容器，仅以顶部 hairline + 章节标题作锚点。
             */}
-            <div className="border-t border-white/[0.06] pt-6 md:pt-7">
+            <div className="border-t pt-6 md:pt-7" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
               <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 md:mb-5">
-                <span className="font-headline text-base font-semibold text-white/90 md:text-lg">
+                <span className="font-headline text-base font-semibold text-white md:text-lg">
                   创作心语
                 </span>
                 <span className="font-label text-[10px] uppercase tracking-[0.22em] text-white/35">
                   Creator&apos;s Note
                 </span>
               </div>
-              <div className="prose-article max-w-none text-white/80 leading-relaxed">
+              <div className="prose-article max-w-none leading-relaxed">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   disallowedElements={["html", "script"]}
                   components={{
                     p: ({ children }) => (
-                      <p className="mb-4 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85] last:mb-0">
+                      <p className="mb-4 font-body text-sm leading-7 text-white/70 md:text-base md:leading-[1.85] last:mb-0">
                         {children}
                       </p>
                     ),
@@ -225,20 +225,20 @@ export function ShowcaseDetailPage() {
                       </h5>
                     ),
                     ul: ({ children }) => (
-                      <ul className="mb-4 list-disc space-y-1.5 pl-5 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85]">
+                      <ul className="mb-4 list-disc space-y-1.5 pl-5 font-body text-sm leading-7 text-white/70 md:text-base md:leading-[1.85]">
                         {children}
                       </ul>
                     ),
                     ol: ({ children }) => (
-                      <ol className="mb-4 list-decimal space-y-1.5 pl-5 font-body text-sm leading-7 text-white/80 md:text-base md:leading-[1.85]">
+                      <ol className="mb-4 list-decimal space-y-1.5 pl-5 font-body text-sm leading-7 text-white/70 md:text-base md:leading-[1.85]">
                         {children}
                       </ol>
                     ),
                     li: ({ children }) => (
-                      <li className="marker:text-primary/60">{children}</li>
+                      <li className="marker:text-primary/50">{children}</li>
                     ),
                     blockquote: ({ children }) => (
-                      <blockquote className="my-3 border-l-2 border-primary/45 pl-4 font-body text-sm italic text-white/60 md:text-base">
+                      <blockquote className="my-3 border-l-2 border-primary/40 pl-4 font-body text-sm italic text-white/50 md:text-base">
                         {children}
                       </blockquote>
                     ),
@@ -247,16 +247,16 @@ export function ShowcaseDetailPage() {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary/85 underline underline-offset-2 transition-colors hover:text-primary"
+                        className="text-primary/80 underline underline-offset-2 transition-colors hover:text-primary"
                       >
                         {children}
                       </a>
                     ),
                     strong: ({ children }) => (
-                      <strong className="font-semibold text-white/95">{children}</strong>
+                      <strong className="font-semibold text-white/90">{children}</strong>
                     ),
                     em: ({ children }) => (
-                      <em className="italic text-white/65">{children}</em>
+                      <em className="italic text-white/60">{children}</em>
                     ),
                     code: ({ children }) => (
                       <code className="rounded border border-white/[0.08] bg-white/[0.06] px-1.5 py-0.5 font-reward-hud text-xs text-primary/90">
