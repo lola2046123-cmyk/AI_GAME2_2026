@@ -1,32 +1,20 @@
 /**
  * Vercel Serverless：用 Service Role 绕过 RLS，供管理页 list / update / delete。
- *
- * 环境变量（必填）：
- *   - VITE_SUPABASE_URL          Supabase 项目 URL（前端共用，沿用 VITE_ 前缀）
- *   - SUPABASE_SERVICE_ROLE_KEY  service_role 密钥，绕过 RLS
- *   - ADMIN_PIN                  管理员 PIN（仅服务端，**不带** VITE_ 前缀）
- *
- * 鉴权：前端在 /admin 登录时已用 VITE_ADMIN_PIN 比对，再把 PIN 透传到这里；
- *      此处用 ADMIN_PIN（服务端独立变量）做最终拦截。两个值务必保持一致。
+ * 环境变量：VITE_SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY、VITE_ADMIN_PIN
  */
 import { createClient } from "@supabase/supabase-js";
 
-/* ────────────────────────────────────────
-   类型与工具：本文件保持自包含
-   ——历史上从 ../src/lib/composition 与 ../src/types/submission 引入会让
-   Vercel @vercel/nft 在跨目录追踪 + tsconfig moduleResolution:"bundler" 组合下
-   漏打包源文件，导致 cold start 时 Cannot find module → FUNCTION_INVOCATION_FAILED。
-──────────────────────────────────────── */
+import type { ShowcaseSubmission } from "../src/types/submission";
 
-/** Vercel Node 运行时请求/响应的最小形状（避免依赖 @vercel/node） */
-type ApiRequest = { method?: string; body?: string | Record<string, unknown> };
-type ApiResponse = {
-  status: (code: number) => ApiResponse;
-  setHeader: (name: string, value: string) => void;
-  json: (body: Record<string, unknown>) => void;
-};
-
-/** 与 src/lib/composition.ts 保持一致：前端的"个人 / N 人团队" */
+/**
+ * 创作团队构成（个人 / 团队 N 人）持久化编码。
+ *
+ * 注意：这里**故意**与 src/lib/composition.ts 内联保持一致，而不是跨目录 import。
+ * 原因：Vercel 默认 Node Runtime 用 esbuild 打包 serverless function 时，
+ * 从 api/ 跨到 src/ 的 runtime import（非 `import type`）在某些场景下会解析失败，
+ * 导致函数初始化崩溃并返回 HTML 错误页。这里 10 行重复成本远低于失败成本。
+ * 若改动 composition 编码白名单，请同步修改 src/lib/composition.ts。
+ */
 type CompositionCode =
   | "solo"
   | "team-2"
@@ -37,7 +25,7 @@ type CompositionCode =
   | "team-7"
   | "team-8";
 
-const VALID_COMPOSITION_CODES: ReadonlySet<string> = new Set([
+const COMPOSITION_VALID_CODES: ReadonlySet<string> = new Set([
   "solo",
   "team-2",
   "team-3",
@@ -53,24 +41,17 @@ function parseCompositionCode(
 ): CompositionCode | undefined {
   if (!input) return undefined;
   const v = input.trim();
-  return VALID_COMPOSITION_CODES.has(v) ? (v as CompositionCode) : undefined;
+  return COMPOSITION_VALID_CODES.has(v)
+    ? (v as CompositionCode)
+    : undefined;
 }
 
-/** 与 src/types/submission.ts 字段一致；本文件只用一部分字段 */
-type ShowcaseSubmission = {
-  id: string;
-  gameName: string;
-  gameplay: string;
-  cardSummary?: string;
-  gameplaySource?: "manual" | "ai" | "local";
-  techStack: string[];
-  evolution: string;
-  composition?: CompositionCode;
-  deployUrl: string;
-  thumbnailUrl: string;
-  createdAt: string;
-  source: "mock" | "user";
-  is_visible?: boolean;
+/** Vercel Node 运行时请求/响应的最小形状（避免依赖 @vercel/node） */
+type ApiRequest = { method?: string; body?: string | Record<string, unknown> };
+type ApiResponse = {
+  status: (code: number) => ApiResponse;
+  setHeader: (name: string, value: string) => void;
+  json: (body: Record<string, unknown>) => void;
 };
 
 type DbRow = {
@@ -143,20 +124,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   const url = process.env.VITE_SUPABASE_URL?.trim();
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  const expectedPin = process.env.ADMIN_PIN?.trim();
+  const expectedPin = process.env.VITE_ADMIN_PIN ?? "2026";
 
   if (!url || !serviceKey) {
     res.status(500).json({
       ok: false,
       error: "缺少 VITE_SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY"
-    });
-    return;
-  }
-  if (!expectedPin) {
-    res.status(500).json({
-      ok: false,
-      error:
-        "服务端未配置 ADMIN_PIN（请在 Vercel → Settings → Environment Variables 添加 ADMIN_PIN，不带 VITE_ 前缀）"
     });
     return;
   }
